@@ -6,13 +6,41 @@
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
-    "watch": "grafana-toolkit plugin:dev --watch"
+    "watch": "grafana-toolkit plugin:dev --watch",
+    "build:lib": "tsc",
+    "build:umd": "webpack src/index.ts -o dist/react-pv-components.js --config webpack.config.development.js",
+    "build:umd:min": "webpack src/index.ts -o dist/react-pv-components.min.js --config webpack.config.production.js",
+    "example": "webpack-dev-server --config webpack.config.example.js",
+    "build:example": "webpack --config webpack.config.example.js",
+    "_build": "npm run build:lib && npm run build:umd && npm run build:umd:min"
   },
   "author": "Grafana Labs",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-react": "^7.8.3",
     "@grafana/data": "next",
     "@grafana/toolkit": "next",
     "@grafana/ui": "next"
+  },
+  "dependencies": {
+    "@types/js-base64": "^2.3.1",
+    "@types/pubsub-js": "^1.5.18",
+    "@types/react-select": "^3.0.10",
+    "ag-grid-community": "^22.1.1",
+    "ag-grid-react": "^22.1.1",
+    "axios": "^0.19.1",
+    "i18next": "^19.0.3",
+    "js-base64": "^2.5.1",
+    "path": "^0.12.7",
+    "pubsub-js": "^1.8.0",
+    "react": "^16.0.0",
+    "react-burger-menu": "^2.6.13",
+    "react-dom": "^16.12.0",
+    "react-hot-loader": "^4.12.18",
+    "react-resize-aware": "^3.0.0",
+    "react-select": "^3.0.8",
+    "reflexbox": "^4.0.6",
+    "semantic-ui-react": "^0.88.2"
   }
 }
