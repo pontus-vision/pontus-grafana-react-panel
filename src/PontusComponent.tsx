@@ -171,7 +171,7 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   }
 
   static getURLGeneric(props: any, pvgdprGuiStr: string, defaultSuffix: string, defaultSandbox: string): string {
-    if (props.url) {
+    if (props.url && props.url.length > 0) {
       return props.url;
     } else if (window.location && window.location.pathname) {
       const pvgdprGuiIndex = window.location.pathname.indexOf(pvgdprGuiStr);

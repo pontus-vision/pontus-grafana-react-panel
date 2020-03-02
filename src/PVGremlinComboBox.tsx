@@ -1,8 +1,8 @@
-import React, {CSSProperties} from 'react';
+import React from 'react';
+import  {AsyncSelect} from '@grafana/ui';
 // Be sure to include styles at some point, probably during your bootstrapping
 import PontusComponent from './PontusComponent';
 import Axios from 'axios';
-// import {StylesConfig} from 'react-select/src/styles';
 
 // import ResizeAware from 'react-resize-aware';
 export interface PVGremlinComboBoxProps {
@@ -19,7 +19,7 @@ export interface PVGremlinComboBoxProps {
   onChange?: { (val: any): void };
   name?: string;
   optionsRequest?: any;
-  placeholder?: React.ReactNode;
+  placeholder?: string;
 }
 
 export interface PVGremlinComboBoxState extends PVGremlinComboBoxProps {
@@ -180,27 +180,35 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
     //   singleValue: (provided: CSSProperties, state: any) => {
     //     const opacity = state.isDisabled ? 0.5 : 1;
     //     const transition = 'opacity 300ms';
-    //     return {...provided, opacity, transition};
+    //     return { ...provided, opacity, transition };
     //   },
     // };
     
     // multi={this.props.multi === null ? true : this.props.multi}
     
     return (
-      <select multiple={true}
-              name={this.props.name || 'form-field-name'}
-        // key={this.state.value}
-              defaultValue={this.state.value}
-        // isMulti={this.props.multi === null ? true : this.props.multi}
-        // isClearable
-        // options={this.state.options}
-        // joinValues={true}
-        // delimiter={','}
-              inputMode={"search"}
-              onChange={this.onChange}
-        // placeholder={this.state.placeholder}
-        // styles={customStyles}
+      <AsyncSelect
+         options={this.state.options}
+         isMulti={this.props.multi === null ? true : this.props.multi}
+         isClearable={true}
+         defaultValue={this.state.value}
+         placeholder = {this.props.placeholder}
+
       />
+      
+      // <Select
+      //   name={this.props.name || 'form-field-name'}
+      //   // key={this.state.value}
+      //   defaultValue={this.state.value}
+      //   isMulti={this.props.multi === null ? true : this.props.multi}
+      //   isClearable
+      //   options={this.state.options}
+      //   joinValues={true}
+      //   delimiter={','}
+      //   onChange={this.onChange}
+      //   placeholder={this.state.placeholder}
+      //   // styles={customStyles}
+      // />
     );
     
     /*       return (

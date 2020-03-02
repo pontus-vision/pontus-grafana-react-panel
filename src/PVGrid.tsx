@@ -11,19 +11,21 @@ import { ColDef, GridOptions, IGetRowsParams, RowClickedEvent } from 'ag-grid-co
 // import {ColDef} from "ag-grid-community/dist/lib/entities/colDef";
 // import {RowClickedEvent} from "ag-grid-community/dist/lib/events";
 
+
 export interface PVGridProps {
+  url: string;
   namespace?: string;
   subNamespace?: string;
   mountedSuccess?: boolean;
   customFilter?: string | undefined;
-  settings: any | undefined;
+  settings?: any ;
+  columnDefs?: PVGridColDef[];
 }
 
 export interface PVGridState extends PVGridProps {
   hideMenu: boolean | undefined;
 
   totalRecords: number;
-  columnDefs: PVGridColDef[];
   defaultColDef: ColDef;
 
   rowModelType: string;

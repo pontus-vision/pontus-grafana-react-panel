@@ -16,7 +16,7 @@ interface SimplePanelState extends Readonly<any> {
   rowData: any;
 }
 
-export class SimplePanel extends PureComponent<Props> {
+export class SimplePanel extends PureComponent<Props, SimplePanelState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -55,8 +55,9 @@ export class SimplePanel extends PureComponent<Props> {
   }
 
   render() {
-    const { options, data, width, height } = this.props;
-
+    const {  width, height } = this.props;
+    const namespace = this.props.options.namespace;
+    const url = this.props.options.url;
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
     return (
@@ -77,20 +78,20 @@ export class SimplePanel extends PureComponent<Props> {
           {/*<PontusComponent/>*/}
           {/*<AgGridReact/>*/}
           {/*<PVGremlinComboBox mountedSuccess={true} namespace={"foo"}/>*/}
-          <PVGrid namespace={'test'} customFilter={undefined} mountedSuccess={true} settings={undefined} subNamespace={undefined} />
+          <PVGrid url={url} namespace={namespace} customFilter={undefined} mountedSuccess={true} columnDefs={this.state.columnDefs} subNamespace={undefined} />
         </div>
 
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            padding: '10px',
-          }}
-        >
-          <div>Count: {data.series.length}</div>
-          <div>{options.text}</div>
-        </div>
+        {/*<div*/}
+        {/*  style={{*/}
+        {/*    position: 'absolute',*/}
+        {/*    bottom: 0,*/}
+        {/*    left: 0,*/}
+        {/*    padding: '10px',*/}
+        {/*  }}*/}
+        {/*>*/}
+          {/*<div>Count: {data.series.length}</div>*/}
+          {/*<div>{options.text}</div>*/}
+        {/*</div>*/}
       </div>
     );
   }

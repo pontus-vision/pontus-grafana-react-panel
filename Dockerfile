@@ -17,6 +17,6 @@ RUN   yarn run dev
 FROM grafana/grafana:latest
 EXPOSE 3000
 
-COPY --from=builder /plugin/dist /var/lib/grafana/plugins/grafana/clock-panel/
+COPY --from=builder /plugin/dist /var/lib/grafana/plugins/grafana/pontus-panel/
 #COPY --from=builder /plugin/provisioning/datasources /etc/grafana/provisioning/datasources
 ENV TERM=linux

@@ -7,8 +7,11 @@ import PVGridColSelector from "./PVGridColSelector";
 // import PVGridColSelector from './PVGridColSelector';
 
 export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>> {
-  onTextChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, text: target.value });
+  onNamespaceChanged = ({ target }: any) => {
+    this.props.onOptionsChange({ ...this.props.options, namespace: target.value });
+  };
+  onURLChanged = ({ target }: any) => {
+    this.props.onOptionsChange({ ...this.props.options, namespace: target.value });
   };
 
   render() {
@@ -17,8 +20,9 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
     return (
       <div className="section gf-form-group">
         <h5 className="section-heading">Display</h5>
-        <FormField label="Text" labelWidth={5} inputWidth={20} type="text" onChange={this.onTextChanged} value={options.text || ''} />
-        <PVGridColSelector namespace={"test"} />
+        <FormField label="Namespace" labelWidth={10} inputWidth={20} type="text" onChange={this.onNamespaceChanged} value={options.namespace || ''} />
+        <FormField label="Base URL" labelWidth={10} inputWidth={20} type="text" onChange={this.onURLChanged} value={options.url || ''} />
+        <PVGridColSelector namespace={options.namespace} />
         
       </div>
     );

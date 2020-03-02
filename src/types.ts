@@ -1,7 +1,9 @@
 export interface SimpleOptions {
-  text: string;
+  namespace: string;
+  url: string;
 }
 
 export const defaults: SimpleOptions = {
-  text: 'The default text!',
+  namespace: 'test',
+  url: 'http://localhost:18443/gateway/sandbox/pvgdpr_graph/'
 };

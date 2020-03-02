@@ -1,20 +1,20 @@
 {
   "type": "panel",
-  "name": "Simple Panel",
-  "id": "myorgid-simple-panel",
+  "name": "Pontus Vision Panel",
+  "id": "pontus-panel",
 
   "info": {
-    "description": "Simple React Panel",
+    "description": "Pontus Vision Panel",
     "author": {
-      "name": "Your Name"
+      "name": "Leo Martins"
     },
-    "keywords": ["Simple"],
+    "keywords": ["Pontus", "LGPD", "GDPR"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
     "links": [
-      {"name": "Website", "url": "https://github.com/grafana/simple-react-panel"},
+      {"name": "Website", "url": "https://github.com/pontus-vision/simple-react-panel"},
       {"name": "License", "url": "https://github.com/grafana/simple-react-panel/blob/master/LICENSE"}
     ],
     "screenshots": [],
@@ -23,7 +23,7 @@
   },
 
   "dependencies": {
-    "grafanaVersion": "6.3.x",
+    "grafanaVersion": "6.x.x",
     "plugins": []
   }
 }
