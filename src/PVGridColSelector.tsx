@@ -30,7 +30,6 @@ export interface PVGridColSelectorState extends PVGridColSelectorProps {
 class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridColSelectorState> {
   private nodePropertyNamesReactSelect: any;
   private propsSelected: any[];
-  private namespace: string;
 
   constructor(props: Readonly<PVGridColSelectorProps>) {
     super(props);
@@ -40,8 +39,6 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
     this.state = { checkedFuzzy: false };
     this.nodePropertyNamesReactSelect = null;
     this.propsSelected = [];
-
-    this.namespace = this.props.namespace || '';
   }
 
   onError = (err: any) => {
@@ -52,7 +49,7 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
     // this.props.glEventHub.emit('userSearch-on-boxChanged')
 
     this.nodePropertyNamesReactSelect.getOptions({ labels: val });
-    this.emit(this.namespace + '-pvgrid-on-extra-search-changed', val);
+    this.emit(this.props.namespace + '-pvgrid-on-extra-search-changed', val);
   };
 
   onChangeNodePropertyNames = (val: any) => {
@@ -76,7 +73,7 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
 
     // for (val)
 
-    this.emit(this.namespace + '-pvgrid-on-col-settings-changed', colSettings);
+    this.emit(this.props.namespace + '-pvgrid-on-col-settings-changed', colSettings);
   };
 
   setObjNodePropertyNames = (reactSelect: any) => {
@@ -157,7 +154,7 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
       <div style={{ width: '100%', height: '100%', flexDirection: 'column', display: 'flex' }}>
         <div style={{ display: 'block', width: '100%', padding: '10px' }}>
           <PVGremlinComboBox
-            namespace={`${this.namespace}-node-types`}
+            namespace={`${this.props.namespace}-node-types`}
             name="node-types"
             multi={false}
             onChange={this.onChangeVertexLabels}
@@ -172,7 +169,7 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
         <div style={{ display: 'block', width: '100%', padding: '10px' }}>
           <PVGremlinComboBox
             name="node-property-types"
-            namespace={`${this.namespace}-node-property-types`}
+            namespace={`${this.props.namespace}-node-property-types`}
             multi={true}
             onChange={this.onChangeNodePropertyNames}
             onError={this.onError}

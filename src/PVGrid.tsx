@@ -11,14 +11,15 @@ import { ColDef, GridOptions, IGetRowsParams, RowClickedEvent } from 'ag-grid-co
 // import {ColDef} from "ag-grid-community/dist/lib/entities/colDef";
 // import {RowClickedEvent} from "ag-grid-community/dist/lib/events";
 
-
 export interface PVGridProps {
   url: string;
+  isNeighbour: boolean;
+  neighbourNamespace: string;
   namespace?: string;
   subNamespace?: string;
   mountedSuccess?: boolean;
   customFilter?: string | undefined;
-  settings?: any ;
+  settings?: any;
   columnDefs?: PVGridColDef[];
 }
 
@@ -51,10 +52,10 @@ export interface PVGridColDef extends ColDef {
 }
 
 class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
-  protected namespace: string;
-  protected subNamespace: string;
+  // protected namespace: string;
+  // protected subNamespace: string;
   private mountedSuccess: boolean;
-  private customFilter: string | undefined;
+  protected customFilter: string | undefined;
   private dataType: string | undefined;
   private readonly PAGESIZE: number;
   private errCounter: number;
@@ -82,11 +83,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
     this.fromPage = 0;
     this.toPage = 0;
-    this.namespace = props.namespace || '';
-    this.subNamespace = props.subNamespace || '';
     this.mountedSuccess = false;
-
-    this.customFilter = props.customFilter;
 
     // this.columns = [
     //   {key: 'name', name: 'Name'},
@@ -97,11 +94,12 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.data = [];
     this.searchstr = '';
     this.searchExact = true;
+    this.customFilter = props.customFilter;
+
     this.sortcol = null;
     this.sortdir = '+desc';
     this.hRequest = undefined;
     this.req = undefined; // ajax request
-    this.url = PontusComponent.getRestUrlAg(props);
 
     this.dataType = this.getDataType(props);
 
@@ -166,8 +164,15 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     };
   }
 
+  setCustomFilter = (customFilter: string | undefined) => {
+    this.customFilter = customFilter;
+    this.ensureData(0, this.PAGESIZE);
+  };
+
   getColSettings(props: any): PVGridColDef[] {
-    const colSettingsStr = PontusComponent.getItem(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}.PVGrid.colSettings`);
+    const colSettingsStr = PontusComponent.getItem(
+      `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`
+    );
     let colSettings: PVGridColDef[];
     if (colSettingsStr) {
       colSettings = JSON.parse(colSettingsStr) as PVGridColDef[];
@@ -180,7 +185,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   }
 
   getDataType(props: any): string {
-    let dataType = PontusComponent.getItem(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}.PVGrid.dataType`);
+    let dataType = PontusComponent.getItem(`${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`);
     // let dataType = JSON.parse();
     if (!dataType) {
       dataType = props.dataType ? props.dataType : '';
@@ -202,12 +207,9 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   //   this.namespace = namespace;
   // };
   //
-  componentDidMount = () => {
-    this.mountedSuccess = true;
-    this.on(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-search-changed`, this.setSearch);
-    this.on(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-search-exact-changed`, this.setSearchExact);
-    this.on(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-col-settings-changed`, this.setColumnSettingsCb);
-    this.on(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-extra-search-changed`, this.setExtraSearch);
+
+  onClickNeighbour: PubSubCallback = (topic: string, obj: any) => {
+    this.setCustomFilter(`hasNeighbourId:${obj.id}`);
   };
 
   getSearchObj = (
@@ -309,7 +311,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     const fromPage = Math.floor(fromReqNum / this.PAGESIZE);
     const toPage = Math.floor(toReq / this.PAGESIZE);
 
-    const url = this.url;
+    const url = PontusComponent.getRestUrlAg(this.props);
     if (this.hRequest) {
       clearTimeout(this.hRequest);
     }
@@ -406,10 +408,10 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   setDataType = (str: string) => {
     this.dataType = str;
-    PontusComponent.setItem(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}.PVGrid.dataType`, this.dataType);
+    PontusComponent.setItem(`${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`, this.dataType);
   };
 
-  setExtraSearch = (str: any) => {
+  setExtraSearch: PubSubCallback = (topic: string, str: any) => {
     // this.extraSearch = str;
     if (str && str.value) {
       this.setDataType(str.value);
@@ -434,19 +436,22 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     if (event.data) {
       // let val = this.grid.getDataItem(clickInfo.row);
       // alert (val);
-      this.emit(this.namespace + '-pvgrid-on-click-row', event.data);
+      this.emit(this.props.namespace + '-pvgrid-on-click-row', event.data);
     }
   };
 
-  private setColumnSettingsCb(topic: string, colSettings: PVGridColDef[]) {
+  setColumnSettingsCb = (topic: string, colSettings: PVGridColDef[]) => {
     this.setColumnSettings(colSettings);
-  }
+  };
 
   setColumnSettings = (colSettings: PVGridColDef[]) => {
     this.colFieldTranslation = {};
 
     if (colSettings) {
-      PontusComponent.setItem(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}.PVGrid.colSettings`, JSON.stringify(colSettings));
+      PontusComponent.setItem(
+        `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`,
+        JSON.stringify(colSettings)
+      );
 
       for (let i = 0; i < colSettings.length; i++) {
         const colSetting: PVGridColDef = colSettings[i];
@@ -492,16 +497,41 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
       this.cols = colSettings;
     }
   };
+  createSubscriptions = (props: Readonly<PVGridProps>) => {
+    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-changed`, this.setSearch);
+    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-exact-changed`, this.setSearchExact);
+    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-col-settings-changed`, this.setColumnSettingsCb);
+    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-extra-search-changed`, this.setExtraSearch);
+    if (props.isNeighbour) {
+      this.on(`${props.neighbourNamespace}-pvgrid-on-click-row`, this.onClickNeighbour);
+    } else {
+      this.setCustomFilter(undefined);
+    }
+  };
+
+  removeSubscriptions = (props: Readonly<PVGridProps>) => {
+    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-changed`, this.setSearch);
+    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-exact-changed`, this.setSearchExact);
+    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-col-settings-changed`, this.setColumnSettingsCb);
+    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-extra-search-changed`, this.setExtraSearch);
+
+    if (props.isNeighbour) {
+      this.off(`${props.neighbourNamespace}-pvgrid-on-click-row`, this.onClickNeighbour);
+    } else {
+      this.setCustomFilter(undefined);
+    }
+  };
+  componentDidMount = () => {
+    this.mountedSuccess = true;
+    this.createSubscriptions(this.props);
+  };
+  componentDidUpdate(prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void {
+    this.removeSubscriptions(prevProps);
+    this.createSubscriptions(this.props);
+  }
 
   componentWillUnmount = () => {
-    // this.props.glEventHub.off(this.namespace + '-pvgrid-on-search-changed', this.setSearch);
-    // this.props.glEventHub.off(this.namespace + '-pvgrid-on-col-settings-changed', this.setColumnSettings);
-    // this.props.glEventHub.off(this.namespace + '-pvgrid-on-extra-search-changed', this.setExtraSearch);
-
-    this.off(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-search-changed`, this.setSearch);
-    this.off(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-search-exact-changed`, this.setSearchExact);
-    this.off(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-col-settings-changed`, this.setColumnSettingsCb);
-    this.off(`${this.namespace}${this.subNamespace ? this.subNamespace : ''}-pvgrid-on-extra-search-changed`, this.setExtraSearch);
+    this.removeSubscriptions(this.props);
   };
 
   // onViewportChanged = (/*e, args*/) => {

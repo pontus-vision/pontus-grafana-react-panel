@@ -258,7 +258,6 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     }
     return retVal;
   }
-  
 }
 
 export default PontusComponent;

@@ -57,7 +57,7 @@ class PVGridReportButtonCellRenderer extends PVReportButton {
               position: 'fixed',
               top: '20%',
               zIndex: 100000,
-              backgroundColor: '#696969',
+              backgroundColor: 'rgba(250,250,250,0.95)',
               padding: '10px',
             }}
           >
