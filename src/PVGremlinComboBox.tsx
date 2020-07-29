@@ -161,6 +161,7 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
   };
   
   onChange = (value: SelectableValue<string>) => {
+
     this.setState({
       value: value,
     });
@@ -205,6 +206,7 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
       return (
         <MultiSelect
           noOptionsMessage={this.props.placeholder!}
+          value={this.state.value}
           options={this.state.options}
           isClearable={true}
           defaultValue={this.state.value}
@@ -224,6 +226,8 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
           defaultValue={this.state.value}
           onChange={this.onChange}
           placeholder={this.props.placeholder}
+          value={this.state.value}
+  
           // loadOptions={this.loadOptionsCb}
         />);
     }
