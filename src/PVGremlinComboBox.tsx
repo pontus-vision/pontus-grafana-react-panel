@@ -173,11 +173,13 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
 
     // multi={this.props.multi === null ? true : this.props.multi}
 
+    const isMulti = (this.props.multi === undefined || this.props.multi === null) ? true:
+      this.props.multi;
     return (
       <Select
-        noOptionsMessage={() => this.props.placeholder!}
+        noOptionsMessage={ this.props.placeholder!}
         options={this.state.options}
-        isMulti={this.props.multi === null ? true : this.props.multi}
+        isMulti={isMulti}
         isClearable={true}
         defaultValue={this.state.value}
         onChange={this.onChange}

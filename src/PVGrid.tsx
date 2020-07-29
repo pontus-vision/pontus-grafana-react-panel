@@ -40,7 +40,7 @@ export interface PVGridState extends PVGridProps {
 
   paginationNumberFormatter: { (data: any): string };
 
-  localeTextFunc: { (key: string, defaultValue: string): string | undefined };
+  localeTextFunc: { (key: string, defaultValue: string): string  };
   options?: string[] | undefined;
   rowData: any[] | undefined;
 }
@@ -152,13 +152,13 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         return '[' + params.value.toLocaleString() + ']';
       },
 
-      localeTextFunc: (key: string, defaultValue: string) => {
+      localeTextFunc: (key: string, defaultValue: string):string => {
         // to avoid key clash with external keys, we add 'grid' to the start of each key.
         const gridKey: string = 'grid_' + key;
 
         // look the value up. here we use the AngularJS 1.x $filter service, however you
         // can use whatever service you want, AngularJS 1.x or otherwise.
-        const value = PontusComponent.t(gridKey);
+        const value:string = PontusComponent.t(gridKey) as string;
         return value === gridKey ? defaultValue : value;
       },
     };

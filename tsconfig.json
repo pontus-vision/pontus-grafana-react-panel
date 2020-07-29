@@ -8,5 +8,8 @@
     "typeRoots": ["./node_modules/@types"],
     "allowJs": true,
     "resolveJsonModule": true
-  }
+  },
+  "exclude": [
+        "src/*.js"
+    ]
 }

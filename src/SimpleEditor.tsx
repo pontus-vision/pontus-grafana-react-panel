@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { FormField, Switch } from '@grafana/ui';
+import { LegacyForms, Switch } from '@grafana/ui';
 import { PanelEditorProps } from '@grafana/data';
 
 import { SimpleOptions } from './types';
@@ -26,7 +26,7 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
     const { options } = this.props;
 
     const neighbourNamespace = options.isNeighbour ? (
-      <FormField
+      <LegacyForms.FormField
         label={PontusComponent.t('Neighbour')!}
         labelWidth={10}
         inputWidth={20}
@@ -41,7 +41,7 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
     return (
       <div className="section gf-form-group">
         <h5 className="section-heading">{PontusComponent.t('Display')!}</h5>
-        <FormField
+        <LegacyForms.FormField
           label={PontusComponent.t('Self Namespace')!}
           labelWidth={10}
           inputWidth={20}
@@ -49,7 +49,7 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           onChange={this.onNamespaceChanged}
           value={options.namespace || ''}
         />
-        <FormField
+        <LegacyForms.FormField
           label={PontusComponent.t('Base URL')!}
           labelWidth={10}
           inputWidth={20}
