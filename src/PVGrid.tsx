@@ -448,6 +448,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.colFieldTranslation = {};
 
     if (colSettings) {
+      const newColSettings: PVGridColDef[] = [];
+      
       PontusComponent.setItem(
         `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`,
         JSON.stringify(colSettings)
@@ -455,22 +457,23 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
       for (let i = 0; i < colSettings.length; i++) {
         const colSetting: PVGridColDef = colSettings[i];
+        const newColSetting: PVGridColDef = {...colSetting};
 
         // const colSetting = colSettings[i];
-        colSetting.headerName = PontusComponent.t(colSetting.name);
+        newColSetting.headerName = PontusComponent.t(colSetting.name);
         let origField = colSetting.field;
 
         // If the column starts with a #, it's indexed, and we can sort/filter;
         // otherwise, we can't.
         if (origField.startsWith('#')) {
-          colSetting.sortable = true;
+          newColSetting.sortable = true;
           const isDate = origField.toLowerCase().search(/date/) >= 0;
           if (isDate) {
-            colSetting.filter = 'agDateColumnFilter';
+            newColSetting.filter = 'agDateColumnFilter';
             // colSetting.valueFormatter = (param: ValueFormatterParams):string => {
             // };
           } else {
-            colSetting.filter = true;
+            newColSetting.filter = true;
           }
           origField = origField.toString().substring(1);
         } else if (origField.startsWith('@')) {
@@ -479,22 +482,23 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
           // let parsedText = origField.toString().split('@');
           // origField = parsedText[1];
           // let text = parsedText[2];
-
-          colSetting.cellRendererFramework = PVGridReportButtonCellRenderer;
-          colSetting.sortable = false;
-          colSetting.filter = false;
+  
+          newColSetting.cellRendererFramework = PVGridReportButtonCellRenderer;
+          newColSetting.sortable = false;
+          newColSetting.filter = false;
         } else {
-          colSetting.sortable = false;
-          colSetting.filter = false;
+          newColSetting.sortable = false;
+          newColSetting.filter = false;
         }
-        colSetting.field = origField.replace(/\./g, '_');
-        colSetting.id = origField;
+        newColSetting.field = origField.replace(/\./g, '_');
+        newColSetting.id = origField;
 
         this.colFieldTranslation[colSetting.field] = origField;
+        newColSettings.push(newColSetting);
       }
 
-      this.setColumns(colSettings);
-      this.cols = colSettings;
+      this.setColumns(newColSettings);
+      this.cols = newColSettings;
     }
   };
   createSubscriptions = (props: Readonly<PVGridProps>) => {
