@@ -482,7 +482,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
           // let parsedText = origField.toString().split('@');
           // origField = parsedText[1];
           // let text = parsedText[2];
-  
+
           newColSetting.cellRendererFramework = PVGridReportButtonCellRenderer;
           newColSetting.sortable = false;
           newColSetting.filter = false;
@@ -493,7 +493,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         newColSetting.field = origField.replace(/\./g, '_');
         newColSetting.id = origField;
 
-        this.colFieldTranslation[colSetting.field] = origField;
+        this.colFieldTranslation[newColSetting.field] = origField;
         newColSettings.push(newColSetting);
       }
 
