@@ -461,7 +461,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
         // const colSetting = colSettings[i];
         newColSetting.headerName = PontusComponent.t(colSetting.name);
-        let origField = colSetting.field;
+        // force a deep copy here.
+        let origField = `${colSetting.field}`;
 
         // If the column starts with a #, it's indexed, and we can sort/filter;
         // otherwise, we can't.
