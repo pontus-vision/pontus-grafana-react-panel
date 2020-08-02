@@ -33,21 +33,37 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   //     .range(['green', 'orange', 'red']);
   //
   // }
-  private topics: { [topic: string]: number } = {};
+  private topics: Record<string, number> = {};
+  private callbacksPerTopic: Record<string, PubSubCallback[]> = {};
 
   on(topic: string, callback: PubSubCallback) {
     if (!this.topics[topic]) {
       this.topics[topic] = 0;
     }
-    PubSub.subscribe(topic, callback);
-    this.topics[topic]++;
+    if (!this.callbacksPerTopic[topic]) {
+      this.callbacksPerTopic[topic] = [];
+    }
+    if (!this.callbacksPerTopic[topic].some(currCallback => currCallback === callback)) {
+      PubSub.subscribe(topic, callback);
+      this.callbacksPerTopic[topic].push(callback);
+      this.topics[topic]++;
+    }
   }
 
   off(topic: string, callback: PubSubCallback) {
     if (!this.topics[topic]) {
       return;
     }
+
+    const found = this.callbacksPerTopic[topic].findIndex(currCallback => currCallback === callback);
+    if (found === -1) {
+      return;
+    }
+
     PubSub.unsubscribe(callback);
+
+    this.callbacksPerTopic[topic].splice(found, 1);
+
     this.topics[topic]--;
   }
   emit(topic: string, data: any) {
@@ -108,8 +124,12 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     return retVal;
   }
 
-  static replaceAll(searchString: string, replaceString: string, str: string) {
-    return str.split(searchString).join(replaceString);
+  static replaceAll(searchString: string, replaceString: string, str: string):string {
+    if (str.split){
+      return str.split(searchString).join(replaceString);
+  
+    }
+    return str;
   }
 
   static getGraphURL(props: any): string {
@@ -141,7 +161,12 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   }
 
   static getRestEdgeLabelsURL(props: any): string {
-    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'pvgdpr_server/home/edge_labels', '/gateway/sandbox/pvgdpr_server/home/edge_labels');
+    return PontusComponent.getURLGeneric(
+      props,
+      'pvgdpr_gui',
+      'pvgdpr_server/home/edge_labels',
+      '/gateway/sandbox/pvgdpr_server/home/edge_labels'
+    );
   }
 
   static getRestVertexLabelsURL(props: any): string {
@@ -163,11 +188,21 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   }
 
   static getRestURL(props: any): string {
-    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'pvgdpr_server/home/records', '/gateway/sandbox/pvgdpr_server/home/records');
+    return PontusComponent.getURLGeneric(
+      props,
+      'pvgdpr_gui',
+      'pvgdpr_server/home/records',
+      '/gateway/sandbox/pvgdpr_server/home/records'
+    );
   }
 
   static getRestUrlAg(props: any): string {
-    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'pvgdpr_server/home/agrecords', '/gateway/sandbox/pvgdpr_server/home/agrecords');
+    return PontusComponent.getURLGeneric(
+      props,
+      'pvgdpr_gui',
+      'pvgdpr_server/home/agrecords',
+      '/gateway/sandbox/pvgdpr_server/home/agrecords'
+    );
   }
 
   static getURLGeneric(props: any, pvgdprGuiStr: string, defaultSuffix: string, defaultSandbox: string): string {

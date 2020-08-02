@@ -2,6 +2,7 @@ import React, { CSSProperties } from 'react';
 import PVGremlinComboBox from './PVGremlinComboBox';
 // import { Flex } from 'reflexbox';
 import PontusComponent from './PontusComponent';
+import {PVGridColDef} from "./PVGrid";
 
 export interface PVGridColSelectorProps {
   namespace?: string;
@@ -14,12 +15,12 @@ export interface PVGridColSelectorProps {
   multi?: boolean;
   options?: any;
   onError?: { (err: any): void };
-  onChange?: { (val: any): void };
+  onChange?: { (val: {dataType?: string, colSettings?: PVGridColDef[]}): void };
   name?: string;
   optionsRequest?: string;
   placeholder?: React.ReactNode;
   dataType?: string;
-  colSettings?: Array<{ name: string; id: string }>;
+  colSettings?: PVGridColDef[];
   style?: CSSProperties;
 }
 
@@ -28,17 +29,22 @@ export interface PVGridColSelectorState extends PVGridColSelectorProps {
 }
 
 class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridColSelectorState> {
-  private nodePropertyNamesReactSelect: any;
+  private nodePropertyNamesReactSelect: PVGremlinComboBox|undefined;
   private propsSelected: any[];
-
+  private dataType?: string;
+  private colSettings?: PVGridColDef[];
+  
   constructor(props: Readonly<PVGridColSelectorProps>) {
     super(props);
 
     this.req = undefined;
 
     this.state = { checkedFuzzy: false };
-    this.nodePropertyNamesReactSelect = null;
+    this.nodePropertyNamesReactSelect = undefined;
+    // this.nodePropertyNamesReactSelect = null;
     this.propsSelected = [];
+    this.dataType = props.dataType;
+    this.colSettings = props.colSettings;
   }
 
   onError = (err: any) => {
@@ -47,8 +53,14 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
   onChangeVertexLabels = (val: any) => {
     // alert("got data " + val);
     // this.props.glEventHub.emit('userSearch-on-boxChanged')
-
-    this.nodePropertyNamesReactSelect.getOptions({ labels: val });
+    if(this.nodePropertyNamesReactSelect){
+      this.nodePropertyNamesReactSelect.getOptions({ labels: val });
+  
+    }
+    if (this.props.onChange){
+      this.dataType = val;
+      this.props.onChange({dataType: this.dataType, colSettings: this.colSettings})
+    }
     this.emit(this.props.namespace + '-pvgrid-on-extra-search-changed', val);
   };
 
@@ -66,17 +78,22 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
 
     if (val) {
       for (let i = 0, ilen = val.length; i < ilen; i++) {
-        colSettings.push({ id: val[i].value, name: val[i].label, field: val[i].value, sortable: true });
+        colSettings.push({ id: val[i].value as string, name: val[i].label, field: val[i].value as string, sortable: true });
         this.propsSelected.push(val[i].value);
       }
     }
 
     // for (val)
+    if (this.props.onChange){
+      this.colSettings = colSettings;
+      this.props.onChange({dataType: this.dataType, colSettings: this.colSettings})
+    }
 
+    
     this.emit(this.props.namespace + '-pvgrid-on-col-settings-changed', colSettings);
   };
 
-  setObjNodePropertyNames = (reactSelect: any) => {
+  setObjNodePropertyNames = (reactSelect: PVGremlinComboBox) => {
     this.nodePropertyNamesReactSelect = reactSelect;
   };
 

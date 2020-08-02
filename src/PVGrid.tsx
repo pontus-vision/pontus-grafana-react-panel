@@ -7,9 +7,6 @@ import PontusComponent, { PubSubCallback } from './PontusComponent';
 // import  * as reveal2 from './PVBurgerMenuReveal';
 import PVGridReportButtonCellRenderer from './PVGridReportButtonCellRenderer';
 import { ColDef, GridOptions, IGetRowsParams, RowClickedEvent } from 'ag-grid-community';
-// import {IGetRowsParams} from "ag-grid-community/dist/lib/interfaces/iDatasource";
-// import {ColDef} from "ag-grid-community/dist/lib/entities/colDef";
-// import {RowClickedEvent} from "ag-grid-community/dist/lib/events";
 
 export interface PVGridProps {
   url: string;
@@ -40,7 +37,7 @@ export interface PVGridState extends PVGridProps {
 
   paginationNumberFormatter: { (data: any): string };
 
-  localeTextFunc: { (key: string, defaultValue: string): string  };
+  localeTextFunc: { (key: string, defaultValue: string): string };
   options?: string[] | undefined;
   rowData: any[] | undefined;
 }
@@ -85,10 +82,6 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.toPage = 0;
     this.mountedSuccess = false;
 
-    // this.columns = [
-    //   {key: 'name', name: 'Name'},
-    //   {key: 'street', name: 'Street'}
-    // ];
     this.errCounter = 0;
     this.PAGESIZE = 300;
     this.data = [];
@@ -152,13 +145,13 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         return '[' + params.value.toLocaleString() + ']';
       },
 
-      localeTextFunc: (key: string, defaultValue: string):string => {
+      localeTextFunc: (key: string, defaultValue: string): string => {
         // to avoid key clash with external keys, we add 'grid' to the start of each key.
         const gridKey: string = 'grid_' + key;
 
         // look the value up. here we use the AngularJS 1.x $filter service, however you
         // can use whatever service you want, AngularJS 1.x or otherwise.
-        const value:string = PontusComponent.t(gridKey) as string;
+        const value: string = PontusComponent.t(gridKey) as string;
         return value === gridKey ? defaultValue : value;
       },
     };
@@ -179,13 +172,15 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     } else {
       colSettings = props.colSettings ? props.colSettings : [];
     }
-    this.setColumnSettings(colSettings);
+    colSettings = this.setColumnSettings(colSettings, true);
 
     return colSettings;
   }
 
   getDataType(props: any): string {
-    let dataType = PontusComponent.getItem(`${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`);
+    let dataType = PontusComponent.getItem(
+      `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`
+    );
     // let dataType = JSON.parse();
     if (!dataType) {
       dataType = props.dataType ? props.dataType : '';
@@ -369,7 +364,9 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.onSuccessPVRestQuery(resp);
   };
 
-  onSuccessPVRestQuery = (resp: { data: { from: any; records: string | any[]; totalAvailable: number | undefined } }) => {
+  onSuccessPVRestQuery = (resp: {
+    data: { from: any; records: string | any[]; totalAvailable: number | undefined };
+  }) => {
     const from = resp.data.from,
       to = from + resp.data.records.length;
     const items = [];
@@ -408,7 +405,10 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   setDataType = (str: string) => {
     this.dataType = str;
-    PontusComponent.setItem(`${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`, this.dataType);
+    PontusComponent.setItem(
+      `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`,
+      this.dataType
+    );
   };
 
   setExtraSearch: PubSubCallback = (topic: string, str: any) => {
@@ -444,36 +444,41 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.setColumnSettings(colSettings);
   };
 
-  setColumnSettings = (colSettings: PVGridColDef[]) => {
+  setColumnSettings = (colSettings: PVGridColDef[], initMode?: boolean):PVGridColDef[] => {
     this.colFieldTranslation = {};
 
     if (colSettings) {
       const newColSettings: PVGridColDef[] = [];
-      
+
+      // if (!initMode) {
       PontusComponent.setItem(
         `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`,
         JSON.stringify(colSettings)
       );
+      // }
 
       for (let i = 0; i < colSettings.length; i++) {
         const colSetting: PVGridColDef = colSettings[i];
-        const newColSetting: PVGridColDef = {...colSetting};
+        const newColSetting: PVGridColDef = { ...colSetting };
 
         // const colSetting = colSettings[i];
         newColSetting.headerName = PontusComponent.t(colSetting.name);
         // force a deep copy here.
         let origField = `${colSetting.field}`;
-
+        // if (!initMode) {
         // If the column starts with a #, it's indexed, and we can sort/filter;
         // otherwise, we can't.
         if (origField.startsWith('#')) {
+          // colSetting.sortable = true;
           newColSetting.sortable = true;
           const isDate = origField.toLowerCase().search(/date/) >= 0;
           if (isDate) {
+            // colSetting.filter = 'agDateColumnFilter';
             newColSetting.filter = 'agDateColumnFilter';
             // colSetting.valueFormatter = (param: ValueFormatterParams):string => {
             // };
           } else {
+            // colSetting.filter = true;
             newColSetting.filter = true;
           }
           origField = origField.toString().substring(1);
@@ -483,30 +488,52 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
           // let parsedText = origField.toString().split('@');
           // origField = parsedText[1];
           // let text = parsedText[2];
-
           newColSetting.cellRendererFramework = PVGridReportButtonCellRenderer;
           newColSetting.sortable = false;
           newColSetting.filter = false;
+          // colSetting.cellRendererFramework = PVGridReportButtonCellRenderer;
+          // colSetting.sortable = false;
+          // colSetting.filter = false;
         } else {
+          // colSetting.sortable = false;
+          // colSetting.filter = false;
           newColSetting.sortable = false;
           newColSetting.filter = false;
         }
-        newColSetting.field = origField.replace(/\./g, '_');
         newColSetting.id = origField;
-
+        newColSetting.field = origField.replace(/\./g, '_');
+        // }
+  
+        this.colFieldTranslation[colSetting.field] = origField;
         this.colFieldTranslation[newColSetting.field] = origField;
         newColSettings.push(newColSetting);
       }
 
       this.setColumns(newColSettings);
       this.cols = newColSettings;
+      return newColSettings;
+  
     }
+    
+    return [];
   };
   createSubscriptions = (props: Readonly<PVGridProps>) => {
-    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-changed`, this.setSearch);
-    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-exact-changed`, this.setSearchExact);
-    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-col-settings-changed`, this.setColumnSettingsCb);
-    this.on(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-extra-search-changed`, this.setExtraSearch);
+    this.on(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-changed`,
+      this.setSearch
+    );
+    this.on(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-exact-changed`,
+      this.setSearchExact
+    );
+    this.on(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-col-settings-changed`,
+      this.setColumnSettingsCb
+    );
+    this.on(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-extra-search-changed`,
+      this.setExtraSearch
+    );
     if (props.isNeighbour) {
       this.on(`${props.neighbourNamespace}-pvgrid-on-click-row`, this.onClickNeighbour);
     } else {
@@ -515,10 +542,22 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   };
 
   removeSubscriptions = (props: Readonly<PVGridProps>) => {
-    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-changed`, this.setSearch);
-    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-exact-changed`, this.setSearchExact);
-    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-col-settings-changed`, this.setColumnSettingsCb);
-    this.off(`${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-extra-search-changed`, this.setExtraSearch);
+    this.off(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-changed`,
+      this.setSearch
+    );
+    this.off(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-search-exact-changed`,
+      this.setSearchExact
+    );
+    this.off(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-col-settings-changed`,
+      this.setColumnSettingsCb
+    );
+    this.off(
+      `${props.namespace}${props.subNamespace ? props.subNamespace : ''}-pvgrid-on-extra-search-changed`,
+      this.setExtraSearch
+    );
 
     if (props.isNeighbour) {
       this.off(`${props.neighbourNamespace}-pvgrid-on-click-row`, this.onClickNeighbour);
@@ -530,6 +569,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.mountedSuccess = true;
     this.createSubscriptions(this.props);
   };
+
   componentDidUpdate(prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void {
     this.removeSubscriptions(prevProps);
     this.createSubscriptions(this.props);

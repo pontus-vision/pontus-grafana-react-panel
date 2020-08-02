@@ -5,6 +5,7 @@ import { PanelEditorProps } from '@grafana/data';
 import { SimpleOptions } from './types';
 import PVGridColSelector from './PVGridColSelector';
 import PontusComponent from './PontusComponent';
+import {PVGridColDef} from "./PVGrid";
 // import PVGridColSelector from './PVGridColSelector';
 
 export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>> {
@@ -20,6 +21,10 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
 
   onIsNeighbour = ({ target }: any) => {
     this.props.onOptionsChange({ ...this.props.options, isNeighbour: target.checked });
+  };
+  
+  onColSelector = (val: {dataType?: string, colSettings?: PVGridColDef[]}) => {
+    this.props.onOptionsChange({ ...this.props.options,  colSettings: val.colSettings , dataType: val.dataType});
   };
 
   render() {
@@ -59,7 +64,9 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
         />
         <Switch label={PontusComponent.t('Is Neighbour')!} checked={options.isNeighbour || false} onChange={this.onIsNeighbour} />
         {neighbourNamespace}
-        <PVGridColSelector namespace={options.namespace} />
+        <PVGridColSelector namespace={options.namespace} dataType={options.dataType} colSettings={options.colSettings}
+                           onChange={this.onColSelector}
+        />
       </div>
     );
   }
