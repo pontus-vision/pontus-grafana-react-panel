@@ -34,18 +34,18 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
       throw new Error('must set the URL to forward requests');
     }
 
-    const lastValStr = PontusComponent.getItem(`${this.props.namespace}-value`);
+    // const lastValStr = PontusComponent.getItem(`${this.props.namespace}-value`);
 
     // let optionsStr = PontusComponent.getItem(`${this.props.namespace}-options`);
 
     let lastVal = null;
-    if (lastValStr) {
-      lastVal = JSON.parse(lastValStr);
-    } else {
-      lastVal = lastVal ? lastVal : this.props.value ? this.props.value : this.props.multi ? [] : {};
+    // if (lastValStr) {
+    //   lastVal = JSON.parse(lastValStr);
+    // } else {
+    //   lastVal = lastVal ? lastVal : this.props.value ? this.props.value : this.props.multi ? [] : {};
 
       // let options = (!this.props.options) ? this.props.multi ? lastVal : [lastVal] : this.props.options;
-    }
+    // }
 
     lastVal = lastVal ? lastVal : this.props.value ? this.props.value : this.props.multi ? [] : {};
 
@@ -60,13 +60,13 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
   }
 
   loadOptionsCb = async (query: string): Promise<Array<SelectableValue<string>>> => {
-    let savedReq: any | undefined = PontusComponent.getItem(`${this.props.namespace}.optionsJsonRequest`);
+    let savedReq: any | undefined ; //= PontusComponent.getItem(`${this.props.namespace}.optionsJsonRequest`);
     try {
-      if (savedReq) {
-        savedReq = JSON.parse(savedReq);
-      } else {
+      // if (savedReq) {
+      //   savedReq = JSON.parse(savedReq);
+      // } else {
         savedReq = this.props.optionsRequest;
-      }
+      // }
     } catch (e) {}
 
     return this.getOptions(savedReq);
@@ -75,13 +75,13 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
   getOptions = async (jsonRequest: any): Promise<Array<SelectableValue<string>>> => {
     const retVal: Array<SelectableValue<string>> = [];
 
-    if (jsonRequest) {
-      let reqToSave = jsonRequest;
-      if (typeof jsonRequest === 'object') {
-        reqToSave = JSON.stringify(jsonRequest);
-      }
-      PontusComponent.setItem(`${this.props.namespace}.optionsJsonRequest`, reqToSave);
-    }
+    // if (jsonRequest) {
+    //   let reqToSave = jsonRequest;
+    //   if (typeof jsonRequest === 'object') {
+    //     reqToSave = JSON.stringify(jsonRequest);
+    //   }
+    //   PontusComponent.setItem(`${this.props.namespace}.optionsJsonRequest`, reqToSave);
+    // }
 
     const url = this.props.url ? this.props.url : PontusComponent.getRestVertexLabelsURL(this.props);
 
@@ -140,7 +140,7 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
     this.setState({
       value: value,
     });
-    PontusComponent.setItem(`${this.props.namespace}-value`, JSON.stringify(value));
+    // PontusComponent.setItem(`${this.props.namespace}-value`, JSON.stringify(value));
 
     if (this.props.onChange) {
       this.props.onChange(value);

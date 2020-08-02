@@ -163,15 +163,15 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   };
 
   getColSettings(props: any): PVGridColDef[] {
-    const colSettingsStr = PontusComponent.getItem(
-      `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`
-    );
+    // const colSettingsStr = PontusComponent.getItem(
+    //   `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`
+    // );
     let colSettings: PVGridColDef[];
-    if (colSettingsStr) {
-      colSettings = JSON.parse(colSettingsStr) as PVGridColDef[];
-    } else {
+    // if (colSettingsStr) {
+    //   colSettings = JSON.parse(colSettingsStr) as PVGridColDef[];
+    // } else {
       colSettings = props.colSettings ? props.colSettings : [];
-    }
+    // }
     colSettings = this.setColumnSettings(colSettings, true);
 
     return colSettings;
@@ -450,12 +450,12 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     if (colSettings) {
       const newColSettings: PVGridColDef[] = [];
 
-      // if (!initMode) {
-      PontusComponent.setItem(
-        `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`,
-        JSON.stringify(colSettings)
-      );
-      // }
+      // // if (!initMode) {
+      // PontusComponent.setItem(
+      //   `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`,
+      //   JSON.stringify(colSettings)
+      // );
+      // // }
 
       for (let i = 0; i < colSettings.length; i++) {
         const colSetting: PVGridColDef = colSettings[i];
