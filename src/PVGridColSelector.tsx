@@ -50,7 +50,7 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
   onError = (err: any) => {
     console.error('error loading pages ' + err);
   };
-  onChangeVertexLabels = (val: any) => {
+  onChangeVertexLabels = (val: { label:string, value:string }) => {
     // alert("got data " + val);
     // this.props.glEventHub.emit('userSearch-on-boxChanged')
     if(this.nodePropertyNamesReactSelect){
@@ -58,7 +58,7 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
   
     }
     if (this.props.onChange){
-      this.dataType = val;
+      this.dataType = val.value;
       this.props.onChange({dataType: this.dataType, colSettings: this.colSettings})
     }
     this.emit(this.props.namespace + '-pvgrid-on-extra-search-changed', val);
@@ -93,14 +93,14 @@ class PVGridColSelector extends PontusComponent<PVGridColSelectorProps, PVGridCo
     this.emit(this.props.namespace + '-pvgrid-on-col-settings-changed', colSettings);
   };
 
-  setObjNodePropertyNames = (reactSelect: PVGremlinComboBox) => {
-    this.nodePropertyNamesReactSelect = reactSelect;
+  setObjNodePropertyNames = (reactSelect: any) => {
+    this.nodePropertyNamesReactSelect = reactSelect as PVGremlinComboBox;
   };
 
   render() {
     const nodeTypesVal = this.props.dataType
       ? {
-          label: PontusComponent.replaceAll('.', ' ', PontusComponent.replaceAll('_', ' ', this.props.dataType)),
+          label: PontusComponent.t(PontusComponent.replaceAll('.', ' ', PontusComponent.replaceAll('_', ' ', this.props.dataType))),
           value: this.props.dataType,
         }
       : {};

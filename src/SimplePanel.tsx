@@ -7,51 +7,18 @@ import './App.css';
 // import PVGrid from "./PVGrid";
 // import PVGremlinComboBox from "./PVGremlinComboBox";
 // import PontusComponent from './PontusComponent';
-import PVGrid from './PVGrid';
+import PVGrid, {PVGridColDef} from './PVGrid';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
 interface SimplePanelState extends Readonly<any> {
-  columnDefs: any;
-  rowData: any;
+  columnDefs?: PVGridColDef[];
+  dataType?: string;
 }
 
 export class SimplePanel extends PureComponent<Props, SimplePanelState> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      columnDefs: [
-        {
-          headerName: 'Make',
-          field: 'make',
-        },
-        {
-          headerName: 'Model',
-          field: 'model',
-        },
-        {
-          headerName: 'Price',
-          field: 'price',
-        },
-      ],
-      rowData: [
-        {
-          make: 'Toyota',
-          model: 'Celica',
-          price: 35000,
-        },
-        {
-          make: 'Ford',
-          model: 'Mondeo',
-          price: 32000,
-        },
-        {
-          make: 'Porsche',
-          model: 'Boxter',
-          price: 72000,
-        },
-      ],
-    } as SimplePanelState;
   }
 
   render() {
@@ -60,6 +27,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const url = this.props.options.url;
     const isNeighbour = this.props.options.isNeighbour;
     const neighbourNamespace = this.props.options.neighbourNamespace;
+    const dataType = this.props.options.dataType;
+    const colSettings = this.props.options.colSettings;
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
     return (
@@ -87,7 +56,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
             namespace={namespace}
             customFilter={undefined}
             mountedSuccess={true}
-            columnDefs={this.state.columnDefs}
+            dataType={dataType}
+            columnDefs={colSettings}
             subNamespace={undefined}
           />
         </div>

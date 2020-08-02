@@ -18,6 +18,8 @@ export interface PVGridProps {
   customFilter?: string | undefined;
   settings?: any;
   columnDefs?: PVGridColDef[];
+  dataType?: string;
+  
 }
 
 export interface PVGridState extends PVGridProps {
@@ -162,7 +164,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.ensureData(0, this.PAGESIZE);
   };
 
-  getColSettings(props: any): PVGridColDef[] {
+  getColSettings(props: Readonly<PVGridProps>): PVGridColDef[] {
     // const colSettingsStr = PontusComponent.getItem(
     //   `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.colSettings`
     // );
@@ -170,21 +172,21 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     // if (colSettingsStr) {
     //   colSettings = JSON.parse(colSettingsStr) as PVGridColDef[];
     // } else {
-      colSettings = props.colSettings ? props.colSettings : [];
+      colSettings = props.columnDefs ? props.columnDefs : [];
     // }
     colSettings = this.setColumnSettings(colSettings, true);
 
     return colSettings;
   }
 
-  getDataType(props: any): string {
-    let dataType = PontusComponent.getItem(
-      `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`
-    );
+  getDataType(props: Readonly<PVGridProps>): string {
+    // let dataType = PontusComponent.getItem(
+    //   `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`
+    // );
     // let dataType = JSON.parse();
-    if (!dataType) {
-      dataType = props.dataType ? props.dataType : '';
-    }
+    // if (!dataType) {
+    let  dataType = props.dataType ? props.dataType : '';
+    // }
     this.setDataType(dataType as string);
 
     return dataType as string;
@@ -405,10 +407,10 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   setDataType = (str: string) => {
     this.dataType = str;
-    PontusComponent.setItem(
-      `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`,
-      this.dataType
-    );
+    // PontusComponent.setItem(
+    //   `${this.props.namespace}${this.props.subNamespace ? this.props.subNamespace : ''}.PVGrid.dataType`,
+    //   this.dataType
+    // );
   };
 
   setExtraSearch: PubSubCallback = (topic: string, str: any) => {
