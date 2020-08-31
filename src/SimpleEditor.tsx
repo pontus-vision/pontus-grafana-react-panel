@@ -18,7 +18,13 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
   onURLChanged = ({ target }: any) => {
     this.props.onOptionsChange({ ...this.props.options, url: target.value });
   };
-
+  
+  onFilterChanged = ({ target }: any) => {
+    this.props.onOptionsChange({ ...this.props.options, filter: JSON.parse(target.value === ''? '[]': target.value) });
+  };
+  onCustomFilterChanged = ({ target }: any) => {
+    this.props.onOptionsChange({ ...this.props.options, customFilter: target.value });
+  };
   onIsNeighbour = ({ target }: any) => {
     this.props.onOptionsChange({ ...this.props.options, isNeighbour: target.checked });
   };
@@ -67,6 +73,24 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
         <PVGridColSelector namespace={options.namespace} dataType={options.dataType} colSettings={options.colSettings}
                            onChange={this.onColSelector}
         />
+        <LegacyForms.FormField
+          label={PontusComponent.t('Filter')!}
+          labelWidth={10}
+          inputWidth={20}
+          type="text"
+          onChange={this.onFilterChanged}
+          value={options.filter || ''}
+        />
+  
+        <LegacyForms.FormField
+          label={PontusComponent.t('Custom Filter')!}
+          labelWidth={10}
+          inputWidth={20}
+          type="text"
+          onChange={this.onCustomFilterChanged}
+          value={options.customFilter || ''}
+        />
+
       </div>
     );
   }

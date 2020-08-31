@@ -2,11 +2,12 @@ import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 // import 'ag-grid-community/dist/styles/ag-grid.css';
 // import 'ag-grid-community/dist/styles/ag-theme-balham-dark.css';
+
 import Axios from 'axios';
 import PontusComponent, { PubSubCallback } from './PontusComponent';
 // import  * as reveal2 from './PVBurgerMenuReveal';
 import PVGridReportButtonCellRenderer from './PVGridReportButtonCellRenderer';
-import { ColDef, GridOptions, IGetRowsParams, RowClickedEvent } from 'ag-grid-community';
+import {ColDef, GridOptions, IDatasource, IGetRowsParams, RowClickedEvent} from 'ag-grid-community';
 
 export interface PVGridProps {
   url: string;
@@ -19,6 +20,7 @@ export interface PVGridProps {
   settings?: any;
   columnDefs?: PVGridColDef[];
   dataType?: string;
+  filter?: any[];
   
 }
 
@@ -90,6 +92,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.searchstr = '';
     this.searchExact = true;
     this.customFilter = props.customFilter;
+    this.filters = props.filter;
 
     this.sortcol = null;
     this.sortdir = '+desc';
@@ -218,7 +221,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     dataType: string | undefined,
     sortcol: any,
     sortdir: any,
-    filters: any,
+    filters: any[],
     customFilter: string | undefined
   ) => {
     return {
@@ -599,7 +602,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.setState({ totalRecords: totalRecords });
   }
 
-  dataSource = {
+  dataSource:IDatasource = {
     rowCount: undefined,
     getRows: (params: IGetRowsParams) => {
       console.log('asking for ' + params.startRow + ' to ' + params.endRow);
@@ -614,7 +617,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
       }
 
       if (params.filterModel) {
-        this.filters = [];
+        const filters = [...this.filters];
 
         for (const fm of Object.keys(params.filterModel)) {
           let colId = fm.replace(/_1$/g, '');
@@ -627,7 +630,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
             ...csJson,
           };
 
-          this.filters.push(colSearch);
+          filters.push(colSearch);
 
           /* when we have simple filters, the following format is used:
            [

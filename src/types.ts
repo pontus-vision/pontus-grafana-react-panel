@@ -7,6 +7,8 @@ export interface SimpleOptions {
   neighbourNamespace: string;
   dataType?: string;
   colSettings?: PVGridColDef[];
+  customFilter?: any;
+  filter?: any[];
   
 }
 

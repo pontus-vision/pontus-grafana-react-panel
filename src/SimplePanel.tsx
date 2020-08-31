@@ -14,6 +14,8 @@ interface Props extends PanelProps<SimpleOptions> {}
 interface SimplePanelState extends Readonly<any> {
   columnDefs?: PVGridColDef[];
   dataType?: string;
+  filter?: any;
+  customFilter?: any;
 }
 
 export class SimplePanel extends PureComponent<Props, SimplePanelState> {
@@ -29,6 +31,9 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const neighbourNamespace = this.props.options.neighbourNamespace;
     const dataType = this.props.options.dataType;
     const colSettings = this.props.options.colSettings;
+    const customFilter = this.props.options.customFilter;
+    const filter = this.props.options.filter;
+    
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
     return (
@@ -54,11 +59,13 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
             neighbourNamespace={neighbourNamespace}
             isNeighbour={isNeighbour}
             namespace={namespace}
-            customFilter={undefined}
+            customFilter={customFilter}
             mountedSuccess={true}
             dataType={dataType}
             columnDefs={colSettings}
             subNamespace={undefined}
+            filter={filter}
+            
           />
         </div>
 
