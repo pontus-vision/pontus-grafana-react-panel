@@ -7,7 +7,7 @@ import './App.css';
 // import PVGrid from "./PVGrid";
 // import PVGremlinComboBox from "./PVGremlinComboBox";
 // import PontusComponent from './PontusComponent';
-import PVGrid, {PVGridColDef} from './PVGrid';
+import PVGrid, { PVGridColDef } from './PVGrid';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -33,7 +33,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const colSettings = this.props.options.colSettings;
     const customFilter = this.props.options.customFilter;
     const filter = this.props.options.filter;
-    
+
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
     return (
@@ -65,7 +65,6 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
             columnDefs={colSettings}
             subNamespace={undefined}
             filter={filter}
-            
           />
         </div>
 

@@ -1,4 +1,4 @@
-import {PVGridColDef} from "./PVGrid";
+import { PVGridColDef } from './PVGrid';
 
 export interface SimpleOptions {
   namespace: string;
@@ -7,15 +7,13 @@ export interface SimpleOptions {
   neighbourNamespace: string;
   dataType?: string;
   colSettings?: PVGridColDef[];
-  customFilter?: any;
-  filter?: any[];
-  
+  customFilter?: string;
+  filter?: string;
 }
 
 export const defaults: SimpleOptions = {
   namespace: 'namespace',
   url: 'http://localhost:18443/gateway/sandbox/pvgdpr_server/home/agrecords',
   isNeighbour: false,
-  neighbourNamespace: 'neighbour'
-  
+  neighbourNamespace: 'neighbour',
 };

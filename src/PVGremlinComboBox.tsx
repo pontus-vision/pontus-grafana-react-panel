@@ -44,7 +44,7 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
     // } else {
     //   lastVal = lastVal ? lastVal : this.props.value ? this.props.value : this.props.multi ? [] : {};
 
-      // let options = (!this.props.options) ? this.props.multi ? lastVal : [lastVal] : this.props.options;
+    // let options = (!this.props.options) ? this.props.multi ? lastVal : [lastVal] : this.props.options;
     // }
 
     lastVal = lastVal ? lastVal : this.props.value ? this.props.value : this.props.multi ? [] : {};
@@ -60,12 +60,12 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
   }
 
   loadOptionsCb = async (query: string): Promise<Array<SelectableValue<string>>> => {
-    let savedReq: any | undefined ; //= PontusComponent.getItem(`${this.props.namespace}.optionsJsonRequest`);
+    let savedReq: any | undefined; //= PontusComponent.getItem(`${this.props.namespace}.optionsJsonRequest`);
     try {
       // if (savedReq) {
       //   savedReq = JSON.parse(savedReq);
       // } else {
-        savedReq = this.props.optionsRequest;
+      savedReq = this.props.optionsRequest;
       // }
     } catch (e) {}
 

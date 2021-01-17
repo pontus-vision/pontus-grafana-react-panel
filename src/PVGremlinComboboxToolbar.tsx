@@ -1,105 +1,91 @@
-import React, {CSSProperties} from 'react';
+import React, { CSSProperties } from 'react';
 // Be sure to include styles at some point, probably during your bootstrapping
 import axios from 'axios';
 import PontusComponent from './PontusComponent';
-import PVGremlinComboBox, {PVGremlinComboBoxProps} from './PVGremlinComboBox';
+import PVGremlinComboBox, { PVGremlinComboBoxProps } from './PVGremlinComboBox';
 import CreatableSelect from 'react-select/creatable';
-import {StylesConfig} from 'react-select/src/styles';
-import {SelectableValue} from "@grafana/data";
+import { StylesConfig } from 'react-select/src/styles';
+import { SelectableValue } from '@grafana/data';
 // import 'semantic-ui-css/semantic.min.css';
 // import ResizeAware from 'react-resize-aware';
 
 class PVGremlinComboboxToolbar extends PVGremlinComboBox {
   constructor(props: Readonly<PVGremlinComboBoxProps>) {
     super(props);
-    
+
     this.req = undefined;
-    if (this.props.url === null)
-    {
+    if (this.props.url === null) {
       throw new Error('must set the URL to forward requests');
     }
-    
+
     this.state = {
       value: this.props.multi ? [] : {},
       // ,options: [{label : "one", value: "one"}, {label: "two", value: "two"}]
       options: this.props.options === null ? [] : this.props.options,
     };
   }
-  
+
   getOptions = async (jsonRequest: any | undefined = undefined): Promise<SelectableValue<string>[]> => {
     const url = this.props.url ? this.props.url : PontusComponent.getRestNodePropertyNamesURL(this.props);
-    
-    if (this.req)
-    {
+
+    if (this.req) {
       this.req.cancel();
     }
-    
-    const retVal: SelectableValue<string> [] = [];
-    
+
+    const retVal: SelectableValue<string>[] = [];
+
     const CancelToken = axios.CancelToken;
     this.req = CancelToken.source();
-    
-    try
-    {
-      const response = await axios
-        .post(url, jsonRequest, {
-          headers: {'Content-Type': 'application/json', Accept: 'application/json'},
-          cancelToken: this.req.token,
-        });
-      
+
+    try {
+      const response = await axios.post(url, jsonRequest, {
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        cancelToken: this.req.token,
+      });
+
       // this.reactSelect.options = response.data.labels || [];
-      if (response.data && response.data.labels)
-      {
-        for (let i = 0; i < response.data.labels.length; i++)
-        {
+      if (response.data && response.data.labels) {
+        for (let i = 0; i < response.data.labels.length; i++) {
           const lbl = response.data.labels[i];
           lbl.label = PontusComponent.t(lbl.label);
-          retVal.push ({label: lbl.label, value: response.data.values[i]});
+          retVal.push({ label: lbl.label, value: response.data.values[i] });
         }
         this.setState({
           options: response.data.labels,
         });
       }
-      
-
-      
-    } catch (thrown)
-    {
-      if (axios.isCancel(thrown))
-      {
+    } catch (thrown) {
+      if (axios.isCancel(thrown)) {
         console.log('Request canceled', thrown.message);
-      }
-      else
-      {
+      } else {
         this.onError(thrown);
       }
     }
-    
+
     return retVal;
   };
-  
+
   onChange = (value: any | undefined = undefined) => {
     this.setState({
       value: value,
     });
-    
-    if (this.props.onChange)
-    {
+
+    if (this.props.onChange) {
       this.props.onChange(value);
       // this.reactSelect.setFocus();
     }
   };
-  
+
   componentDidMount() {
     /* you can pass config as prop, or use a predefined one */
-    
+
     this.getOptions();
   }
-  
+
   componentWillUnmount() {
     // this.props.glEventHub.off('pvgrid-on-data-loaded', this.onDataLoadedCb);
   }
-  
+
   render() {
     // multi={this.props.multi === null ? true : this.props.multi}
     const customStyles: StylesConfig = {
@@ -112,8 +98,8 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
         const opacity = state.isDisabled ? 0.5 : 1;
         const transition = 'opacity 300ms';
         const top = '35%';
-        
-        return {...provided, opacity, transition, top};
+
+        return { ...provided, opacity, transition, top };
       },
       container: (provided: CSSProperties, state: any) => {
         const display = 'inline-block';
@@ -122,14 +108,14 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
         const minHeight = '20px';
         const marginLeft = '2px';
         const marginRight = '2px';
-        return {...provided, display, width, height, minHeight, marginLeft, marginRight};
+        return { ...provided, display, width, height, minHeight, marginLeft, marginRight };
       },
       control: (provided: CSSProperties, state: any) => {
         // const display = 'inline-block';
         const width = '20em';
         const height = '20px';
         const minHeight = '20px';
-        return {...provided, width, height, minHeight};
+        return { ...provided, width, height, minHeight };
       },
       placeholder: (provided: CSSProperties, state: any) => {
         // const display = 'inline-block';
@@ -138,9 +124,9 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
         const minHeight = '20px';
         const fontSize = '12px';
         const top = '45%';
-        return {...provided, width, height, minHeight, fontSize, top};
+        return { ...provided, width, height, minHeight, fontSize, top };
       },
-      
+
       input: (provided: CSSProperties, state: any) => {
         // const display = 'inline-block';
         const width = '20em';
@@ -151,17 +137,17 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
         const margin = '0px'; /* margin: 2px; */
         const paddingBottom = '0px'; /* padding-bottom: 2px; */
         const paddingTop = '1px'; /* padding-top: 2px; */
-        return {...provided, width, height, minHeight, fontSize, top, margin, paddingBottom, paddingTop};
+        return { ...provided, width, height, minHeight, fontSize, top, margin, paddingBottom, paddingTop };
       },
       indicatorsContainer: (provided: CSSProperties, state: any) => {
         const height = '20px';
         const minHeight = '20px';
         const fontSize = '12px';
         const top = '25%';
-        return {...provided, height, minHeight, fontSize, top};
+        return { ...provided, height, minHeight, fontSize, top };
       },
     };
-    
+
     /*
      <CreatableSelect
      options={this.state.options}
@@ -169,7 +155,7 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
      styles={customStyles}
      />
      */
-    
+
     return (
       <CreatableSelect
         name={this.props.name || 'form-field-name'}
@@ -185,7 +171,7 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
         styles={customStyles}
       />
     );
-    
+
     /*       return (
      <ul className="userlist">
      {this.state.users.map(function (user) {

@@ -105,7 +105,7 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
         cancelToken: self.req.token,
       })
         .then(this.onSuccess)
-        .catch(thrown => {
+        .catch((thrown) => {
           if (Axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
@@ -158,7 +158,12 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
   render() {
     return (
       <div>
-        <Button className={'compact'} style={{ border: 0, background: 'rgb(254,250,250)', marginRight: '3px' }} size={'small'} onClick={this.onClick}>
+        <Button
+          className={'compact'}
+          style={{ border: 0, background: 'rgb(254,250,250)', marginRight: '3px' }}
+          size={'small'}
+          onClick={this.onClick}
+        >
           {this.props.buttonLabel}
         </Button>
 
@@ -177,7 +182,10 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
               padding: '10px',
             }}
           >
-            <div style={{ backgroundColor: 'rgba(250, 245, 245,0.75)' }} dangerouslySetInnerHTML={{ __html: this.state.preview }} />
+            <div
+              style={{ backgroundColor: 'rgba(250, 245, 245,0.75)' }}
+              dangerouslySetInnerHTML={{ __html: this.state.preview }}
+            />
           </Segment>
         </Portal>
       </div>

@@ -5,7 +5,8 @@ import { PanelEditorProps } from '@grafana/data';
 import { SimpleOptions } from './types';
 import PVGridColSelector from './PVGridColSelector';
 import PontusComponent from './PontusComponent';
-import {PVGridColDef} from "./PVGrid";
+import { PVGridColDef } from './PVGrid';
+
 // import PVGridColSelector from './PVGridColSelector';
 
 export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>> {
@@ -18,9 +19,9 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
   onURLChanged = ({ target }: any) => {
     this.props.onOptionsChange({ ...this.props.options, url: target.value });
   };
-  
+
   onFilterChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, filter: JSON.parse(target.value === ''? '[]': target.value) });
+    this.props.onOptionsChange({ ...this.props.options, filter: target.value });
   };
   onCustomFilterChanged = ({ target }: any) => {
     this.props.onOptionsChange({ ...this.props.options, customFilter: target.value });
@@ -28,9 +29,9 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
   onIsNeighbour = ({ target }: any) => {
     this.props.onOptionsChange({ ...this.props.options, isNeighbour: target.checked });
   };
-  
-  onColSelector = (val: {dataType?: string, colSettings?: PVGridColDef[]}) => {
-    this.props.onOptionsChange({ ...this.props.options,  colSettings: val.colSettings , dataType: val.dataType});
+
+  onColSelector = (val: { dataType?: string; colSettings?: PVGridColDef[] }) => {
+    this.props.onOptionsChange({ ...this.props.options, colSettings: val.colSettings, dataType: val.dataType });
   };
 
   render() {
@@ -68,10 +69,17 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           onChange={this.onURLChanged}
           value={options.url || ''}
         />
-        <Switch label={PontusComponent.t('Is Neighbour')!} checked={options.isNeighbour || false} onChange={this.onIsNeighbour} />
+        <Switch
+          label={PontusComponent.t('Is Neighbour')!}
+          checked={options.isNeighbour || false}
+          onChange={this.onIsNeighbour}
+        />
         {neighbourNamespace}
-        <PVGridColSelector namespace={options.namespace} dataType={options.dataType} colSettings={options.colSettings}
-                           onChange={this.onColSelector}
+        <PVGridColSelector
+          namespace={options.namespace}
+          dataType={options.dataType}
+          colSettings={options.colSettings}
+          onChange={this.onColSelector}
         />
         <LegacyForms.FormField
           label={PontusComponent.t('Filter')!}
@@ -81,7 +89,7 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           onChange={this.onFilterChanged}
           value={options.filter || ''}
         />
-  
+
         <LegacyForms.FormField
           label={PontusComponent.t('Custom Filter')!}
           labelWidth={10}
@@ -90,7 +98,6 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           onChange={this.onCustomFilterChanged}
           value={options.customFilter || ''}
         />
-
       </div>
     );
   }

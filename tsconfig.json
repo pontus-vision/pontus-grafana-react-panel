@@ -9,7 +9,5 @@
     "allowJs": true,
     "resolveJsonModule": true
   },
-  "exclude": [
-        "src/*.js"
-    ]
+  "exclude": ["src/*.js"]
 }
