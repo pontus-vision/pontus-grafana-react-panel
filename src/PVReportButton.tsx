@@ -105,7 +105,7 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
         cancelToken: self.req.token,
       })
         .then(this.onSuccess)
-        .catch((thrown) => {
+        .catch(thrown => {
           if (Axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {

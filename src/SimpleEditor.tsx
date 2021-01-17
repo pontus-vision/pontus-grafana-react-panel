@@ -1,11 +1,14 @@
 import React, { PureComponent } from 'react';
-import { LegacyForms, Switch } from '@grafana/ui';
+// import { LegacyForms, Switch } from '@grafana/ui';
 import { PanelEditorProps } from '@grafana/data';
 
 import { SimpleOptions } from './types';
 import PVGridColSelector from './PVGridColSelector';
 import PontusComponent from './PontusComponent';
 import { PVGridColDef } from './PVGrid';
+import { Switch } from '@grafana/ui';
+import { LegacyForms } from '@grafana/ui';
+const { FormField } = LegacyForms;
 
 // import PVGridColSelector from './PVGridColSelector';
 
@@ -70,6 +73,7 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           value={options.url || ''}
         />
         <Switch
+          css={undefined}
           label={PontusComponent.t('Is Neighbour')!}
           checked={options.isNeighbour || false}
           onChange={this.onIsNeighbour}
@@ -81,7 +85,7 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           colSettings={options.colSettings}
           onChange={this.onColSelector}
         />
-        <LegacyForms.FormField
+        <FormField
           label={PontusComponent.t('Filter')!}
           labelWidth={10}
           inputWidth={20}

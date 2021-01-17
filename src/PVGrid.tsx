@@ -737,9 +737,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
             maxBlocksInCache={2}
             pagination={true}
             paginationAutoPageSize={true}
-            getRowNodeId={(item) => {
-              return item.id;
-            }}
+            getRowNodeId={item => item.id}
           />
         </div>
       </div>

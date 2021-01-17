@@ -3,9 +3,10 @@ import React, { CSSProperties } from 'react';
 import axios from 'axios';
 import PontusComponent from './PontusComponent';
 import PVGremlinComboBox, { PVGremlinComboBoxProps } from './PVGremlinComboBox';
-import CreatableSelect from 'react-select/creatable';
+import { Creatable } from 'react-select/creatable';
 import { StylesConfig } from 'react-select/src/styles';
 import { SelectableValue } from '@grafana/data';
+import { OptionTypeBase } from 'react-select';
 // import 'semantic-ui-css/semantic.min.css';
 // import ResizeAware from 'react-resize-aware';
 
@@ -14,7 +15,7 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
     super(props);
 
     this.req = undefined;
-    if (this.props.url === null) {
+    if (!this.props.url) {
       throw new Error('must set the URL to forward requests');
     }
 
@@ -25,14 +26,14 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
     };
   }
 
-  getOptions = async (jsonRequest: any | undefined = undefined): Promise<SelectableValue<string>[]> => {
+  getOptions = async (jsonRequest: any | undefined = undefined): Promise<Array<SelectableValue<string>>> => {
     const url = this.props.url ? this.props.url : PontusComponent.getRestNodePropertyNamesURL(this.props);
 
     if (this.req) {
       this.req.cancel();
     }
 
-    const retVal: SelectableValue<string>[] = [];
+    const retVal: Array<SelectableValue<string>> = [];
 
     const CancelToken = axios.CancelToken;
     this.req = CancelToken.source();
@@ -88,7 +89,8 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
 
   render() {
     // multi={this.props.multi === null ? true : this.props.multi}
-    const customStyles: StylesConfig = {
+    // const isMulti:Boolean = this.props.multi?true:false;
+    const customStyles: StylesConfig<OptionTypeBase, boolean> = {
       option: (provided: CSSProperties, state: any) => ({
         ...provided,
         color: 'black',
@@ -149,15 +151,15 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
     };
 
     /*
-     <CreatableSelect
-     options={this.state.options}
-     placeholder='Select Label'
-     styles={customStyles}
-     />
-     */
+         <CreatableSelect
+         options={this.state.options}
+         placeholder='Select Label'
+         styles={customStyles}
+         />
+         */
 
     return (
-      <CreatableSelect
+      <Creatable
         name={this.props.name || 'form-field-name'}
         key={this.state.value ? this.state.value.length : 0}
         value={this.state.value}
@@ -173,16 +175,16 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
     );
 
     /*       return (
-     <ul className="userlist">
-     {this.state.users.map(function (user) {
-     return <User
-     key={user.name}
-     userData={user}
-     glEventHub={eventHub}/>
-     })}
-     </ul>
-     )
-     */
+         <ul className="userlist">
+         {this.state.users.map(function (user) {
+         return <User
+         key={user.name}
+         userData={user}
+         glEventHub={eventHub}/>
+         })}
+         </ul>
+         )
+         */
   }
 }
 

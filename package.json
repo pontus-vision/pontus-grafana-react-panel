@@ -21,6 +21,7 @@
     "@babel/preset-react": "^7.12.10",
     "@grafana/data": "^7.3.7",
     "@grafana/toolkit": "^7.3.7",
+    "@grafana/runtime": "^7.3.7",
     "@grafana/ui": "^7.3.7"
   },
   "dependencies": {

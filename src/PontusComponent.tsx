@@ -43,7 +43,7 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     if (!this.callbacksPerTopic[topic]) {
       this.callbacksPerTopic[topic] = [];
     }
-    if (!this.callbacksPerTopic[topic].some((currCallback) => currCallback === callback)) {
+    if (!this.callbacksPerTopic[topic].some(currCallback => currCallback === callback)) {
       PubSub.subscribe(topic, callback);
       this.callbacksPerTopic[topic].push(callback);
       this.topics[topic]++;
@@ -55,7 +55,7 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
       return;
     }
 
-    const found = this.callbacksPerTopic[topic].findIndex((currCallback) => currCallback === callback);
+    const found = this.callbacksPerTopic[topic].findIndex(currCallback => currCallback === callback);
     if (found === -1) {
       return;
     }
@@ -98,7 +98,7 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   static b64DecodeUnicode(str: string): string {
     return decodeURIComponent(
       Array.prototype.map
-        .call(atob(str), (c) => {
+        .call(atob(str), c => {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         })
         .join('')
