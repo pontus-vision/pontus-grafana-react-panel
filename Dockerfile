@@ -4,17 +4,19 @@ WORKDIR /
 COPY package.json  yarn.lock /plugin/
 
 WORKDIR /plugin
-RUN  yarn install 
 
+RUN yarn  install 
 
 COPY . /plugin/
 
 COPY --from=pontusvisiongdpr/pontus-i18n:latest /*.json  /plugin/src/
-#RUN   yarn run build
-RUN   yarn run dev
 
+RUN   yarn run build
+
+#RUN yarn run   dev
 
 FROM grafana/grafana:latest
+
 EXPOSE 3000
 
 COPY --from=builder /plugin/dist /var/lib/grafana/plugins/grafana/pontus-panel/
