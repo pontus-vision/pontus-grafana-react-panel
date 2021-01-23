@@ -1,0 +1,29 @@
+{
+  "type": "panel",
+  "name": "Pontus Vision Panel",
+  "id": "pontus-panel",
+
+  "info": {
+    "description": "Pontus Vision Panel",
+    "author": {
+      "name": "Leo Martins"
+    },
+    "keywords": ["Pontus", "LGPD", "GDPR"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      { "name": "Website", "url": "https://github.com/pontus-vision/simple-react-panel" },
+      { "name": "License", "url": "https://github.com/grafana/simple-react-panel/blob/master/LICENSE" }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+
+  "dependencies": {
+    "grafanaVersion": "6.x.x",
+    "plugins": []
+  }
+}
