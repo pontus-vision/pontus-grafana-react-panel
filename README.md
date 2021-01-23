@@ -1,6 +1,6 @@
 # Pontus Vision Grafana React Panel
 
-This is a simple React Panel for Grafana, which enables Pontus Vision POLE data to be displayed in tables in Grafana
+This is a React Panel for Grafana, which enables Pontus Vision POLE data to be displayed in tables in Grafana.  It has a searcheable grid that displays data from the pontus-odb-graph backend.
 
 To work with this plugin run:
 
