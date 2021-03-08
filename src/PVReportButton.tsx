@@ -6,8 +6,7 @@ import PontusComponent from './PontusComponent';
 
 // import PVDatamaps from './PVDatamaps';
 export interface PVReportButtonProps {
-  node: any;
-  colDef: any;
+  node?: any;
   namespace?: string;
   subNamespace?: string;
   mountedSuccess?: boolean;
@@ -24,7 +23,11 @@ export interface PVReportButtonProps {
   placeholder?: React.ReactNode;
   templateText?: string;
   contextId?: string;
-  buttonLabel: string;
+  buttonLabel?: string;
+  className?: string;
+  style?: any;
+  size?: string;
+  colDef?: any;
 }
 
 export interface PVReportButtonState extends PVReportButtonProps {
@@ -158,7 +161,12 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
   render() {
     return (
       <div>
-        <Button className={'compact'} style={{ border: 0, background: 'rgb(254,250,250)', marginRight: '3px' }} size={'small'} onClick={this.onClick}>
+        <Button
+          className={'compact'}
+          style={{ border: 0, background: 'rgb(254,250,250)', marginRight: '3px' }}
+          size={'small'}
+          onClick={this.onClick}
+        >
           {this.props.buttonLabel}
         </Button>
 
@@ -177,7 +185,10 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
               padding: '10px',
             }}
           >
-            <div style={{ backgroundColor: 'rgba(250, 245, 245,0.75)' }} dangerouslySetInnerHTML={{ __html: this.state.preview }} />
+            <div
+              style={{ backgroundColor: 'rgba(250, 245, 245,0.75)' }}
+              dangerouslySetInnerHTML={{ __html: this.state.preview }}
+            />
           </Segment>
         </Portal>
       </div>

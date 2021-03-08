@@ -1,49 +1,55 @@
 import React, { PureComponent } from 'react';
-import { LegacyForms, Switch } from '@grafana/ui';
-import { PanelEditorProps } from '@grafana/data';
+// import { LegacyForms, Switch } from '@grafana/ui';
+import { PanelOptionsEditorProps } from '@grafana/data';
 
 import { SimpleOptions } from './types';
-import PVGridColSelector from './PVGridColSelector';
 import PontusComponent from './PontusComponent';
-import {PVGridColDef} from "./PVGrid";
+import { LegacyForms, Switch } from '@grafana/ui';
+
+const { FormField } = LegacyForms;
+
 // import PVGridColSelector from './PVGridColSelector';
 
-export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>> {
+export class SimpleEditor extends PureComponent<PanelOptionsEditorProps<SimpleOptions>> {
   onNamespaceChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, namespace: target.value });
+    this.props.onChange({ ...this.props.value, namespace: target.value });
   };
   onNeighbourNamespaceChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, neighbourNamespace: target.value });
+    this.props.onChange({ ...this.props.value, neighbourNamespace: target.value });
   };
   onURLChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, url: target.value });
+    this.props.onChange({ ...this.props.value, url: target.value });
   };
-  
+
   onFilterChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, filter: JSON.parse(target.value === ''? '[]': target.value) });
+    this.props.onChange({ ...this.props.value, filter: target.value });
   };
   onCustomFilterChanged = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, customFilter: target.value });
+    this.props.onChange({ ...this.props.value, customFilter: target.value });
   };
   onIsNeighbour = ({ target }: any) => {
-    this.props.onOptionsChange({ ...this.props.options, isNeighbour: target.checked });
+    this.props.onChange({ ...this.props.value, isNeighbour: target.checked });
   };
-  
-  onColSelector = (val: {dataType?: string, colSettings?: PVGridColDef[]}) => {
-    this.props.onOptionsChange({ ...this.props.options,  colSettings: val.colSettings , dataType: val.dataType});
+
+  onColSelector = (val: any) => {
+    this.props.onChange({ ...this.props.value, colSettings: val.colSettings, dataType: val.dataType });
+  };
+
+  onGraphMode = ({ target }: any) => {
+    this.props.onChange({ ...this.props.value, graphMode: target.checked });
   };
 
   render() {
-    const { options } = this.props;
+    const { value } = this.props;
 
-    const neighbourNamespace = options.isNeighbour ? (
+    const neighbourNamespace = value.isNeighbour ? (
       <LegacyForms.FormField
         label={PontusComponent.t('Neighbour')!}
         labelWidth={10}
         inputWidth={20}
         type="text"
         onChange={this.onNeighbourNamespaceChanged}
-        value={options.neighbourNamespace || ''}
+        value={value.neighbourNamespace || ''}
       />
     ) : (
       <div />
@@ -58,7 +64,7 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           inputWidth={20}
           type="text"
           onChange={this.onNamespaceChanged}
-          value={options.namespace || ''}
+          value={value.namespace || ''}
         />
         <LegacyForms.FormField
           label={PontusComponent.t('Base URL')!}
@@ -66,32 +72,54 @@ export class SimpleEditor extends PureComponent<PanelEditorProps<SimpleOptions>>
           inputWidth={20}
           type="text"
           onChange={this.onURLChanged}
-          value={options.url || ''}
+          value={value.url || ''}
         />
-        <Switch label={PontusComponent.t('Is Neighbour')!} checked={options.isNeighbour || false} onChange={this.onIsNeighbour} />
+        <Switch
+          css={undefined}
+          label={PontusComponent.t('Is Neighbour')!}
+          checked={value.isNeighbour || false}
+          onChange={this.onIsNeighbour}
+        />
+        <Switch
+          css={undefined}
+          label={PontusComponent.t('Graph Mode')!}
+          checked={value.graphMode || false}
+          onChange={this.onGraphMode}
+        />
         {neighbourNamespace}
-        <PVGridColSelector namespace={options.namespace} dataType={options.dataType} colSettings={options.colSettings}
-                           onChange={this.onColSelector}
-        />
-        <LegacyForms.FormField
+        {/*<PVGridColSelector*/}
+        {/*  // namespace={value.namespace!}*/}
+        {/*  // dataType={value.dataType}*/}
+        {/*  // colSettings={value.colSettings}*/}
+        {/*  onChange={this.onColSelector}*/}
+        {/*  value={value}*/}
+        {/*  context={value:''}*/}
+        {/*/>*/}
+        <FormField
           label={PontusComponent.t('Filter')!}
           labelWidth={10}
           inputWidth={20}
           type="text"
           onChange={this.onFilterChanged}
-          value={options.filter || ''}
+          value={value.filter || ''}
         />
-  
+
         <LegacyForms.FormField
           label={PontusComponent.t('Custom Filter')!}
           labelWidth={10}
           inputWidth={20}
           type="text"
           onChange={this.onCustomFilterChanged}
-          value={options.customFilter || ''}
+          value={value.customFilter || ''}
         />
-
       </div>
     );
   }
 }
+
+// export const SimpleEditorFuncComp: FunctionComponent<PanelOptionsEditorProps<SimpleOptions>> = (
+//   cprops: PanelOptionsEditorProps<SimpleOptions>,
+//   context?: any
+// ): ReactElement<any, any> | null => {
+//   return <SimpleEditor value={cprops.value} onChange={()=>{}}  context={context} item={cprops.value}/>;
+// };

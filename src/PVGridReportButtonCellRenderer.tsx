@@ -11,8 +11,8 @@ class PVGridReportButtonCellRenderer extends PVReportButton {
     const parsedStaticData = props.colDef.id.split('@');
 
     this.state = {
-      colDef: undefined,
-      node: undefined,
+      // colDef: undefined,
+      // node: undefined,
       open: false,
       preview: '',
       ...props,

@@ -17,6 +17,7 @@ export interface PubSubCallback extends Function {
 class PontusComponent<T, S> extends React.PureComponent<T, S> {
   protected url: string;
   protected req: CancelTokenSource | undefined;
+  protected request: any;
   protected errorCounter: number;
   protected hRequest: any | undefined;
 
@@ -124,10 +125,9 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     return retVal;
   }
 
-  static replaceAll(searchString: string, replaceString: string, str: string):string {
-    if (str.split){
+  static replaceAll(searchString: string, replaceString: string, str: string): string {
+    if (str.split) {
       return str.split(searchString).join(replaceString);
-  
     }
     return str;
   }

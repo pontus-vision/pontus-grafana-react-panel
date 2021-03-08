@@ -7,7 +7,7 @@ import Axios from 'axios';
 import PontusComponent, { PubSubCallback } from './PontusComponent';
 // import  * as reveal2 from './PVBurgerMenuReveal';
 import PVGridReportButtonCellRenderer from './PVGridReportButtonCellRenderer';
-import {ColDef, GridOptions, IDatasource, IGetRowsParams, RowClickedEvent} from 'ag-grid-community';
+import { ColDef, GridOptions, IDatasource, IGetRowsParams, RowClickedEvent } from 'ag-grid-community';
 
 export interface PVGridProps {
   url: string;
@@ -20,8 +20,7 @@ export interface PVGridProps {
   settings?: any;
   columnDefs?: PVGridColDef[];
   dataType?: string;
-  filter?: any[];
-  
+  filter?: string;
 }
 
 export interface PVGridState extends PVGridProps {
@@ -78,7 +77,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   // private req2: CancelTokenSource | undefined;
   private fromPage: number;
   private toPage: number;
-
+  private filtersCalc: any[];
   constructor(props: Readonly<PVGridProps>) {
     super(props);
 
@@ -92,8 +91,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.searchstr = '';
     this.searchExact = true;
     this.customFilter = props.customFilter;
-    this.filters = props.filter;
-
+    this.filters = props.filter ? (JSON.parse(props.filter) as any[]) : [];
+    this.filtersCalc = [];
     this.sortcol = null;
     this.sortdir = '+desc';
     this.hRequest = undefined;
@@ -175,7 +174,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     // if (colSettingsStr) {
     //   colSettings = JSON.parse(colSettingsStr) as PVGridColDef[];
     // } else {
-      colSettings = props.columnDefs ? props.columnDefs : [];
+    colSettings = props.columnDefs ? props.columnDefs : [];
     // }
     colSettings = this.setColumnSettings(colSettings, true);
 
@@ -188,7 +187,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     // );
     // let dataType = JSON.parse();
     // if (!dataType) {
-    let  dataType = props.dataType ? props.dataType : '';
+    let dataType = props.dataType ? props.dataType : '';
     // }
     this.setDataType(dataType as string);
 
@@ -331,7 +330,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
           self.dataType,
           self.sortcol,
           self.sortdir,
-          self.filters,
+          self.filtersCalc,
           self.customFilter
         ),
         {
@@ -449,7 +448,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.setColumnSettings(colSettings);
   };
 
-  setColumnSettings = (colSettings: PVGridColDef[], initMode?: boolean):PVGridColDef[] => {
+  setColumnSettings = (colSettings: PVGridColDef[], initMode?: boolean): PVGridColDef[] => {
     this.colFieldTranslation = {};
 
     if (colSettings) {
@@ -508,7 +507,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         newColSetting.id = origField;
         newColSetting.field = origField.replace(/\./g, '_');
         // }
-  
+
         this.colFieldTranslation[colSetting.field] = origField;
         this.colFieldTranslation[newColSetting.field] = origField;
         newColSettings.push(newColSetting);
@@ -517,9 +516,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
       this.setColumns(newColSettings);
       this.cols = newColSettings;
       return newColSettings;
-  
     }
-    
+
     return [];
   };
   createSubscriptions = (props: Readonly<PVGridProps>) => {
@@ -602,7 +600,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.setState({ totalRecords: totalRecords });
   }
 
-  dataSource:IDatasource = {
+  dataSource: IDatasource = {
     rowCount: undefined,
     getRows: (params: IGetRowsParams) => {
       console.log('asking for ' + params.startRow + ' to ' + params.endRow);
@@ -617,7 +615,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
       }
 
       if (params.filterModel) {
-        const filters = [...this.filters];
+        this.filtersCalc = this.filters ? [...this.filters] : [];
 
         for (const fm of Object.keys(params.filterModel)) {
           let colId = fm.replace(/_1$/g, '');
@@ -630,7 +628,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
             ...csJson,
           };
 
-          filters.push(colSearch);
+          this.filtersCalc.push(colSearch);
 
           /* when we have simple filters, the following format is used:
            [
@@ -739,9 +737,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
             maxBlocksInCache={2}
             pagination={true}
             paginationAutoPageSize={true}
-            getRowNodeId={item => {
-              return item.id;
-            }}
+            getRowNodeId={item => item.id}
           />
         </div>
       </div>

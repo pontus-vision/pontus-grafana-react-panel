@@ -7,7 +7,8 @@ import './App.css';
 // import PVGrid from "./PVGrid";
 // import PVGremlinComboBox from "./PVGremlinComboBox";
 // import PontusComponent from './PontusComponent';
-import PVGrid, {PVGridColDef} from './PVGrid';
+import PVGrid, { PVGridColDef } from './PVGrid';
+import PVDataGraph from './PVDataGraph';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -29,11 +30,31 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const url = this.props.options.url;
     const isNeighbour = this.props.options.isNeighbour;
     const neighbourNamespace = this.props.options.neighbourNamespace;
-    const dataType = this.props.options.dataType;
-    const colSettings = this.props.options.colSettings;
+    const graphMode = this.props.options.graphMode;
+    const dataType = this.props.options.dataType || this.props.options.dataSettings?.dataType;
+    const colSettings = this.props.options.colSettings || this.props.options.dataSettings?.colSettings;
     const customFilter = this.props.options.customFilter;
     const filter = this.props.options.filter;
-    
+
+    const gridWidget = (
+      <PVGrid
+        url={url}
+        neighbourNamespace={neighbourNamespace}
+        isNeighbour={isNeighbour}
+        namespace={namespace}
+        customFilter={customFilter}
+        mountedSuccess={true}
+        dataType={dataType}
+        columnDefs={colSettings}
+        subNamespace={undefined}
+        filter={filter}
+      />
+    );
+
+    const graphWidget = (
+      <PVDataGraph isNeighbour={isNeighbour} namespace={namespace} neighbourNamespace={neighbourNamespace} />
+    );
+
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
     return (
@@ -54,19 +75,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           {/*<PontusComponent/>*/}
           {/*<AgGridReact/>*/}
           {/*<PVGremlinComboBox mountedSuccess={true} namespace={"foo"}/>*/}
-          <PVGrid
-            url={url}
-            neighbourNamespace={neighbourNamespace}
-            isNeighbour={isNeighbour}
-            namespace={namespace}
-            customFilter={customFilter}
-            mountedSuccess={true}
-            dataType={dataType}
-            columnDefs={colSettings}
-            subNamespace={undefined}
-            filter={filter}
-            
-          />
+          {graphMode ? graphWidget : gridWidget}
         </div>
 
         {/*<div*/}
