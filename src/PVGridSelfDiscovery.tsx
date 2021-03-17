@@ -410,7 +410,7 @@ class PVGridSelfDiscovery extends PontusComponent<PVGridSelfDiscoveryProps, PVGr
           }
         )
         .then(self.onSuccessProxy)
-        .catch(thrown => {
+        .catch((thrown) => {
           if (axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
@@ -565,7 +565,7 @@ class PVGridSelfDiscovery extends PontusComponent<PVGridSelfDiscoveryProps, PVGr
           cancelToken: self.req.token,
         })
         .then(self.onSuccessAddRowProxy)
-        .catch(thrown => {
+        .catch((thrown) => {
           if (axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {

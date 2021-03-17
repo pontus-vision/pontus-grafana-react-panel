@@ -9,6 +9,7 @@ import './App.css';
 // import PontusComponent from './PontusComponent';
 import PVGrid, { PVGridColDef } from './PVGrid';
 import PVDataGraph from './PVDataGraph';
+import PVGDPRScore from './PVGDPRScore';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -30,11 +31,12 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const url = this.props.options.url;
     const isNeighbour = this.props.options.isNeighbour;
     const neighbourNamespace = this.props.options.neighbourNamespace;
-    const graphMode = this.props.options.graphMode;
+    const widgetType = this.props.options.widgetType;
     const dataType = this.props.options.dataType || this.props.options.dataSettings?.dataType;
     const colSettings = this.props.options.colSettings || this.props.options.dataSettings?.colSettings;
     const customFilter = this.props.options.customFilter;
     const filter = this.props.options.filter;
+    const scoreType = this.props.options.scoreType;
 
     const gridWidget = (
       <PVGrid
@@ -55,6 +57,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       <PVDataGraph isNeighbour={isNeighbour} namespace={namespace} neighbourNamespace={neighbourNamespace} />
     );
 
+    const scoreWidget = <PVGDPRScore type={scoreType!} longShow={false} />;
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
     return (
@@ -75,7 +78,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           {/*<PontusComponent/>*/}
           {/*<AgGridReact/>*/}
           {/*<PVGremlinComboBox mountedSuccess={true} namespace={"foo"}/>*/}
-          {graphMode ? graphWidget : gridWidget}
+          {widgetType === 'Network' ? graphWidget : widgetType === 'Grid' ? gridWidget : scoreWidget}
         </div>
 
         {/*<div*/}

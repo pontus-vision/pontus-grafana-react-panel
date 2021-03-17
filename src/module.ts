@@ -7,7 +7,49 @@ import PVGridColSelector from './PVGridColSelector';
 
 // export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setDefaults(defaults).setEditor(SimpleEditor);
 export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel);
-plugin.setPanelOptions(builder => {
+plugin.setPanelOptions((builder) => {
+  builder.addRadio({
+    path: 'widgetType',
+    name: PontusComponent.t('Type')!,
+    settings: {
+      allowCustomValue: false,
+      options: [
+        { value: 'Network', label: PontusComponent.t('Network') },
+        { value: 'Grid', label: PontusComponent.t('Grid') },
+        { value: 'Score', label: PontusComponent.t('Score') },
+      ],
+    },
+    defaultValue: 'Grid',
+    showIf: (currentOptions: SimpleOptions, data) => {
+      return true;
+    },
+  });
+  builder.addRadio({
+    path: 'scoreType',
+    name: PontusComponent.t('Score Type')!,
+    settings: {
+      allowCustomValue: false,
+      options: [
+        { value: 'Awareness', label: PontusComponent.t('NavPanelAwarenessPopup_title') },
+        { value: 'Children', label: PontusComponent.t('NavPanelChildrenPopup_title') },
+        { value: 'Consent', label: PontusComponent.t('NavPanelConsentPopup_title') },
+        { value: 'DataBreach', label: PontusComponent.t('NavPanelDataBreachPopup_title') },
+        { value: 'DataProtnOfficer', label: PontusComponent.t('NavPanelDataProtnOfficerPopup_title') },
+        { value: 'IndividualsRights', label: PontusComponent.t('NavPanelIndividualsRightsPopup_title') },
+        { value: 'InformationYouHold', label: PontusComponent.t('NavPanelInformationYouHoldPopup_title') },
+        { value: 'International', label: PontusComponent.t('NavPanelInternationalPopup_title') },
+        { value: 'LawfulBasis', label: PontusComponent.t('NavPanelLawfulBasisPopup_title') },
+        { value: 'PrivacyImpactAssessment', label: PontusComponent.t('NavPanelPrivacyImpactAssessmentPopup_title') },
+        { value: 'PrivacyNotices', label: PontusComponent.t('NavPanelPrivacyNoticesPopup_title') },
+        { value: 'SubjectAccessRequest', label: PontusComponent.t('NavPanelSubjectAccessRequestPopup_title') },
+      ],
+    },
+    defaultValue: 'Awareness',
+    showIf: (currentOptions: SimpleOptions, data) => {
+      return currentOptions.widgetType === 'Score';
+    },
+  });
+
   builder.addTextInput({
     path: 'namespace',
     name: PontusComponent.t('Self Namespace')!,
@@ -15,7 +57,7 @@ plugin.setPanelOptions(builder => {
     // description: 'namespace',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return true;
+      return currentConfig.widgetType !== 'Score';
     },
   });
   builder.addBooleanSwitch({
@@ -25,7 +67,7 @@ plugin.setPanelOptions(builder => {
     // description: 'isNeighbour',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return true;
+      return currentConfig.widgetType !== 'Score';
     },
   });
   builder.addTextInput({
@@ -35,7 +77,7 @@ plugin.setPanelOptions(builder => {
     // description: 'neighbourNamespace',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.isNeighbour;
+      return currentConfig.widgetType !== 'Score' && currentConfig.isNeighbour;
     },
   });
   builder.addTextInput({
@@ -48,16 +90,17 @@ plugin.setPanelOptions(builder => {
       return true;
     },
   });
-  builder.addBooleanSwitch({
-    path: 'graphMode',
-    name: PontusComponent.t('Graph Mode')!,
-    defaultValue: defaults.graphMode,
-    // description: 'graphMode',
-    settings: undefined,
-    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.isNeighbour;
-    },
-  });
+
+  // builder.addBooleanSwitch({
+  //   path: 'graphMode',
+  //   name: PontusComponent.t('Graph Mode')!,
+  //   defaultValue: defaults.graphMode,
+  //   // description: 'graphMode',
+  //   settings: undefined,
+  //   showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+  //     return currentConfig.isNeighbour;
+  //   },
+  // });
 
   builder.addTextInput({
     path: 'filter',
@@ -66,7 +109,7 @@ plugin.setPanelOptions(builder => {
     // description: 'filter',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return !currentConfig.graphMode;
+      return currentConfig.widgetType === 'Grid';
     },
   });
 
@@ -77,7 +120,7 @@ plugin.setPanelOptions(builder => {
     name: PontusComponent.t('Custom Filter')!,
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return !currentConfig.graphMode;
+      return currentConfig.widgetType === 'Grid';
     },
   });
 
@@ -90,7 +133,7 @@ plugin.setPanelOptions(builder => {
     defaultValue: defaults.dataSettings,
     editor: PVGridColSelector,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return !currentConfig.graphMode;
+      return currentConfig.widgetType === 'Grid';
     },
   });
 });

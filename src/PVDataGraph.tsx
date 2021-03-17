@@ -8,6 +8,7 @@ import PVReportButton from './PVReportButton';
 import PVDetailsButton from './PVDetailsButton';
 import PontusComponent from './PontusComponent';
 import { ButtonProps } from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import ReactResizeDetector from 'react-resize-detector';
 
 export interface PVDataGraphProps {
   isNeighbour?: boolean;
@@ -196,16 +197,8 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         if (isEdge) {
           let edgeDir = event.id.indexOf('<-') !== -1 ? '<-' : '->';
 
-          let metadataType = event.id
-            .replace(/ ->.*/g, '')
-            .replace(/ <-.*/g, '')
-            .replace(' ', '.')
-            .replace(/ /g, '_');
-          let edgeType = event.id
-            .replace(/.*-> /g, '')
-            .replace(/.*<- /g, '')
-            .replace(/ /g, '_')
-            .replace(/[()]/g, '');
+          let metadataType = event.id.replace(/ ->.*/g, '').replace(/ <-.*/g, '').replace(' ', '.').replace(/ /g, '_');
+          let edgeType = event.id.replace(/.*-> /g, '').replace(/.*<- /g, '').replace(/ /g, '_').replace(/[()]/g, '');
 
           this.setState({
             metadataType: metadataType,
@@ -381,7 +374,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
           cancelToken: self.req.token,
         })
         .then(this.onSuccess)
-        .catch(thrown => {
+        .catch((thrown) => {
           if (axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
@@ -657,6 +650,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
       // <PVDataGraphNeighboursButton key={100} namespace={this.props.namespace} />,
       <Button
         className={'compact'}
+        key={210}
         style={
           summary
             ? { border: 0, background: 'rgb(48,48,48)', marginRight: '3px' }
@@ -717,9 +711,10 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         </div>
       );
     }
+    // style={{ height: '100%', width: '100%', flexDirection: 'column' }}
 
     return (
-      <div style={{ height: '100%', width: '100%', flexDirection: 'column' }}>
+      <ReactResizeDetector onResize={this.handleResize}>
         {bttns}
         <Graph
           style={{ height: '90%', width: '100%', flexGrow: 1 }}
@@ -772,7 +767,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
             />
           </Segment>
         </Portal>
-      </div>
+      </ReactResizeDetector>
     );
   }
 

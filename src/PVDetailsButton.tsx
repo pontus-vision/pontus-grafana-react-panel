@@ -100,7 +100,7 @@ export class PVDetailsButton extends PontusComponent<PVDetailsButtonProps, PVDet
           cancelToken: self.req.token,
         })
         .then(this.onSuccess)
-        .catch(thrown => {
+        .catch((thrown) => {
           if (axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {

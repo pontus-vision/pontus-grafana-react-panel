@@ -5,7 +5,20 @@ export interface SimpleOptions {
   url: string;
   isNeighbour: boolean;
   neighbourNamespace: string;
-  graphMode?: boolean;
+  scoreType?:
+    | 'Awareness'
+    | 'Children'
+    | 'Consent'
+    | 'DataBreach'
+    | 'DataProtnOfficer'
+    | 'IndividualsRights'
+    | 'InformationYouHold'
+    | 'International'
+    | 'LawfulBasis'
+    | 'PrivacyImpactAssessment'
+    | 'PrivacyNotices'
+    | 'SubjectAccessRequest';
+  widgetType: 'Grid' | 'Network' | 'Score';
   dataType?: string;
   colSettings?: PVGridColDef[];
   customFilter?: string;
@@ -21,4 +34,5 @@ export const defaults: SimpleOptions = {
   url: 'http://localhost:18443/gateway/sandbox/pvgdpr_server/home/agrecords',
   isNeighbour: false,
   neighbourNamespace: 'neighbour',
+  widgetType: 'Grid',
 };
