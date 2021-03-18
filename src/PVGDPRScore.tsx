@@ -3,19 +3,31 @@ import React from 'react';
 import PVGauge from './PVGauge';
 import axios, { AxiosResponse } from 'axios';
 import { Grid } from 'semantic-ui-react';
-import { ic_multiline_chart } from 'react-icons-kit-allreact/md/ic_multiline_chart';
-import { book_2 } from 'react-icons-kit-allreact/ikons/book_2';
+import { ic_multiline_chart as ScoreIcon } from 'react-icons-kit/md/ic_multiline_chart';
+import { ic_child_care as ChildrenIcon } from 'react-icons-kit/md/ic_child_care';
+import { check as ConsentIcon } from 'react-icons-kit/fa/check';
+import { book_2 as AwarenessIcon } from 'react-icons-kit/ikons/book_2';
+import { unlocked as DataBreachIcon } from 'react-icons-kit/iconic/unlocked';
+import { blackTie as DataProtnOfficerIcon } from 'react-icons-kit/fa/blackTie';
+import { iosPricetagsOutline as IndividualsRightsIcon } from 'react-icons-kit/ionicons/iosPricetagsOutline';
+import { info as InformationYouHoldIcon } from 'react-icons-kit/icomoon/info';
+import { globe as InternationalIcon } from 'react-icons-kit/ikons/globe';
+import { balanceScale as LawfulBasisIcon } from 'react-icons-kit/fa/balanceScale';
+import { shareAlt as PrivacyImpactAssessmentIcon } from 'react-icons-kit/fa/shareAlt';
+import { eyeBlocked as PrivacyNoticesIcon } from 'react-icons-kit/icomoon/eyeBlocked';
+import { download as SubjectAccessRequestIcon } from 'react-icons-kit/entypo/download';
 
-import Icon from 'react-icons-kit-allreact';
+import Icon from 'react-icons-kit';
 import PontusComponent from './PontusComponent';
+import { ScoreType } from './types';
 
 /***************************
  * UserList Component
  ***************************/
 
 export interface PVGDPRScoreProps {
-  type: string;
-  longShow: boolean;
+  scoreType: ScoreType;
+  longShow?: boolean;
 }
 
 export interface PVGDPRScoreState extends PVGDPRScoreProps {
@@ -26,16 +38,38 @@ export interface PVGDPRScoreState extends PVGDPRScoreProps {
 class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
   text: string;
   title: string;
-  icon: Icon;
+  icon: JSX.Element;
   weight: number;
   errCounter: number;
   latestStatus: number;
-  iconMap: Record<string, Icon> = {
-    Awareness: new Icon(book_2),
+  iconMap: Record<ScoreType, JSX.Element> = {
+    Awareness: <Icon icon={AwarenessIcon} />,
+    Children: <Icon icon={ChildrenIcon} />,
+    Consent: <Icon icon={ConsentIcon} />,
+    DataBreach: <Icon icon={DataBreachIcon} />,
+    DataProtnOfficer: <Icon icon={DataProtnOfficerIcon} />,
+    IndividualsRights: <Icon icon={IndividualsRightsIcon} />,
+    InformationYouHold: <Icon icon={InformationYouHoldIcon} />,
+    International: <Icon icon={InternationalIcon} />,
+    LawfulBasis: <Icon icon={LawfulBasisIcon} />,
+    PrivacyImpactAssessment: <Icon icon={PrivacyImpactAssessmentIcon} />,
+    PrivacyNotices: <Icon icon={PrivacyNoticesIcon} />,
+    SubjectAccessRequest: <Icon icon={SubjectAccessRequestIcon} />,
   };
-  scoreIcon: Icon;
-  weightMap: Record<string, number> = {
+  scoreIcon: JSX.Element;
+  weightMap: Record<ScoreType, number> = {
     Awareness: 1,
+    Children: 2,
+    Consent: 6,
+    DataBreach: 6,
+    DataProtnOfficer: 1,
+    IndividualsRights: 1,
+    International: 1,
+    LawfulBasis: 1,
+    InformationYouHold: 4,
+    PrivacyImpactAssessment: 6,
+    PrivacyNotices: 6,
+    SubjectAccessRequest: 4,
   };
   h_request?: NodeJS.Timeout;
 
@@ -43,17 +77,19 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
     super(props);
     // this.url = "/gateway/sandbox/pvgdpr_graph";
 
-    this.text = PontusComponent.t(`NavPanel${this.props.type}Popup_text`)!;
+    this.text = PontusComponent.t(`NavPanel${this.props.scoreType}Popup_text`)!;
 
-    this.title = PontusComponent.t(`NavPanel${this.props.type}Popup_title`)!;
-    this.icon = this.iconMap[this.props.type];
-    this.weight = this.weightMap[this.props.type];
+    this.title = PontusComponent.t(`NavPanel${this.props.scoreType}Popup_title`)!;
+    this.icon = this.iconMap[this.props.scoreType!];
+    this.weight = this.weightMap[this.props.scoreType!];
 
-    this.scoreIcon = new Icon(ic_multiline_chart);
+    this.scoreIcon = <Icon icon={ScoreIcon} />;
 
     this.errCounter = 0;
     this.setState({
-      scoreExplanation: '...  LOADING DATA ...',
+      scoreType: props.scoreType,
+      longShow: props.longShow,
+      scoreExplanation: this.text,
       scoreValue: 0,
     });
 
@@ -160,6 +196,7 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
         this.setState({
           scoreExplanation: data.scoreExplanation,
           scoreValue: data.scoreValue,
+          scoreType: this.props.scoreType,
         });
 
         this.emit('on-score-changed', {
@@ -194,8 +231,8 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
               <PVGauge
                 min={0}
                 max={100}
-                valueFormatter={(value: number) => `${value.toFixed(0)}`}
-                backgroundColor="#fefefe"
+                autoResize={true}
+                backgroundColor="white"
                 value={this.state.scoreValue}
                 width={150}
                 height={130}
@@ -216,7 +253,7 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
           </Grid.Column>
 
           <Grid.Column textAlign="justified">
-            <Icon icon={this.icon} />
+            {this.icon}
             <p>{this.text}</p>
           </Grid.Column>
           <Grid.Column textAlign="justified">
@@ -230,7 +267,7 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
       return (
         <Grid centered divided columns={2}>
           <Grid.Column textAlign="justified">
-            <Icon icon={this.scoreIcon} />
+            {this.scoreIcon}
 
             <p>{this.state.scoreExplanation}</p>
           </Grid.Column>
@@ -241,7 +278,16 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
           {/*</Grid.Column>*/}
           <Grid.Column textAlign="center">
             <div>
-              <PVGauge value={this.state.scoreValue} width={100} height={130} label={this.title} />
+              <PVGauge
+                value={this.state.scoreValue}
+                width={100}
+                height={130}
+                label={this.title}
+                autoResize={true}
+                backgroundColor={'white'}
+                max={100}
+                min={0}
+              />
             </div>
           </Grid.Column>
         </Grid>

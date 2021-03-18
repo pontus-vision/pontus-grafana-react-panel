@@ -1,5 +1,5 @@
-import { PanelPlugin } from '@grafana/data';
-import { defaults, SimpleOptions } from './types';
+import { PanelPlugin, SelectableValue } from '@grafana/data';
+import { defaults, ScoreType, ScoreTypeValues, SimpleOptions, WidgetType, WidgetTypeValues } from './types';
 import { SimplePanel } from './SimplePanel';
 import PontusComponent from './PontusComponent';
 import PVGridColSelector from './PVGridColSelector';
@@ -7,19 +7,31 @@ import PVGridColSelector from './PVGridColSelector';
 
 // export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setDefaults(defaults).setEditor(SimpleEditor);
 export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel);
+
+export const getScoreTypeOptions = (): Array<SelectableValue<ScoreType>> => {
+  const retVal: Array<SelectableValue<ScoreType>> = [];
+  ScoreTypeValues.forEach((value) => {
+    retVal.push({ value: value, label: PontusComponent.t(`NavPanel${value}Popup_title`) });
+  });
+  return retVal;
+};
+export const getWidgetTypeOptions = (): Array<SelectableValue<WidgetType>> => {
+  const retVal: Array<SelectableValue<WidgetType>> = [];
+  WidgetTypeValues.forEach((value) => {
+    retVal.push({ value: value, label: PontusComponent.t(value) });
+  });
+  return retVal;
+};
+
 plugin.setPanelOptions((builder) => {
   builder.addRadio({
     path: 'widgetType',
     name: PontusComponent.t('Type')!,
     settings: {
       allowCustomValue: false,
-      options: [
-        { value: 'Network', label: PontusComponent.t('Network') },
-        { value: 'Grid', label: PontusComponent.t('Grid') },
-        { value: 'Score', label: PontusComponent.t('Score') },
-      ],
+      options: getWidgetTypeOptions(),
     },
-    defaultValue: 'Grid',
+    defaultValue: 'PVGrid',
     showIf: (currentOptions: SimpleOptions, data) => {
       return true;
     },
@@ -29,27 +41,22 @@ plugin.setPanelOptions((builder) => {
     name: PontusComponent.t('Score Type')!,
     settings: {
       allowCustomValue: false,
-      options: [
-        { value: 'Awareness', label: PontusComponent.t('NavPanelAwarenessPopup_title') },
-        { value: 'Children', label: PontusComponent.t('NavPanelChildrenPopup_title') },
-        { value: 'Consent', label: PontusComponent.t('NavPanelConsentPopup_title') },
-        { value: 'DataBreach', label: PontusComponent.t('NavPanelDataBreachPopup_title') },
-        { value: 'DataProtnOfficer', label: PontusComponent.t('NavPanelDataProtnOfficerPopup_title') },
-        { value: 'IndividualsRights', label: PontusComponent.t('NavPanelIndividualsRightsPopup_title') },
-        { value: 'InformationYouHold', label: PontusComponent.t('NavPanelInformationYouHoldPopup_title') },
-        { value: 'International', label: PontusComponent.t('NavPanelInternationalPopup_title') },
-        { value: 'LawfulBasis', label: PontusComponent.t('NavPanelLawfulBasisPopup_title') },
-        { value: 'PrivacyImpactAssessment', label: PontusComponent.t('NavPanelPrivacyImpactAssessmentPopup_title') },
-        { value: 'PrivacyNotices', label: PontusComponent.t('NavPanelPrivacyNoticesPopup_title') },
-        { value: 'SubjectAccessRequest', label: PontusComponent.t('NavPanelSubjectAccessRequestPopup_title') },
-      ],
+      options: getScoreTypeOptions(),
     },
     defaultValue: 'Awareness',
     showIf: (currentOptions: SimpleOptions, data) => {
-      return currentOptions.widgetType === 'Score';
+      return currentOptions.widgetType === 'PVGDPRScore';
     },
   });
-
+  builder.addBooleanSwitch({
+    path: 'longShow',
+    name: PontusComponent.t('Show Long Scores')!,
+    settings: undefined,
+    defaultValue: true,
+    showIf: (currentOptions: SimpleOptions, data) => {
+      return currentOptions.widgetType === 'PVGDPRScore';
+    },
+  });
   builder.addTextInput({
     path: 'namespace',
     name: PontusComponent.t('Self Namespace')!,
@@ -57,7 +64,7 @@ plugin.setPanelOptions((builder) => {
     // description: 'namespace',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType !== 'Score';
+      return currentConfig.widgetType !== 'PVGDPRScore';
     },
   });
   builder.addBooleanSwitch({
@@ -67,7 +74,7 @@ plugin.setPanelOptions((builder) => {
     // description: 'isNeighbour',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType !== 'Score';
+      return currentConfig.widgetType !== 'PVGDPRScore';
     },
   });
   builder.addTextInput({
@@ -77,7 +84,7 @@ plugin.setPanelOptions((builder) => {
     // description: 'neighbourNamespace',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType !== 'Score' && currentConfig.isNeighbour;
+      return currentConfig.widgetType !== 'PVGDPRScore' && currentConfig.isNeighbour;
     },
   });
   builder.addTextInput({
@@ -109,7 +116,7 @@ plugin.setPanelOptions((builder) => {
     // description: 'filter',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType === 'Grid';
+      return currentConfig.widgetType === 'PVGrid';
     },
   });
 
@@ -120,7 +127,7 @@ plugin.setPanelOptions((builder) => {
     name: PontusComponent.t('Custom Filter')!,
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType === 'Grid';
+      return currentConfig.widgetType === 'PVGrid';
     },
   });
 
@@ -133,7 +140,7 @@ plugin.setPanelOptions((builder) => {
     defaultValue: defaults.dataSettings,
     editor: PVGridColSelector,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType === 'Grid';
+      return currentConfig.widgetType === 'PVGrid';
     },
   });
 });

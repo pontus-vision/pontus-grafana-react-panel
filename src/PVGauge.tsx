@@ -5,13 +5,13 @@ import Gauge from 'react-svg-gauge';
 import PontusComponent from './PontusComponent';
 
 export interface PVGaugeProps {
-  type: string;
   label: string;
   value: number;
+  min: number;
+  max: number;
   width: number;
   height: number;
   backgroundColor: string;
-  longShow: boolean;
   autoResize: boolean;
   valueLabelStyle?: any;
 }
@@ -31,12 +31,12 @@ class PVGauge extends PontusComponent<PVGaugeProps, PVGaugeState> {
     }
 
     this.state = {
+      min: props.min,
+      max: props.max,
       height: props.height,
       width: props.width,
       autoResize: autoResize,
       value: props.value,
-      longShow: props.longShow,
-      type: props.type,
       label: props.label,
       backgroundColor: props.backgroundColor,
     };
@@ -63,7 +63,17 @@ class PVGauge extends PontusComponent<PVGaugeProps, PVGaugeState> {
     //
     // }
     if (this.state.autoResize && height && width) {
-      this.setState({ height: height, width: width });
+      this.setState({
+        min: this.props.min,
+        max: this.props.max,
+        autoResize: this.props.autoResize,
+        backgroundColor: this.props.backgroundColor,
+        label: this.props.label,
+        value: this.props.value,
+        valueLabelStyle: this.props.valueLabelStyle,
+        height: height,
+        width: width,
+      });
     }
   };
   // setNode = (node:any) => {
@@ -87,15 +97,15 @@ class PVGauge extends PontusComponent<PVGaugeProps, PVGaugeState> {
         <div style={{ height: '100%', width: '100%' }}>
           <Gauge
             // ref={this.setNode}
-            min={0}
-            max={100}
+            min={this.state.min}
+            max={this.state.max}
             valueFormatter={(value: number) => `${value.toFixed(0)}`}
             color={colorHex}
             value={val}
             width={this.state.width}
             height={this.state.height}
             label={this.props.label ? this.props.label : ''}
-            backgroundColor="#fefefe"
+            backgroundColor={this.props.backgroundColor}
             topLabelStyle={{
               textAnchor: 'middle',
               fill: '#ffffff',

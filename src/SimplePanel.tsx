@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/data';
-import { SimpleOptions } from 'types';
+import { SimpleOptions, WidgetType } from 'types';
 import './App.css';
 // import PVGrid from './PVGrid';
 // import {AgGridReact} from "ag-grid-react";
@@ -38,26 +38,26 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const filter = this.props.options.filter;
     const scoreType = this.props.options.scoreType;
 
-    const gridWidget = (
-      <PVGrid
-        url={url}
-        neighbourNamespace={neighbourNamespace}
-        isNeighbour={isNeighbour}
-        namespace={namespace}
-        customFilter={customFilter}
-        mountedSuccess={true}
-        dataType={dataType}
-        columnDefs={colSettings}
-        subNamespace={undefined}
-        filter={filter}
-      />
-    );
-
-    const graphWidget = (
-      <PVDataGraph isNeighbour={isNeighbour} namespace={namespace} neighbourNamespace={neighbourNamespace} />
-    );
-
-    const scoreWidget = <PVGDPRScore type={scoreType!} longShow={false} />;
+    const widget: Record<WidgetType, JSX.Element> = {
+      PVGDPRScore: <PVGDPRScore scoreType={scoreType!} longShow={false} />,
+      PVDataGraph: (
+        <PVDataGraph isNeighbour={isNeighbour} namespace={namespace} neighbourNamespace={neighbourNamespace} />
+      ),
+      PVGrid: (
+        <PVGrid
+          url={url}
+          neighbourNamespace={neighbourNamespace}
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          customFilter={customFilter}
+          mountedSuccess={true}
+          dataType={dataType}
+          columnDefs={colSettings}
+          subNamespace={undefined}
+          filter={filter}
+        />
+      ),
+    };
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
     return (
@@ -78,7 +78,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           {/*<PontusComponent/>*/}
           {/*<AgGridReact/>*/}
           {/*<PVGremlinComboBox mountedSuccess={true} namespace={"foo"}/>*/}
-          {widgetType === 'Network' ? graphWidget : widgetType === 'Grid' ? gridWidget : scoreWidget}
+          {widget[widgetType]}
         </div>
 
         {/*<div*/}
