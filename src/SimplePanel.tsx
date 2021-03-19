@@ -7,6 +7,8 @@ import './App.css';
 // import PVGrid from "./PVGrid";
 // import PVGremlinComboBox from "./PVGremlinComboBox";
 // import PontusComponent from './PontusComponent';
+import { getTheme } from '@grafana/ui';
+
 import PVGrid, { PVGridColDef } from './PVGrid';
 import PVDataGraph from './PVDataGraph';
 import PVGDPRScore from './PVGDPRScore';
@@ -23,6 +25,7 @@ interface SimplePanelState extends Readonly<any> {
 export class SimplePanel extends PureComponent<Props, SimplePanelState> {
   constructor(props: any) {
     super(props);
+    const theme = getTheme();
   }
 
   render() {
