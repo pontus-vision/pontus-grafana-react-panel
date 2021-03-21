@@ -24,7 +24,7 @@ export const getWidgetTypeOptions = (): Array<SelectableValue<WidgetType>> => {
 };
 
 plugin.setPanelOptions((builder) => {
-  builder.addRadio({
+  builder.addSelect({
     path: 'widgetType',
     name: PontusComponent.t('Type')!,
     settings: {
@@ -36,7 +36,7 @@ plugin.setPanelOptions((builder) => {
       return true;
     },
   });
-  builder.addRadio({
+  builder.addSelect({
     path: 'scoreType',
     name: PontusComponent.t('Score Type')!,
     settings: {

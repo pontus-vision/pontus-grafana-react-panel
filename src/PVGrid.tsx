@@ -566,13 +566,11 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   componentDidMount = () => {
     this.mountedSuccess = true;
     this.createSubscriptions(this.props);
-    this.ensureDataCustom(this.from, this.to);
   };
 
   componentDidUpdate = (prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void => {
     this.removeSubscriptions(prevProps);
     this.createSubscriptions(this.props);
-    this.ensureDataCustom(this.from, this.to);
   };
 
   componentWillUnmount = () => {
