@@ -4,7 +4,9 @@ import React from 'react';
 import i18next, { getDefaultLang } from './i18n';
 // let d3 = window.d3;
 import PubSub from 'pubsub-js';
-import { CancelTokenSource } from 'axios';
+import axios, { CancelTokenSource } from 'axios';
+import { getTheme } from '@grafana/ui';
+import { GrafanaTheme } from '@grafana/data';
 
 // import * as d3 from "d3";
 
@@ -19,12 +21,13 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   protected req: CancelTokenSource | undefined;
   protected request: any;
   protected errorCounter: number;
-  protected hRequest: any | undefined;
-
+  protected hRequest?: NodeJS.Timeout;
+  protected theme: GrafanaTheme;
   constructor(props: Readonly<any>) {
     super(props);
     this.errorCounter = 0;
     this.url = PontusComponent.getGraphURL(props);
+    this.theme = getTheme();
   }
 
   // static getColorScale(minVal, maxVal)
@@ -36,6 +39,48 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   // }
   private topics: Record<string, number> = {};
   private callbacksPerTopic: Record<string, PubSubCallback[]> = {};
+
+  ensureData = (id1: any, id2?: any) => {
+    if (this.req) {
+      this.req.cancel();
+    }
+
+    let url = this.url;
+    if (this.hRequest) {
+      clearTimeout(this.hRequest);
+    }
+
+    let self = this;
+
+    this.hRequest = setTimeout(() => {
+      let CancelToken = axios.CancelToken;
+      self.req = CancelToken.source();
+
+      // http.post(url)
+      axios
+        .post(url, self.getQuery(id1, id2), {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          cancelToken: self.req.token,
+        })
+        .then(this.onSuccess)
+        .catch((thrown) => {
+          if (axios.isCancel(thrown)) {
+            console.log('Request canceled', thrown.message);
+          } else {
+            this.onError(undefined, thrown);
+          }
+        });
+    }, 50);
+  };
+  onSuccess = (resp: any) => {};
+  onError = (event: any, thrown: Error) => {};
+
+  protected getQuery = (eventId: any, id2?: any): { bindings: Record<string, any>; gremlin: string } => {
+    return { bindings: { hello: 'world' }, gremlin: '' };
+  };
 
   on(topic: string, callback: PubSubCallback) {
     if (!this.topics[topic]) {

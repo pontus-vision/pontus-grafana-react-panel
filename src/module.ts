@@ -49,8 +49,35 @@ plugin.setPanelOptions((builder) => {
     },
   });
   builder.addBooleanSwitch({
-    path: 'longShow',
-    name: PontusComponent.t('Show Long Scores')!,
+    path: 'showIcon',
+    name: PontusComponent.t('Show Score Icon')!,
+    settings: undefined,
+    defaultValue: true,
+    showIf: (currentOptions: SimpleOptions, data) => {
+      return currentOptions.widgetType === 'PVGDPRScore';
+    },
+  });
+  builder.addBooleanSwitch({
+    path: 'showText',
+    name: PontusComponent.t('Show Score Text')!,
+    settings: undefined,
+    defaultValue: true,
+    showIf: (currentOptions: SimpleOptions, data) => {
+      return currentOptions.widgetType === 'PVGDPRScore';
+    },
+  });
+  builder.addBooleanSwitch({
+    path: 'showExplanation',
+    name: PontusComponent.t('Show Score Explanation')!,
+    settings: undefined,
+    defaultValue: true,
+    showIf: (currentOptions: SimpleOptions, data) => {
+      return currentOptions.widgetType === 'PVGDPRScore';
+    },
+  });
+  builder.addBooleanSwitch({
+    path: 'showGauge',
+    name: PontusComponent.t('Show Score Gauge')!,
     settings: undefined,
     defaultValue: true,
     showIf: (currentOptions: SimpleOptions, data) => {

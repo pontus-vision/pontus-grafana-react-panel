@@ -2,7 +2,6 @@ import React from 'react';
 // import ResizeAware from 'react-resize-aware';
 import PVGauge from './PVGauge';
 import axios, { AxiosResponse } from 'axios';
-import { Grid } from 'semantic-ui-react';
 import { ic_multiline_chart as ScoreIcon } from 'react-icons-kit/md/ic_multiline_chart';
 import { ic_child_care as ChildrenIcon } from 'react-icons-kit/md/ic_child_care';
 import { check as ConsentIcon } from 'react-icons-kit/fa/check';
@@ -27,7 +26,10 @@ import { ScoreType } from './types';
 
 export interface PVGDPRScoreProps {
   scoreType: ScoreType;
-  longShow?: boolean;
+  showText?: boolean;
+  showExplanation?: boolean;
+  showIcon?: boolean;
+  showGauge?: boolean;
 }
 
 export interface PVGDPRScoreState extends PVGDPRScoreProps {
@@ -36,9 +38,6 @@ export interface PVGDPRScoreState extends PVGDPRScoreProps {
 }
 
 class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
-  text: string;
-  title: string;
-  icon: JSX.Element;
   weight: number;
   errCounter: number;
   latestStatus: number;
@@ -77,21 +76,14 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
     super(props);
     // this.url = "/gateway/sandbox/pvgdpr_graph";
 
-    this.text = PontusComponent.t(`NavPanel${this.props.scoreType}Popup_text`)!;
-
-    this.title = PontusComponent.t(`NavPanel${this.props.scoreType}Popup_title`)!;
-    this.icon = this.iconMap[this.props.scoreType!];
-    this.weight = this.weightMap[this.props.scoreType!];
-
     this.scoreIcon = <Icon icon={ScoreIcon} />;
 
     this.errCounter = 0;
-    this.setState({
-      scoreType: props.scoreType,
-      longShow: props.longShow,
-      scoreExplanation: this.text,
+    this.state = {
+      ...props,
+      scoreExplanation: '',
       scoreValue: 0,
-    });
+    };
 
     this.weight = 0;
 
@@ -109,6 +101,10 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
   }
 
   componentDidMount() {
+    this.ensureData();
+  }
+
+  componentDidUpdate(prevProps: Readonly<PVGDPRScoreProps>, prevState: Readonly<PVGDPRScoreState>, snapshot?: any) {
     this.ensureData();
   }
 
@@ -198,11 +194,12 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
           scoreValue: data.scoreValue,
           scoreType: this.props.scoreType,
         });
+        const weight = this.weightMap[this.props.scoreType!];
 
         this.emit('on-score-changed', {
           scoreValue: data.scoreValue,
-          title: this.title,
-          weight: this.weight,
+          title: PontusComponent.t(`NavPanel${this.props.scoreType}Popup_title`),
+          weight: weight,
         });
       }
     } catch (e) {
@@ -211,7 +208,16 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
   };
 
   getSearchQuery = () => {
-    throw new Error('This is a base class; getSearchQuery must be overriden ');
+    return {
+      gremlin: PontusComponent.t(`NavPanel${this.props.scoreType}Popup_query`),
+
+      bindings: {
+        // pg_from: from
+        // , pg_to: to
+        // , pg_orderCol: sortcolId
+        // , pg_orderDir: sortdir
+      },
+    };
   };
 
   onClickGauge = () => {
@@ -223,76 +229,45 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
   render() {
     // var eventHub = this.props.glEventHub;
     //         <Graph graph={this.state.graph} options={this.state.options} events={this.state.events}/>
-    if (this.props.longShow) {
-      return (
-        <Grid centered divided columns={3} style={{ padding: 15 }}>
-          <Grid.Column textAlign="center">
-            <div onClick={this.onClickGauge}>
-              <PVGauge
-                min={0}
-                max={100}
-                autoResize={true}
-                backgroundColor="white"
-                value={this.state.scoreValue}
-                width={150}
-                height={130}
-                label={this.title}
-                valueLabelStyle={{
-                  textAnchor: 'middle',
-                  fill: '#ffffff',
-                  stroke: 'none',
-                  fontStyle: 'normal',
-                  fontVariant: 'normal',
-                  fontWeight: 'bold',
-                  fontStretch: 'normal',
-                  lineHeight: 'normal',
-                  fillOpacity: 1,
-                }}
-              />
-            </div>
-          </Grid.Column>
+    const text = PontusComponent.t(`NavPanel${this.props.scoreType}Popup_text`)!;
+    const explanation = this.state.scoreExplanation;
+    const title = PontusComponent.t(`NavPanel${this.props.scoreType}Popup_title`)!;
+    const icon = this.iconMap[this.props.scoreType!];
 
-          <Grid.Column textAlign="justified">
-            {this.icon}
-            <p>{this.text}</p>
-          </Grid.Column>
-          <Grid.Column textAlign="justified">
-            <Icon icon={this.scoreIcon} />
+    const textComp = <p>{text}</p>;
+    const explanationComp = <p>{explanation}</p>;
+    const gaugeComp = (
+      <PVGauge
+        min={0}
+        max={100}
+        autoResize={true}
+        backgroundColor={this.theme.isLight ? 'white' : 'black'}
+        value={this.state.scoreValue}
+        width={150}
+        height={130}
+        label={title}
+        valueLabelStyle={{
+          textAnchor: 'middle',
+          fill: this.theme.isLight ? '#ffffff' : '#000000',
+          stroke: 'none',
+          fontStyle: 'normal',
+          fontVariant: 'normal',
+          fontWeight: 'bold',
+          fontStretch: 'normal',
+          lineHeight: 'normal',
+          fillOpacity: 1,
+        }}
+      />
+    );
 
-            <p>{this.state.scoreExplanation}</p>
-          </Grid.Column>
-        </Grid>
-      );
-    } else {
-      return (
-        <Grid centered divided columns={2}>
-          <Grid.Column textAlign="justified">
-            {this.scoreIcon}
-
-            <p>{this.state.scoreExplanation}</p>
-          </Grid.Column>
-
-          {/*<Grid.Column textAlign='center'>*/}
-          {/*<strong>{this.title}</strong>*/}
-          {/*<p>{this.text}</p>*/}
-          {/*</Grid.Column>*/}
-          <Grid.Column textAlign="center">
-            <div>
-              <PVGauge
-                value={this.state.scoreValue}
-                width={100}
-                height={130}
-                label={this.title}
-                autoResize={true}
-                backgroundColor={'white'}
-                max={100}
-                min={0}
-              />
-            </div>
-          </Grid.Column>
-        </Grid>
-      );
-    }
+    return (
+      <div>
+        {this.props.showIcon ? icon : <div />}
+        {this.props.showText ? textComp : <div />}
+        {this.props.showExplanation ? explanationComp : <div />}
+        {this.props.showGauge ? gaugeComp : <div />}
+      </div>
+    );
   }
 }
 

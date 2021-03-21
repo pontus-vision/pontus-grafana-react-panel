@@ -7,11 +7,13 @@ import './App.css';
 // import PVGrid from "./PVGrid";
 // import PVGremlinComboBox from "./PVGremlinComboBox";
 // import PontusComponent from './PontusComponent';
-import { getTheme } from '@grafana/ui';
-
 import PVGrid, { PVGridColDef } from './PVGrid';
 import PVDataGraph from './PVDataGraph';
 import PVGDPRScore from './PVGDPRScore';
+import PVDataGraphShowAllNodes from './PVDataGraphShowAllNodes';
+import PVDoughnutChart from './PVDoughnutChart';
+import PVAceGremlinEditor from './PVAceGremlinEditor';
+import PVAceGremlinJSONQueryResults from './PVAceGremlinJSONQueryResults';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -25,7 +27,6 @@ interface SimplePanelState extends Readonly<any> {
 export class SimplePanel extends PureComponent<Props, SimplePanelState> {
   constructor(props: any) {
     super(props);
-    const theme = getTheme();
   }
 
   render() {
@@ -39,10 +40,32 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const colSettings = this.props.options.colSettings || this.props.options.dataSettings?.colSettings;
     const customFilter = this.props.options.customFilter;
     const filter = this.props.options.filter;
-    const scoreType = this.props.options.scoreType;
+    const scoreType = this.props.options.scoreType!;
 
     const widget: Record<WidgetType, JSX.Element> = {
-      PVGDPRScore: <PVGDPRScore scoreType={scoreType!} longShow={false} />,
+      AwarenessPieChart: (
+        <PVDoughnutChart
+          maxHeight={1000}
+          url={url}
+          neighbourNamespace={neighbourNamespace}
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          subNamespace={undefined}
+          width={width}
+          height={height}
+        />
+      ),
+      GremlinQueryEditor: <PVAceGremlinEditor style={{ height: '100%', width: '100%' }} />,
+      GremlinQueryResults: <PVAceGremlinJSONQueryResults />,
+      PVGDPRScore: (
+        <PVGDPRScore
+          scoreType={scoreType}
+          showGauge={this.props.options.showGauge}
+          showText={this.props.options.showText}
+          showIcon={this.props.options.showIcon}
+          showExplanation={this.props.options.showExplanation}
+        />
+      ),
       PVDataGraph: (
         <PVDataGraph isNeighbour={isNeighbour} namespace={namespace} neighbourNamespace={neighbourNamespace} />
       ),
@@ -58,6 +81,13 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           columnDefs={colSettings}
           subNamespace={undefined}
           filter={filter}
+        />
+      ),
+      PVInfraGraph: (
+        <PVDataGraphShowAllNodes
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          neighbourNamespace={neighbourNamespace}
         />
       ),
     };

@@ -36,7 +36,6 @@ class PVGridSelfDiscovery extends PontusComponent<PVGridSelfDiscoveryProps, PVGr
   private searchExact: boolean;
   private sortcol: any;
   private sortdir: any;
-  private h_request: any;
   private grid?: Slick.Grid<any>;
   private gridDiv: any;
   private namespace?: string;
@@ -108,7 +107,6 @@ class PVGridSelfDiscovery extends PontusComponent<PVGridSelfDiscoveryProps, PVGr
     this.searchExact = true;
     this.sortcol = null;
     this.sortdir = 1;
-    this.h_request = null;
     this.req = undefined; // ajax request
     this.url = PontusComponent.getGraphURL(this.props);
   }
@@ -371,13 +369,13 @@ class PVGridSelfDiscovery extends PontusComponent<PVGridSelfDiscoveryProps, PVGr
     }
 
     let url = this.url;
-    if (this.h_request !== null) {
-      clearTimeout(this.h_request);
+    if (this.hRequest) {
+      clearTimeout(this.hRequest);
     }
 
     let self = this;
 
-    this.h_request = setTimeout(() => {
+    this.hRequest = setTimeout(() => {
       for (let i = fromPage; i <= toPage; i++) {
         self.data[i * self.PAGESIZE] = null;
       } // null indicates a 'requested but not available yet'
@@ -414,7 +412,7 @@ class PVGridSelfDiscovery extends PontusComponent<PVGridSelfDiscoveryProps, PVGr
           if (axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
-            self.onError(thrown, fromPage, toPage);
+            self.onErrorCustom(thrown, fromPage, toPage);
           }
         });
 
@@ -422,7 +420,7 @@ class PVGridSelfDiscovery extends PontusComponent<PVGridSelfDiscoveryProps, PVGr
       self.request.toPage = toPage;
     }, 50);
   };
-  onError = (err: Error, from: number, to: number) => {
+  onErrorCustom = (err: Error, from: number, to: number) => {
     this.errCounter++;
 
     if (this.errCounter < 3) {

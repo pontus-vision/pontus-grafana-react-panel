@@ -8,15 +8,11 @@ import PontusComponent, { PubSubCallback } from './PontusComponent';
 // import  * as reveal2 from './PVBurgerMenuReveal';
 import PVGridReportButtonCellRenderer from './PVGridReportButtonCellRenderer';
 import { ColDef, GridOptions, IDatasource, IGetRowsParams, RowClickedEvent } from 'ag-grid-community';
+import { PVNamespaceProps } from './types';
 
-export interface PVGridProps {
-  url: string;
-  isNeighbour: boolean;
-  neighbourNamespace: string;
-  namespace?: string;
-  subNamespace?: string;
+export interface PVGridProps extends PVNamespaceProps {
   mountedSuccess?: boolean;
-  customFilter?: string | undefined;
+  customFilter?: string;
   settings?: any;
   columnDefs?: PVGridColDef[];
   dataType?: string;
@@ -24,7 +20,7 @@ export interface PVGridProps {
 }
 
 export interface PVGridState extends PVGridProps {
-  hideMenu: boolean | undefined;
+  hideMenu?: boolean;
 
   totalRecords: number;
   defaultColDef: ColDef;
@@ -78,9 +74,9 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   private fromPage: number;
   private toPage: number;
   private filtersCalc: any[];
-  constructor(props: Readonly<PVGridProps>) {
-    super(props);
 
+  constructor(props: PVGridProps) {
+    super(props);
     this.fromPage = 0;
     this.toPage = 0;
     this.mountedSuccess = false;
@@ -98,15 +94,11 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.hRequest = undefined;
     this.req = undefined; // ajax request
 
-    this.dataType = this.getDataType(props);
-
-    this.colFieldTranslation = {};
-
     // this.setColumnSettings(this.getColSettings(props));
 
     this.state = {
-      hideMenu: true,
       ...this.props,
+      hideMenu: true,
       totalRecords: 0,
       columnDefs: this.getColSettings(props),
       defaultColDef: {
@@ -159,11 +151,14 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         return value === gridKey ? defaultValue : value;
       },
     };
+
+    this.colFieldTranslation = {};
+    this.dataType = this.getDataType(props);
   }
 
   setCustomFilter = (customFilter: string | undefined) => {
     this.customFilter = customFilter;
-    this.ensureData(0, this.PAGESIZE);
+    this.ensureDataCustom(0, this.PAGESIZE);
   };
 
   getColSettings(props: Readonly<PVGridProps>): PVGridColDef[] {
@@ -295,7 +290,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   //   }, 50);
   // };
 
-  ensureData = (fromReq: number | undefined, toReq: number | undefined) => {
+  ensureDataCustom = (fromReq?: number, toReq?: number) => {
     if (undefined === fromReq || undefined === toReq) {
       return;
     }
@@ -346,7 +341,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
           if (Axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
-            self.onError(thrown, fromPage, toPage);
+            self.onErrorCustom(thrown, fromPage, toPage);
           }
         });
 
@@ -354,11 +349,11 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
       self.toPage = toPage;
     }, 50);
   };
-  onError = (err: any, fromPage: number | undefined, toPage: number | undefined) => {
+  onErrorCustom = (err: any, fromPage: number | undefined, toPage: number | undefined) => {
     this.errCounter++;
 
     if (this.errCounter < 3) {
-      this.ensureData(this.from, this.to);
+      this.ensureDataCustom(this.from, this.to);
     }
   };
 
@@ -400,11 +395,11 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   setSearch: PubSubCallback = (topic: string, str: any) => {
     this.searchstr = str;
-    this.ensureData(0, this.PAGESIZE);
+    this.ensureDataCustom(0, this.PAGESIZE);
   };
   setSearchExact: PubSubCallback = (topic: string, exact: any) => {
     this.searchExact = exact;
-    this.ensureData(0, this.PAGESIZE);
+    this.ensureDataCustom(0, this.PAGESIZE);
   };
 
   setDataType = (str: string) => {
@@ -425,15 +420,15 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   setColumns = (cols: PVGridColDef[]) => {
     // this.state.columnDefs = cols;
     if (this.mountedSuccess) {
-      this.setState({ columnDefs: cols });
+      this.setState({ columnDefs: cols, ...this.state });
       this.cols = cols;
-      this.ensureData(0, this.PAGESIZE);
+      this.ensureDataCustom(0, this.PAGESIZE);
     }
   };
 
   // setCustomFilter = (customFilter: string | undefined) => {
   //   this.customFilter = customFilter;
-  //   this.ensureData(0, this.PAGESIZE);
+  //   this.ensureDataCustom(0, this.PAGESIZE);
   // };
 
   onClick = (event: RowClickedEvent): void => {
@@ -571,12 +566,14 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   componentDidMount = () => {
     this.mountedSuccess = true;
     this.createSubscriptions(this.props);
+    this.ensureDataCustom(this.from, this.to);
   };
 
-  componentDidUpdate(prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void {
+  componentDidUpdate = (prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void => {
     this.removeSubscriptions(prevProps);
     this.createSubscriptions(this.props);
-  }
+    this.ensureDataCustom(this.from, this.to);
+  };
 
   componentWillUnmount = () => {
     this.removeSubscriptions(this.props);
@@ -584,7 +581,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   // onViewportChanged = (/*e, args*/) => {
   //   // let vp = this.grid.getViewport();
-  //   // this.ensureData(vp.top, vp.bottom);
+  //   // this.ensureDataCustom(vp.top, vp.bottom);
   // };
 
   // onDataLoadedCb = (args) =>
@@ -597,7 +594,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   // };
 
   setTotalRecords(totalRecords: number) {
-    this.setState({ totalRecords: totalRecords });
+    this.setState({ ...this.state, totalRecords: totalRecords });
   }
 
   dataSource: IDatasource = {
@@ -660,8 +657,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         }
       }
       // (sortdir > 0) ? "+asc" : "+desc"
-      // this.ensureData(params.startRow, params.endRow);
-      this.ensureData(params.startRow, params.endRow);
+      // this.ensureDataCustom(params.startRow, params.endRow);
+      this.ensureDataCustom(params.startRow, params.endRow);
     },
   };
 
@@ -673,24 +670,24 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   render = () => {
     // let eventHub = this.props.glEventHub;
     //
-    let menu;
-    if (!this.state.hideMenu) {
-      menu = <div />;
-
-      //   (
-      //   <Menu noOverlay style={{ position: 'absolute', right: '10px' }} pageWrapId={'outer-wrap'} right outerContainerId={'outer-wrap'}>
-      //     <PVGridColSelector
-      //       // glEventHub={this.props.glEventHub}
-      //       style={{ height: '100%', width: '100%' }}
-      //       namespace={`${this.namespace}${this.subNamespace ? this.subNamespace : ''}`}
-      //       colSettings={this.state.columnDefs}
-      //       dataType={this.dataType}
-      //     />
-      //   </Menu>
-      // );
-    } else {
-      menu = <div />;
-    }
+    let menu: JSX.Element = <div />;
+    // if (!this.state.hideMenu) {
+    //   menu = <div />;
+    //
+    //   //   (
+    //   //   <Menu noOverlay style={{ position: 'absolute', right: '10px' }} pageWrapId={'outer-wrap'} right outerContainerId={'outer-wrap'}>
+    //   //     <PVGridColSelector
+    //   //       // glEventHub={this.props.glEventHub}
+    //   //       style={{ height: '100%', width: '100%' }}
+    //   //       namespace={`${this.namespace}${this.subNamespace ? this.subNamespace : ''}`}
+    //   //       colSettings={this.state.columnDefs}
+    //   //       dataType={this.dataType}
+    //   //     />
+    //   //   </Menu>
+    //   // );
+    // } else {
+    //   menu = <div />;
+    // }
 
     return (
       <div style={{ width: '100%', height: 'calc(100% - 20px)' }}>
@@ -698,7 +695,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
         <div
           style={{ width: '100%', height: '100%' }}
-          className={'ag-theme-balham-dark'}
+          className={this.theme.isDark ? 'ag-theme-balham-dark' : 'ag-theme-balham-light'}
           id={'outer-wrap'}
           // ref={this.setGridDiv}>
         >

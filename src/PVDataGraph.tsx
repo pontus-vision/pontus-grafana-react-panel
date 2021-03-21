@@ -9,13 +9,9 @@ import PVDetailsButton from './PVDetailsButton';
 import PontusComponent from './PontusComponent';
 import { ButtonProps } from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import ReactResizeDetector from 'react-resize-detector';
+import { PVNamespaceProps } from './types';
 
-export interface PVDataGraphProps {
-  isNeighbour?: boolean;
-  neighbourNamespace?: string;
-  namespace?: string;
-  subNamespace?: string;
-}
+export type PVDataGraphProps = PVNamespaceProps;
 
 export interface PVDataGraphState extends PVDataGraphProps {
   summary?: boolean;
@@ -48,7 +44,6 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
   protected eventId: any;
   protected graph: any;
   protected network: any;
-  protected h_request: any;
 
   constructor(props: Readonly<any>) {
     super(props);
@@ -96,7 +91,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         nodes: {
           font: {
             align: 'left',
-            color: '#FFFFFF',
+            color: this.theme.isDark ? '#000000' : '#FFFFFF',
           },
           shapeProperties: {
             useImageSize: true,
@@ -154,14 +149,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
           timestep: 0.11,
         },
         edges: {
-          color: '#000000',
+          color: this.theme.isDark ? '#FFFFFF' : '#000000',
           font: {
-            color: '#000000',
+            color: this.theme.isDark ? '#FFFFFF' : '#000000',
             size: 20, // px
             face: 'arial',
             background: 'none',
             strokeWidth: 1, // px
-            strokeColor: '#000000',
+            strokeColor: this.theme.isDark ? '#FFFFFF' : '#000000',
           },
         },
       },
@@ -354,14 +349,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
     this.origNodeId = event !== null ? event.id || event.index : '-1'; // the + converts to number just in case
     // this.origNodeId = (+(this.origNodeId));
     let url = this.url; // "/gateway/sandbox/pvgdpr_server/home/graph";
-    if (this.h_request !== null) {
-      clearTimeout(this.h_request);
+    if (this.hRequest) {
+      clearTimeout(this.hRequest);
     }
 
     let self = this;
     this.setState({ vid: this.origNodeId });
 
-    this.h_request = setTimeout(() => {
+    this.hRequest = setTimeout(() => {
       let CancelToken = axios.CancelToken;
       self.req = CancelToken.source();
 
@@ -522,7 +517,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         nodes: {
           font: {
             align: 'left',
-            color: '#FFFFFF',
+            color: this.theme.isLight ? '#FFFFFF' : '#000000',
           },
           shapeProperties: {
             useImageSize: true,
@@ -549,14 +544,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
           timestep: 0.11,
         },
         edges: {
-          color: '#000000',
+          color: this.theme.isLight ? '#FFFFFF' : '#000000',
           font: {
-            color: '#000000',
+            color: this.theme.isLight ? '#FFFFFF' : '#000000',
             size: 20, // px
             face: 'arial',
             background: 'none',
             strokeWidth: 1, // px
-            strokeColor: '#000000',
+            strokeColor: this.theme.isLight ? '#FFFFFF' : '#000000',
           },
           smooth: false,
         },
@@ -564,14 +559,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
     } else {
       options = {
         edges: {
-          color: '#000000',
+          color: this.theme.isLight ? '#FFFFFF' : '#000000',
           font: {
-            color: '#000000',
+            color: this.theme.isLight ? '#FFFFFF' : '#000000',
             size: 20, // px
             face: 'arial',
             background: 'none',
             strokeWidth: 1, // px
-            strokeColor: '#000000',
+            strokeColor: this.theme.isLight ? '#FFFFFF' : '#000000',
           },
           smooth: false,
         },
@@ -653,7 +648,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         key={210}
         style={
           summary
-            ? { border: 0, background: 'rgb(48,48,48)', marginRight: '3px' }
+            ? { border: 0, background: 'rgb(108,108,108)', marginRight: '3px' }
             : { border: 0, background: 'rgb(187,187,188)', marginRight: '3px' }
         }
         size={'small'}
@@ -668,14 +663,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         namespace={this.props.namespace}
         metadataType={this.state.origLabel}
         contextId={this.state.vid}
-        style={{ border: 0, background: 'rgb(187,187,188)' }}
+        style={{ border: 0, background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)' }}
         size={'small'}
       />,
     ];
 
     let bttns = <div />;
 
-    if ((buttonsList != null && buttonsList.length > 0) || (reportButtons != null && reportButtons.length > 0)) {
+    if ((buttonsList && buttonsList.length > 0) || (reportButtons != null && reportButtons.length > 0)) {
       let ilen = reportButtons ? reportButtons.length : 0;
 
       for (let i = 0; i < ilen; i++) {
@@ -689,7 +684,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
             // glEventHub={this.props.glEventHub}
             // inverted={false}
             // color={'black'}
-            style={{ border: 0, background: 'rgb(187,187,188)' }}
+            style={{ border: 0, background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)' }}
             size={'small'}
           />
         );
@@ -701,7 +696,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
             flexWrap: 'nowrap',
             flexDirection: 'row',
             flexGrow: 1,
-            background: 'rgb(187,187,188)',
+            background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)',
             width: '100%',
           }}
         >

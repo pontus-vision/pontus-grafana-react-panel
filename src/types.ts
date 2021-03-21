@@ -20,7 +20,15 @@ export const ScoreTypeValues = [
 
 export type ScoreType = typeof ScoreTypeValues[number];
 
-export const WidgetTypeValues = ['PVGDPRScore', 'PVGrid', 'PVDataGraph'] as const;
+export const WidgetTypeValues = [
+  'PVGDPRScore',
+  'PVGrid',
+  'PVDataGraph',
+  'PVInfraGraph',
+  'GremlinQueryEditor',
+  'GremlinQueryResults',
+  'AwarenessPieChart',
+] as const;
 
 export type WidgetType = typeof WidgetTypeValues[number];
 
@@ -30,7 +38,10 @@ export interface SimpleOptions {
   isNeighbour: boolean;
   neighbourNamespace: string;
   scoreType?: ScoreType;
-  longShow?: boolean;
+  showIcon?: boolean;
+  showText?: boolean;
+  showExplanation?: boolean;
+  showGauge?: boolean;
   widgetType: WidgetType;
   dataType?: string;
   colSettings?: PVGridColDef[];
@@ -49,3 +60,11 @@ export const defaults: SimpleOptions = {
   neighbourNamespace: 'neighbour',
   widgetType: 'PVGrid',
 };
+
+export interface PVNamespaceProps {
+  url?: string;
+  isNeighbour?: boolean;
+  neighbourNamespace?: string;
+  namespace?: string;
+  subNamespace?: string;
+}

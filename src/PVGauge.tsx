@@ -108,7 +108,7 @@ class PVGauge extends PontusComponent<PVGaugeProps, PVGaugeState> {
             backgroundColor={this.props.backgroundColor}
             topLabelStyle={{
               textAnchor: 'middle',
-              fill: '#ffffff',
+              fill: this.theme.isDark ? '#000000' : '#ffffff',
               stroke: 'none',
               fontStyle: 'normal',
               fontVariant: 'normal',
@@ -119,7 +119,7 @@ class PVGauge extends PontusComponent<PVGaugeProps, PVGaugeState> {
             }}
             minMaxLabelStyle={{
               textAnchor: 'middle',
-              fill: '#ffffff',
+              fill: this.theme.isDark ? '#000000' : '#ffffff',
               stroke: 'none',
               fontStyle: 'normal',
               fontVariant: 'normal',
@@ -132,7 +132,7 @@ class PVGauge extends PontusComponent<PVGaugeProps, PVGaugeState> {
             valueLabelStyle={
               this.props.valueLabelStyle || {
                 textAnchor: 'middle',
-                fill: '#ffffff',
+                fill: this.theme.isDark ? '#000000' : '#ffffff',
                 stroke: 'none',
                 fontStyle: 'normal',
                 fontVariant: 'normal',
