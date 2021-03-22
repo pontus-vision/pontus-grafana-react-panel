@@ -688,12 +688,12 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     // }
 
     return (
-      <div style={{ width: '100%', height: 'calc(100% - 20px)' }}>
+      <div style={{ width: '100%', height: 'calc(100% - 20px)' }} className="ag-theme-balham">
         {menu}
 
         <div
           style={{ width: '100%', height: '100%' }}
-          className={this.theme.isDark ? 'ag-theme-balham-dark' : 'ag-theme-balham-light'}
+          className={this.theme.isLight ? 'ag-theme-balham-light' : 'ag-theme-balham-dark'}
           id={'outer-wrap'}
           // ref={this.setGridDiv}>
         >

@@ -1,6 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { Button, Menu } from 'semantic-ui-react';
-import { Box, Flex } from 'reflexbox';
+import { Button } from 'semantic-ui-react';
 import AceEditor from 'react-ace';
 import 'brace/mode/groovy';
 import 'brace/theme/monokai';
@@ -24,6 +23,7 @@ export interface PVAceGremlinEditorState extends PVAceGremlinEditorProps {
 
 class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceGremlinEditorState> {
   protected od: any;
+
   constructor(props: PVAceGremlinEditorProps) {
     super(props);
     // this.columns = [
@@ -31,7 +31,7 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
     //   {key: 'street', name: 'Street'}
     // ];
     this.url = PontusComponent.getGraphURL(props);
-    this.state = { ...props, height: 1000, width: 1000 };
+    this.state = { ...props, height: 100, width: 100 };
   }
 
   getSearchObj = (data: string) => {
@@ -147,47 +147,54 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
     //                       style={{height: this.state.height + 'px', width: this.state.width + 'px'}}
     //
     //  >
+    let width = this.od ? this.od.offsetParent.offsetWidth - 30 : this.state.width;
+    let height = this.od ? this.od.offsetParent.offsetHeight - 30 : this.state.height;
+
     return (
       <ReactResizeDetector onResize={this.handleResize}>
         <div
           // style={{
           //   height: 'calc(100%-5px)', width: 'calc(100%)', position: 'relative',
           // }}
-          style={{ ...this.props.style, height: this.state.height, width: this.state.width }}
+          style={{ ...this.props.style, height: height, width: width }}
           ref={this.setOuterDiv}
         >
-          <Flex width={1} style={{ flexWrap: 'wrap' }}>
-            <Box px={2} width={1 / 4}>
-              <Menu>
-                <Button
-                  className={'compact'}
-                  onClick={this.runQuery}
-                  // inverted={false}
-                  // color={'black'}
-                  style={{ border: 0, background: 'rgb(69,69,69)' }}
-                  size={'small'}
-                >
-                  {PontusComponent.t('Send Query')}
-                </Button>
-              </Menu>
-            </Box>
-            <Box px={2} width={1 / 4}>
-              <AceEditor
-                mode="groovy"
-                theme="monokai"
-                onChange={this.onChange}
-                name="gremlin-editor"
-                editorProps={{ $blockScrolling: true, useIncrementalSearch: true }}
-                enableBasicAutocompletion={true}
-                // enableLiveAutocompletion={true}
-                tabSize={2}
-                value={val}
-                height={this.state.height! - 20 + 'px'}
-                width={this.state.width! - 20 + 'px'}
-                style={{ overflow: 'auto', flexGrow: 1 }}
-              />
-            </Box>
-          </Flex>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'nowrap',
+              flexDirection: 'row',
+              flexGrow: 1,
+              background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)',
+              width: '100%',
+            }}
+          >
+            <Button
+              className={'compact'}
+              onClick={this.runQuery}
+              // inverted={false}
+              // color={'black'}
+              style={{ border: 0, background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)' }}
+              size={'small'}
+            >
+              {PontusComponent.t('Send Query')}
+            </Button>
+          </div>
+          <AceEditor
+            mode="groovy"
+            theme="monokai"
+            onChange={this.onChange}
+            name="gremlin-editor"
+            editorProps={{ $blockScrolling: true, useIncrementalSearch: true }}
+            enableBasicAutocompletion={true}
+            // enableLiveAutocompletion={true}
+            tabSize={2}
+            value={val}
+            height={height! - 20 + 'px'}
+            width={width! - 20 + 'px'}
+            // style={{ overflow: 'auto', flexGrow: 1 }}
+            style={{ overflow: 'auto', height: '90%', width: '100%', flexGrow: 1 }}
+          />
         </div>
       </ReactResizeDetector>
     );

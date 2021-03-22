@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, Menu } from 'semantic-ui-react';
-import { Box, Flex } from 'reflexbox';
+import { Button } from 'semantic-ui-react';
 import AceEditor from 'react-ace';
 // import ResizeAware from 'react-resize-aware';
 // import ReactResizeDetector from 'react-resize-detector';
@@ -13,6 +12,7 @@ import PVAceGremlinEditor, { PVAceGremlinEditorProps } from './PVAceGremlinEdito
 
 class PVAceGremlinJSONQueryResults extends PVAceGremlinEditor {
   obj: any;
+
   constructor(props: PVAceGremlinEditorProps) {
     super(props);
     // this.columns = [
@@ -67,54 +67,58 @@ class PVAceGremlinJSONQueryResults extends PVAceGremlinEditor {
     }
     data = data.replace(/\\n/g, '\n');
     data = data.replace(/\\t/g, '\t');
+    let width = this.od ? this.od.offsetParent.offsetWidth - 30 : this.state.width;
+    let height = this.od ? this.od.offsetParent.offsetHeight - 30 : this.state.height;
+
     return (
       <div
         // style={{
         //   height: 'calc(100%-5px)', width: 'calc(100%)', position: 'relative',
         // }}
-        style={{ height: this.state.height, width: this.state.width }}
-        // height={this.state.height}
-        // width={this.state.width}
+        style={{ ...this.props.style, height: height, width: width }}
         ref={this.setOuterDiv}
       >
-        <Flex dir={'column'} width={1} style={{ flexWrap: 'wrap' }}>
-          <Box px={2} width={1 / 4}>
-            <Menu>
-              <Button
-                className={'compact'}
-                onClick={() => {
-                  this.emit((this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-click-row', {
-                    id: this.obj.editor.getSelectedText(),
-                  });
-                }}
-                // inverted={false}
-                // color={'black'}
-                style={{ border: 0, background: 'rgb(69,69,69)' }}
-                size={'small'}
-              >
-                Graph
-              </Button>
-            </Menu>
-          </Box>
-          <Box px={2} width={1 / 4}>
-            <AceEditor
-              mode="json"
-              theme="monokai"
-              name="gremlin-query-results"
-              editorProps={{ $blockScrolling: true }}
-              enableBasicAutocompletion={false}
-              enableLiveAutocompletion={false}
-              tabSize={2}
-              readOnly={true}
-              value={data}
-              ref={this.setObj}
-              // style={{height: this.state.height + 'px', width: this.state.width + 'px'}}
-              height={this.state.height! - 20 + 'px'}
-              width={this.state.width! - 20 + 'px'}
-              style={{ overflow: 'auto' }}
-            />
-          </Box>
-        </Flex>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            flexDirection: 'row',
+            flexGrow: 1,
+            background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)',
+            width: '100%',
+          }}
+        >
+          <Button
+            className={'compact'}
+            onClick={() => {
+              this.emit((this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-click-row', {
+                id: this.obj.editor.getSelectedText(),
+              });
+            }}
+            // inverted={false}
+            // color={'black'}
+            style={{ border: 0, background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)' }}
+            size={'small'}
+          >
+            Graph
+          </Button>
+        </div>
+        <AceEditor
+          mode="json"
+          theme="monokai"
+          name="gremlin-query-results"
+          editorProps={{ $blockScrolling: true }}
+          enableBasicAutocompletion={false}
+          enableLiveAutocompletion={false}
+          tabSize={2}
+          readOnly={true}
+          value={data}
+          ref={this.setObj}
+          // style={{height: this.state.height + 'px', width: this.state.width + 'px'}}
+          height={height! - 20 + 'px'}
+          width={width! - 20 + 'px'}
+          style={{ overflow: 'auto' }}
+        />
       </div>
     );
 

@@ -91,41 +91,43 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
         />
       ),
     };
+
+    return widget[widgetType];
     // const { columnDefs, rowData } = this.state as SimplePanelState;
     // @ts-ignore
-    return (
-      <div
-        style={{
-          position: 'relative',
-          width,
-          height,
-        }}
-      >
-        <div
-          className="ag-theme-balham"
-          style={{
-            height: '100%',
-            width: '100%',
-          }}
-        >
-          {/*<PontusComponent/>*/}
-          {/*<AgGridReact/>*/}
-          {/*<PVGremlinComboBox mountedSuccess={true} namespace={"foo"}/>*/}
-          {widget[widgetType]}
-        </div>
-
-        {/*<div*/}
-        {/*  style={{*/}
-        {/*    position: 'absolute',*/}
-        {/*    bottom: 0,*/}
-        {/*    left: 0,*/}
-        {/*    padding: '10px',*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*<div>Count: {data.series.length}</div>*/}
-        {/*<div>{options.text}</div>*/}
-        {/*</div>*/}
-      </div>
-    );
+    // return (
+    //   <div
+    //     style={{
+    //       position: 'relative',
+    //       width,
+    //       height,
+    //     }}
+    //   >
+    //     <div
+    //       className="ag-theme-balham"
+    //       style={{
+    //         height: '100%',
+    //         width: '100%',
+    //       }}
+    //     >
+    //       {/*<PontusComponent/>*/}
+    //       {/*<AgGridReact/>*/}
+    //       {/*<PVGremlinComboBox mountedSuccess={true} namespace={"foo"}/>*/}
+    //       {widget[widgetType]}
+    //     </div>
+    //
+    //     {/*<div*/}
+    //     {/*  style={{*/}
+    //     {/*    position: 'absolute',*/}
+    //     {/*    bottom: 0,*/}
+    //     {/*    left: 0,*/}
+    //     {/*    padding: '10px',*/}
+    //     {/*  }}*/}
+    //     {/*>*/}
+    //     {/*<div>Count: {data.series.length}</div>*/}
+    //     {/*<div>{options.text}</div>*/}
+    //     {/*</div>*/}
+    //   </div>
+    // );
   }
 }
