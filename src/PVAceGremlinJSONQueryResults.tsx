@@ -97,7 +97,11 @@ class PVAceGremlinJSONQueryResults extends PVAceGremlinEditor {
             }}
             // inverted={false}
             // color={'black'}
-            style={{ border: 0, background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)' }}
+            style={{
+              border: 0,
+              background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)',
+              color: this.theme.isLight ? 'black' : 'white',
+            }}
             size={'small'}
           >
             Graph

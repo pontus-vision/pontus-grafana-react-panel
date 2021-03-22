@@ -41,7 +41,7 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
   };
 
   runQuery = () => {
-    let val = PontusComponent.getItem('LGPD-savedStatePVAceGremlinEditor') || '';
+    let val = PontusComponent.getItem(this.props.namespace + 'LGPD-savedStatePVAceGremlinEditor') || '';
 
     if (val) {
       this.emit(this.props.namespace + '-PVAceGremlinEditor-on-before-run-query', val);
@@ -174,7 +174,12 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
               onClick={this.runQuery}
               // inverted={false}
               // color={'black'}
-              style={{ border: 0, background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)' }}
+
+              style={{
+                border: 0,
+                background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)',
+                color: this.theme.isLight ? 'black' : 'white',
+              }}
               size={'small'}
             >
               {PontusComponent.t('Send Query')}
