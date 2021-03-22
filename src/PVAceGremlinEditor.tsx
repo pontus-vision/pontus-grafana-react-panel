@@ -112,7 +112,7 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
   };
 
   onChange = (val: any, ev: any) => {
-    PontusComponent.setItem('LGPD-savedStatePVAceGremlinEditor', val);
+    PontusComponent.setItem(this.props.namespace + 'LGPD-savedStatePVAceGremlinEditor', val);
     // this.setState({value: val})
   };
 
@@ -130,7 +130,7 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
   render() {
     // let eventHub = this.props.glEventHub;
     //
-    let val = PontusComponent.getItem('LGPD-savedStatePVAceGremlinEditor') || '';
+    let val = PontusComponent.getItem(this.props.namespace + 'LGPD-savedStatePVAceGremlinEditor') || '';
     //
     // <ResizeAware
     //   style={{width: '100%', height: 'calc(100% - 20px)', flex: 1 }}
@@ -148,7 +148,7 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
     //
     //  >
     let width = this.od ? this.od.offsetParent.offsetWidth - 30 : this.state.width;
-    let height = this.od ? this.od.offsetParent.offsetHeight - 30 : this.state.height;
+    let height = this.od ? this.od.offsetParent.offsetHeight - 50 : this.state.height;
 
     return (
       <ReactResizeDetector onResize={this.handleResize}>

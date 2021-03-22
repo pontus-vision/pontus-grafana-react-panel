@@ -68,7 +68,7 @@ class PVAceGremlinJSONQueryResults extends PVAceGremlinEditor {
     data = data.replace(/\\n/g, '\n');
     data = data.replace(/\\t/g, '\t');
     let width = this.od ? this.od.offsetParent.offsetWidth - 30 : this.state.width;
-    let height = this.od ? this.od.offsetParent.offsetHeight - 30 : this.state.height;
+    let height = this.od ? this.od.offsetParent.offsetHeight - 50 : this.state.height;
 
     return (
       <div
