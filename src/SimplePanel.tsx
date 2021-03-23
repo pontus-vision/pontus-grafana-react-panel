@@ -32,7 +32,6 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
   render() {
     const { width, height } = this.props;
     const namespace = this.props.options.namespace;
-    const url = this.props.options.url;
     const isNeighbour = this.props.options.isNeighbour;
     const neighbourNamespace = this.props.options.neighbourNamespace;
     const widgetType = this.props.options.widgetType;
@@ -46,7 +45,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       AwarenessPieChart: (
         <PVDoughnutChart
           maxHeight={1000}
-          url={url}
+          url={this.props.options.directUrl}
           neighbourNamespace={neighbourNamespace}
           isNeighbour={isNeighbour}
           namespace={namespace}
@@ -55,10 +54,28 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           height={height}
         />
       ),
-      GremlinQueryEditor: <PVAceGremlinEditor style={{ height: '100%', width: '100%' }} />,
-      GremlinQueryResults: <PVAceGremlinJSONQueryResults />,
+      GremlinQueryEditor: (
+        <PVAceGremlinEditor
+          style={{ height: '100%', width: '100%' }}
+          url={this.props.options.directUrl}
+          neighbourNamespace={neighbourNamespace}
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          subNamespace={undefined}
+        />
+      ),
+      GremlinQueryResults: (
+        <PVAceGremlinJSONQueryResults
+          url={this.props.options.directUrl}
+          neighbourNamespace={neighbourNamespace}
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          subNamespace={undefined}
+        />
+      ),
       PVGDPRScore: (
         <PVGDPRScore
+          url={this.props.options.directUrl}
           scoreType={scoreType}
           showGauge={this.props.options.showGauge}
           showText={this.props.options.showText}
@@ -67,11 +84,16 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
         />
       ),
       PVDataGraph: (
-        <PVDataGraph isNeighbour={isNeighbour} namespace={namespace} neighbourNamespace={neighbourNamespace} />
+        <PVDataGraph
+          url={this.props.options.directUrl}
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          neighbourNamespace={neighbourNamespace}
+        />
       ),
       PVGrid: (
         <PVGrid
-          url={url}
+          url={this.props.options.gridUrl}
           neighbourNamespace={neighbourNamespace}
           isNeighbour={isNeighbour}
           namespace={namespace}
@@ -85,6 +107,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       PVInfraGraph: (
         <PVDataGraphShowAllNodes
+          url={this.props.options.gridUrl}
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}

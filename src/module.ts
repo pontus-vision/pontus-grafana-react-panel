@@ -114,14 +114,41 @@ plugin.setPanelOptions((builder) => {
       return currentConfig.widgetType !== 'PVGDPRScore' && currentConfig.isNeighbour;
     },
   });
+
   builder.addTextInput({
-    path: 'url',
+    path: 'serviceUrl',
     name: PontusComponent.t('Base URL')!,
-    defaultValue: defaults.url,
+    defaultValue: defaults.serviceUrl,
     // description: 'url',
     settings: undefined,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return true;
+      return false; //currentConfig.widgetType === 'GremlinQueryEditor' || currentConfig.widgetType === 'GremlinQueryResults';
+    },
+  });
+  builder.addTextInput({
+    path: 'directUrl',
+    name: PontusComponent.t('Base URL')!,
+    defaultValue: defaults.serviceUrl,
+    // description: 'url',
+    settings: undefined,
+    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+      return (
+        currentConfig.widgetType === 'GremlinQueryEditor' ||
+        currentConfig.widgetType === 'GremlinQueryResults' ||
+        currentConfig.widgetType === 'PVGDPRScore' ||
+        currentConfig.widgetType === 'PVInfraGraph' ||
+        currentConfig.widgetType === 'PVDataGraph' ||
+        currentConfig.widgetType === 'AwarenessPieChart'
+      );
+    },
+  });
+  builder.addTextInput({
+    path: 'gridUrl',
+    name: PontusComponent.t('Base URL')!,
+    defaultValue: defaults.gridUrl,
+    settings: undefined,
+    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+      return currentConfig.widgetType === 'PVGrid';
     },
   });
 

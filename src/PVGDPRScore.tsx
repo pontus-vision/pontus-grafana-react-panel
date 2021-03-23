@@ -25,6 +25,7 @@ import { ScoreType } from './types';
  ***************************/
 
 export interface PVGDPRScoreProps {
+  url?: string;
   scoreType: ScoreType;
   showText?: boolean;
   showExplanation?: boolean;

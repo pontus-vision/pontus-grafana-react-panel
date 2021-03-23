@@ -6,6 +6,7 @@ import AceEditor from 'react-ace';
 import 'brace/mode/json';
 import 'brace/theme/monokai';
 import PVAceGremlinEditor, { PVAceGremlinEditorProps } from './PVAceGremlinEditor';
+import ReactResizeDetector from 'react-resize-detector';
 
 // import axios from "axios";
 // import "slickgrid-es6/dist/slick-default-theme.less";
@@ -71,59 +72,61 @@ class PVAceGremlinJSONQueryResults extends PVAceGremlinEditor {
     let height = this.od ? this.od.offsetParent.offsetHeight - 50 : this.state.height;
 
     return (
-      <div
-        // style={{
-        //   height: 'calc(100%-5px)', width: 'calc(100%)', position: 'relative',
-        // }}
-        style={{ ...this.props.style, height: height, width: width }}
-        ref={this.setOuterDiv}
-      >
+      <ReactResizeDetector onResize={this.handleResize}>
         <div
-          style={{
-            display: 'flex',
-            flexWrap: 'nowrap',
-            flexDirection: 'row',
-            flexGrow: 1,
-            background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)',
-            width: '100%',
-          }}
+          // style={{
+          //   height: 'calc(100%-5px)', width: 'calc(100%)', position: 'relative',
+          // }}
+          style={{ ...this.props.style, height: height, width: width }}
+          ref={this.setOuterDiv}
         >
-          <Button
-            className={'compact'}
-            onClick={() => {
-              this.emit((this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-click-row', {
-                id: this.obj.editor.getSelectedText(),
-              });
-            }}
-            // inverted={false}
-            // color={'black'}
+          <div
             style={{
-              border: 0,
-              background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)',
-              color: this.theme.isLight ? 'black' : 'white',
+              display: 'flex',
+              flexWrap: 'nowrap',
+              flexDirection: 'row',
+              flexGrow: 1,
+              background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)',
+              width: '100%',
             }}
-            size={'small'}
           >
-            Graph
-          </Button>
+            <Button
+              className={'compact'}
+              onClick={() => {
+                this.emit((this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-click-row', {
+                  id: this.obj.editor.getSelectedText(),
+                });
+              }}
+              // inverted={false}
+              // color={'black'}
+              style={{
+                border: 0,
+                background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(69,69,69)',
+                color: this.theme.isLight ? 'black' : 'white',
+              }}
+              size={'small'}
+            >
+              Graph
+            </Button>
+          </div>
+          <AceEditor
+            mode="json"
+            theme="monokai"
+            name="gremlin-query-results"
+            editorProps={{ $blockScrolling: true }}
+            enableBasicAutocompletion={false}
+            enableLiveAutocompletion={false}
+            tabSize={2}
+            readOnly={true}
+            value={data}
+            ref={this.setObj}
+            // style={{height: this.state.height + 'px', width: this.state.width + 'px'}}
+            height={height! - 20 + 'px'}
+            width={width! - 20 + 'px'}
+            style={{ overflow: 'auto' }}
+          />
         </div>
-        <AceEditor
-          mode="json"
-          theme="monokai"
-          name="gremlin-query-results"
-          editorProps={{ $blockScrolling: true }}
-          enableBasicAutocompletion={false}
-          enableLiveAutocompletion={false}
-          tabSize={2}
-          readOnly={true}
-          value={data}
-          ref={this.setObj}
-          // style={{height: this.state.height + 'px', width: this.state.width + 'px'}}
-          height={height! - 20 + 'px'}
-          width={width! - 20 + 'px'}
-          style={{ overflow: 'auto' }}
-        />
-      </div>
+      </ReactResizeDetector>
     );
 
     /*       return (

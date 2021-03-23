@@ -34,7 +34,9 @@ export type WidgetType = typeof WidgetTypeValues[number];
 
 export interface SimpleOptions {
   namespace: string;
-  url: string;
+  directUrl?: string;
+  serviceUrl?: string;
+  gridUrl?: string;
   isNeighbour: boolean;
   neighbourNamespace: string;
   scoreType?: ScoreType;
@@ -55,7 +57,9 @@ export interface SimpleOptions {
 
 export const defaults: SimpleOptions = {
   namespace: 'namespace',
-  url: 'http://localhost:18443/gateway/sandbox/pvgdpr_server/home/agrecords',
+  gridUrl: 'http://localhost:18443/gateway/sandbox/pvgdpr_server/home/agrecords',
+  directUrl: 'http://localhost:18443/gateway/sandbox/pvgdpr_graph',
+  serviceUrl: 'http://localhost:18443/gateway/sandbox/pvgdpr_server',
   isNeighbour: false,
   neighbourNamespace: 'neighbour',
   widgetType: 'PVGrid',
