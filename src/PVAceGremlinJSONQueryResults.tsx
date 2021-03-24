@@ -24,11 +24,11 @@ class PVAceGremlinJSONQueryResults extends PVAceGremlinEditor {
     this.state = { value: '', height: 1000, width: 1000 };
   }
 
-  resetValue = (data: string) => {
+  resetValue = (topic: string, data: any) => {
     this.setState({ value: '' });
   };
 
-  setValue = (data: string) => {
+  setValue = (topic: string, data: any) => {
     this.setState({ value: data });
   };
 
