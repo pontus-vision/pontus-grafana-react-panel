@@ -61,7 +61,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   private sortcol: any | null;
   private sortdir: string;
   private filters: any;
-  private colFieldTranslation: any;
+  private colFieldTranslation: Record<string, string>;
   // private gridApi: GridApi | null | undefined;
   // private gridColumnApi: ColumnApi | null | undefined;
   private getRowsParams: IGetRowsParams | undefined;
@@ -95,6 +95,9 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.req = undefined; // ajax request
 
     // this.setColumnSettings(this.getColSettings(props));
+
+    // WARNING: THIS MUST BE SET BEFORE this.getColSettings() below:
+    this.colFieldTranslation = {};
 
     this.state = {
       ...this.props,
@@ -152,7 +155,72 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
       },
     };
 
-    this.colFieldTranslation = {};
+    const self = this;
+
+    this.dataSource = {
+      rowCount: undefined,
+      getRows: (params: IGetRowsParams) => {
+        console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+        self.getRowsParams = params;
+
+        //  {colId: "Object_Notification_Templates_Types_1", sort: "desc"}
+        // params.sortModel
+        if (params.sortModel && params.sortModel.length > 0) {
+          self.sortcol = params.sortModel[0].colId.replace(/_1$/, '');
+          self.sortcol = self.colFieldTranslation[self.sortcol];
+          self.sortdir = `+${params.sortModel[0].sort}`;
+        }
+
+        if (params.filterModel) {
+          self.filtersCalc = self.filters ? [...this.filters] : [];
+
+          for (const fm of Object.keys(params.filterModel)) {
+            let colId = fm.replace(/_1$/g, '');
+            colId = self.colFieldTranslation[colId];
+
+            const csJson = params.filterModel[fm];
+
+            const colSearch = {
+              colId: colId,
+              ...csJson,
+            };
+
+            self.filtersCalc.push(colSearch);
+
+            /* when we have simple filters, the following format is used:
+             [
+             { colId: "Object_Notification_Templates_Label", filterType: "text", type: "contains", filter: "adfasdf"},
+             { colId: "Object_Notification_Templates_Types", filterType: "text", type: "contains", filter: "aaa"}
+             ]
+             */
+
+            //            OR
+            /*
+             When we have complex filters, the following format is used:
+             [
+             {
+             colId: "Object_Notification_Templates_Label",
+             condition1: {filterType: "text", type: "notContains", filter: "ddd"},
+             condition2: {filterType: "text", type: "endsWith", filter: "aaaa"},
+             filterType: "text",
+             operator: "OR"
+             },
+             {
+             colId: "Object_Notification_Templates_Types:{
+             condition1: {filterType: "text", type: "notContains", filter: "aaaa"},
+             condition2: {filterType: "text", type: "startsWith", filter: "bbbb"},
+             filterType: "text",
+             operator: "AND"
+             }
+             ]
+             */
+          }
+        }
+        // (sortdir > 0) ? "+asc" : "+desc"
+        // this.ensureDataCustom(params.startRow, params.endRow);
+        self.ensureDataCustom(params.startRow, params.endRow);
+      },
+    };
     this.dataType = this.getDataType(props);
   }
 
@@ -595,70 +663,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.setState({ ...this.state, totalRecords: totalRecords });
   }
 
-  dataSource: IDatasource = {
-    rowCount: undefined,
-    getRows: (params: IGetRowsParams) => {
-      console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-      this.getRowsParams = params;
-
-      //  {colId: "Object_Notification_Templates_Types_1", sort: "desc"}
-      // params.sortModel
-      if (params.sortModel && params.sortModel.length > 0) {
-        this.sortcol = params.sortModel[0].colId.replace(/_1$/, '');
-        this.sortcol = this.colFieldTranslation[this.sortcol];
-        this.sortdir = `+${params.sortModel[0].sort}`;
-      }
-
-      if (params.filterModel) {
-        this.filtersCalc = this.filters ? [...this.filters] : [];
-
-        for (const fm of Object.keys(params.filterModel)) {
-          let colId = fm.replace(/_1$/g, '');
-          colId = this.colFieldTranslation[colId];
-
-          const csJson = params.filterModel[fm];
-
-          const colSearch = {
-            colId: colId,
-            ...csJson,
-          };
-
-          this.filtersCalc.push(colSearch);
-
-          /* when we have simple filters, the following format is used:
-           [
-           { colId: "Object_Notification_Templates_Label", filterType: "text", type: "contains", filter: "adfasdf"},
-           { colId: "Object_Notification_Templates_Types", filterType: "text", type: "contains", filter: "aaa"}
-           ]
-           */
-
-          //            OR
-          /*
-           When we have complex filters, the following format is used:
-           [
-           {
-           colId: "Object_Notification_Templates_Label",
-           condition1: {filterType: "text", type: "notContains", filter: "ddd"},
-           condition2: {filterType: "text", type: "endsWith", filter: "aaaa"},
-           filterType: "text",
-           operator: "OR"
-           },
-           {
-           colId: "Object_Notification_Templates_Types:{
-           condition1: {filterType: "text", type: "notContains", filter: "aaaa"},
-           condition2: {filterType: "text", type: "startsWith", filter: "bbbb"},
-           filterType: "text",
-           operator: "AND"
-           }
-           ]
-           */
-        }
-      }
-      // (sortdir > 0) ? "+asc" : "+desc"
-      // this.ensureDataCustom(params.startRow, params.endRow);
-      this.ensureDataCustom(params.startRow, params.endRow);
-    },
-  };
+  dataSource: IDatasource;
 
   onGridReady = (params: GridOptions) => {
     // this.gridApi = params.api;

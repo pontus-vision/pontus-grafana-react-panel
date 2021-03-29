@@ -91,7 +91,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         nodes: {
           font: {
             align: 'left',
-            color: this.theme.isDark ? '#000000' : '#FFFFFF',
+            color: this.theme.isLight ? '#000000' : '#FFFFFF',
           },
           shapeProperties: {
             useImageSize: true,
@@ -149,14 +149,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
           timestep: 0.11,
         },
         edges: {
-          color: this.theme.isDark ? '#FFFFFF' : '#000000',
+          color: this.theme.isLight ? '#FFFFFF' : '#000000',
           font: {
-            color: this.theme.isDark ? '#FFFFFF' : '#000000',
+            color: this.theme.isLight ? '#FFFFFF' : '#000000',
             size: 20, // px
             face: 'arial',
             background: 'none',
             strokeWidth: 1, // px
-            strokeColor: this.theme.isDark ? '#FFFFFF' : '#000000',
+            strokeColor: this.theme.isLight ? '#FFFFFF' : '#000000',
           },
         },
       },
@@ -346,7 +346,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
   selectData = (topic: string, event: any | null) => {
     // this.origNodeId = event !== null ? (+(event.id || event.index)) : -1;// the + converts to number just in case
     // LPPM - 31Dec2019 - we no longer have numeric ids; remove the + converter
-    this.origNodeId = event !== null ? event.id || event.index : '-1'; // the + converts to number just in case
+    this.origNodeId = event ? event.id || event.index : '-1'; // the + converts to number just in case
     // this.origNodeId = (+(this.origNodeId));
     let url = this.url; // "/gateway/sandbox/pvgdpr_server/home/graph";
     if (this.hRequest) {
