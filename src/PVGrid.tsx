@@ -8,15 +8,11 @@ import PontusComponent, { PubSubCallback } from './PontusComponent';
 // import  * as reveal2 from './PVBurgerMenuReveal';
 import PVGridReportButtonCellRenderer from './PVGridReportButtonCellRenderer';
 import { ColDef, GridOptions, IDatasource, IGetRowsParams, RowClickedEvent } from 'ag-grid-community';
+import { PVNamespaceProps } from './types';
 
-export interface PVGridProps {
-  url: string;
-  isNeighbour: boolean;
-  neighbourNamespace: string;
-  namespace?: string;
-  subNamespace?: string;
+export interface PVGridProps extends PVNamespaceProps {
   mountedSuccess?: boolean;
-  customFilter?: string | undefined;
+  customFilter?: string;
   settings?: any;
   columnDefs?: PVGridColDef[];
   dataType?: string;
@@ -24,7 +20,7 @@ export interface PVGridProps {
 }
 
 export interface PVGridState extends PVGridProps {
-  hideMenu: boolean | undefined;
+  hideMenu?: boolean;
 
   totalRecords: number;
   defaultColDef: ColDef;
@@ -65,7 +61,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   private sortcol: any | null;
   private sortdir: string;
   private filters: any;
-  private colFieldTranslation: any;
+  private colFieldTranslation: Record<string, string>;
   // private gridApi: GridApi | null | undefined;
   // private gridColumnApi: ColumnApi | null | undefined;
   private getRowsParams: IGetRowsParams | undefined;
@@ -78,9 +74,9 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   private fromPage: number;
   private toPage: number;
   private filtersCalc: any[];
-  constructor(props: Readonly<PVGridProps>) {
-    super(props);
 
+  constructor(props: PVGridProps) {
+    super(props);
     this.fromPage = 0;
     this.toPage = 0;
     this.mountedSuccess = false;
@@ -98,15 +94,14 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.hRequest = undefined;
     this.req = undefined; // ajax request
 
-    this.dataType = this.getDataType(props);
-
-    this.colFieldTranslation = {};
-
     // this.setColumnSettings(this.getColSettings(props));
 
+    // WARNING: THIS MUST BE SET BEFORE this.getColSettings() below:
+    this.colFieldTranslation = {};
+
     this.state = {
-      hideMenu: true,
       ...this.props,
+      hideMenu: true,
       totalRecords: 0,
       columnDefs: this.getColSettings(props),
       defaultColDef: {
@@ -159,11 +154,79 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         return value === gridKey ? defaultValue : value;
       },
     };
+
+    const self = this;
+
+    this.dataSource = {
+      rowCount: undefined,
+      getRows: (params: IGetRowsParams) => {
+        console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+        self.getRowsParams = params;
+
+        //  {colId: "Object_Notification_Templates_Types_1", sort: "desc"}
+        // params.sortModel
+        if (params.sortModel && params.sortModel.length > 0) {
+          self.sortcol = params.sortModel[0].colId.replace(/_1$/, '');
+          self.sortcol = self.colFieldTranslation[self.sortcol];
+          self.sortdir = `+${params.sortModel[0].sort}`;
+        }
+
+        if (params.filterModel) {
+          self.filtersCalc = self.filters ? [...this.filters] : [];
+
+          for (const fm of Object.keys(params.filterModel)) {
+            let colId = fm.replace(/_1$/g, '');
+            colId = self.colFieldTranslation[colId];
+
+            const csJson = params.filterModel[fm];
+
+            const colSearch = {
+              colId: colId,
+              ...csJson,
+            };
+
+            self.filtersCalc.push(colSearch);
+
+            /* when we have simple filters, the following format is used:
+             [
+             { colId: "Object_Notification_Templates_Label", filterType: "text", type: "contains", filter: "adfasdf"},
+             { colId: "Object_Notification_Templates_Types", filterType: "text", type: "contains", filter: "aaa"}
+             ]
+             */
+
+            //            OR
+            /*
+             When we have complex filters, the following format is used:
+             [
+             {
+             colId: "Object_Notification_Templates_Label",
+             condition1: {filterType: "text", type: "notContains", filter: "ddd"},
+             condition2: {filterType: "text", type: "endsWith", filter: "aaaa"},
+             filterType: "text",
+             operator: "OR"
+             },
+             {
+             colId: "Object_Notification_Templates_Types:{
+             condition1: {filterType: "text", type: "notContains", filter: "aaaa"},
+             condition2: {filterType: "text", type: "startsWith", filter: "bbbb"},
+             filterType: "text",
+             operator: "AND"
+             }
+             ]
+             */
+          }
+        }
+        // (sortdir > 0) ? "+asc" : "+desc"
+        // this.ensureDataCustom(params.startRow, params.endRow);
+        self.ensureDataCustom(params.startRow, params.endRow);
+      },
+    };
+    this.dataType = this.getDataType(props);
   }
 
   setCustomFilter = (customFilter: string | undefined) => {
     this.customFilter = customFilter;
-    this.ensureData(0, this.PAGESIZE);
+    this.ensureDataCustom(0, this.PAGESIZE);
   };
 
   getColSettings(props: Readonly<PVGridProps>): PVGridColDef[] {
@@ -295,7 +358,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   //   }, 50);
   // };
 
-  ensureData = (fromReq: number | undefined, toReq: number | undefined) => {
+  ensureDataCustom = (fromReq?: number, toReq?: number) => {
     if (undefined === fromReq || undefined === toReq) {
       return;
     }
@@ -346,7 +409,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
           if (Axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
-            self.onError(thrown, fromPage, toPage);
+            self.onErrorCustom(thrown, fromPage, toPage);
           }
         });
 
@@ -354,11 +417,11 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
       self.toPage = toPage;
     }, 50);
   };
-  onError = (err: any, fromPage: number | undefined, toPage: number | undefined) => {
+  onErrorCustom = (err: any, fromPage: number | undefined, toPage: number | undefined) => {
     this.errCounter++;
 
     if (this.errCounter < 3) {
-      this.ensureData(this.from, this.to);
+      this.ensureDataCustom(this.from, this.to);
     }
   };
 
@@ -400,11 +463,11 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   setSearch: PubSubCallback = (topic: string, str: any) => {
     this.searchstr = str;
-    this.ensureData(0, this.PAGESIZE);
+    this.ensureDataCustom(0, this.PAGESIZE);
   };
   setSearchExact: PubSubCallback = (topic: string, exact: any) => {
     this.searchExact = exact;
-    this.ensureData(0, this.PAGESIZE);
+    this.ensureDataCustom(0, this.PAGESIZE);
   };
 
   setDataType = (str: string) => {
@@ -425,15 +488,15 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   setColumns = (cols: PVGridColDef[]) => {
     // this.state.columnDefs = cols;
     if (this.mountedSuccess) {
-      this.setState({ columnDefs: cols });
+      this.setState({ columnDefs: cols, ...this.state });
       this.cols = cols;
-      this.ensureData(0, this.PAGESIZE);
+      this.ensureDataCustom(0, this.PAGESIZE);
     }
   };
 
   // setCustomFilter = (customFilter: string | undefined) => {
   //   this.customFilter = customFilter;
-  //   this.ensureData(0, this.PAGESIZE);
+  //   this.ensureDataCustom(0, this.PAGESIZE);
   // };
 
   onClick = (event: RowClickedEvent): void => {
@@ -573,10 +636,10 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.createSubscriptions(this.props);
   };
 
-  componentDidUpdate(prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void {
+  componentDidUpdate = (prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void => {
     this.removeSubscriptions(prevProps);
     this.createSubscriptions(this.props);
-  }
+  };
 
   componentWillUnmount = () => {
     this.removeSubscriptions(this.props);
@@ -584,7 +647,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   // onViewportChanged = (/*e, args*/) => {
   //   // let vp = this.grid.getViewport();
-  //   // this.ensureData(vp.top, vp.bottom);
+  //   // this.ensureDataCustom(vp.top, vp.bottom);
   // };
 
   // onDataLoadedCb = (args) =>
@@ -597,73 +660,10 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   // };
 
   setTotalRecords(totalRecords: number) {
-    this.setState({ totalRecords: totalRecords });
+    this.setState({ ...this.state, totalRecords: totalRecords });
   }
 
-  dataSource: IDatasource = {
-    rowCount: undefined,
-    getRows: (params: IGetRowsParams) => {
-      console.log('asking for ' + params.startRow + ' to ' + params.endRow);
-      this.getRowsParams = params;
-
-      //  {colId: "Object_Notification_Templates_Types_1", sort: "desc"}
-      // params.sortModel
-      if (params.sortModel && params.sortModel.length > 0) {
-        this.sortcol = params.sortModel[0].colId.replace(/_1$/, '');
-        this.sortcol = this.colFieldTranslation[this.sortcol];
-        this.sortdir = `+${params.sortModel[0].sort}`;
-      }
-
-      if (params.filterModel) {
-        this.filtersCalc = this.filters ? [...this.filters] : [];
-
-        for (const fm of Object.keys(params.filterModel)) {
-          let colId = fm.replace(/_1$/g, '');
-          colId = this.colFieldTranslation[colId];
-
-          const csJson = params.filterModel[fm];
-
-          const colSearch = {
-            colId: colId,
-            ...csJson,
-          };
-
-          this.filtersCalc.push(colSearch);
-
-          /* when we have simple filters, the following format is used:
-           [
-           { colId: "Object_Notification_Templates_Label", filterType: "text", type: "contains", filter: "adfasdf"},
-           { colId: "Object_Notification_Templates_Types", filterType: "text", type: "contains", filter: "aaa"}
-           ]
-           */
-
-          //            OR
-          /*
-           When we have complex filters, the following format is used:
-           [
-           {
-           colId: "Object_Notification_Templates_Label",
-           condition1: {filterType: "text", type: "notContains", filter: "ddd"},
-           condition2: {filterType: "text", type: "endsWith", filter: "aaaa"},
-           filterType: "text",
-           operator: "OR"
-           },
-           {
-           colId: "Object_Notification_Templates_Types:{
-           condition1: {filterType: "text", type: "notContains", filter: "aaaa"},
-           condition2: {filterType: "text", type: "startsWith", filter: "bbbb"},
-           filterType: "text",
-           operator: "AND"
-           }
-           ]
-           */
-        }
-      }
-      // (sortdir > 0) ? "+asc" : "+desc"
-      // this.ensureData(params.startRow, params.endRow);
-      this.ensureData(params.startRow, params.endRow);
-    },
-  };
+  dataSource: IDatasource;
 
   onGridReady = (params: GridOptions) => {
     // this.gridApi = params.api;
@@ -673,32 +673,32 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   render = () => {
     // let eventHub = this.props.glEventHub;
     //
-    let menu;
-    if (!this.state.hideMenu) {
-      menu = <div />;
-
-      //   (
-      //   <Menu noOverlay style={{ position: 'absolute', right: '10px' }} pageWrapId={'outer-wrap'} right outerContainerId={'outer-wrap'}>
-      //     <PVGridColSelector
-      //       // glEventHub={this.props.glEventHub}
-      //       style={{ height: '100%', width: '100%' }}
-      //       namespace={`${this.namespace}${this.subNamespace ? this.subNamespace : ''}`}
-      //       colSettings={this.state.columnDefs}
-      //       dataType={this.dataType}
-      //     />
-      //   </Menu>
-      // );
-    } else {
-      menu = <div />;
-    }
+    let menu: JSX.Element = <div />;
+    // if (!this.state.hideMenu) {
+    //   menu = <div />;
+    //
+    //   //   (
+    //   //   <Menu noOverlay style={{ position: 'absolute', right: '10px' }} pageWrapId={'outer-wrap'} right outerContainerId={'outer-wrap'}>
+    //   //     <PVGridColSelector
+    //   //       // glEventHub={this.props.glEventHub}
+    //   //       style={{ height: '100%', width: '100%' }}
+    //   //       namespace={`${this.namespace}${this.subNamespace ? this.subNamespace : ''}`}
+    //   //       colSettings={this.state.columnDefs}
+    //   //       dataType={this.dataType}
+    //   //     />
+    //   //   </Menu>
+    //   // );
+    // } else {
+    //   menu = <div />;
+    // }
 
     return (
-      <div style={{ width: '100%', height: 'calc(100% - 20px)' }}>
+      <div style={{ width: '100%', height: 'calc(100% - 20px)' }} className="ag-theme-balham">
         {menu}
 
         <div
           style={{ width: '100%', height: '100%' }}
-          className={'ag-theme-balham-dark'}
+          className={this.theme.isLight ? 'ag-theme-balham-light' : 'ag-theme-balham-dark'}
           id={'outer-wrap'}
           // ref={this.setGridDiv}>
         >
@@ -737,7 +737,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
             maxBlocksInCache={2}
             pagination={true}
             paginationAutoPageSize={true}
-            getRowNodeId={item => item.id}
+            getRowNodeId={(item) => item.id}
           />
         </div>
       </div>

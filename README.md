@@ -1,6 +1,6 @@
-# Simple React Panel
+# Pontus Vision Grafana React Panel
 
-This is just a stub to show how you can create a basic visualization plugin.
+This is a simple React Panel for Grafana, which enables Pontus Vision POLE data to be displayed in tables in Grafana
 
 To work with this plugin run:
 

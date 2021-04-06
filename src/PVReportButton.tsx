@@ -6,8 +6,7 @@ import PontusComponent from './PontusComponent';
 
 // import PVDatamaps from './PVDatamaps';
 export interface PVReportButtonProps {
-  node: any;
-  colDef: any;
+  node?: any;
   namespace?: string;
   subNamespace?: string;
   mountedSuccess?: boolean;
@@ -24,7 +23,11 @@ export interface PVReportButtonProps {
   placeholder?: React.ReactNode;
   templateText?: string;
   contextId?: string;
-  buttonLabel: string;
+  buttonLabel?: string;
+  className?: string;
+  style?: any;
+  size?: string;
+  colDef?: any;
 }
 
 export interface PVReportButtonState extends PVReportButtonProps {
@@ -105,7 +108,7 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
         cancelToken: self.req.token,
       })
         .then(this.onSuccess)
-        .catch(thrown => {
+        .catch((thrown) => {
           if (Axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
