@@ -13,6 +13,7 @@ COPY --from=pontusvisiongdpr/pontus-i18n:latest /*.json  /plugin/src/
 
 ENV NODE_ENV=development
 RUN   yarn run build
+RUN   yarn audit || [ "$?" -lt 8 ]
 
 #RUN yarn run   dev
 

@@ -57,7 +57,7 @@ export function setDefaultLang(defLang: string) {
     return setLang(defLang);
   }
 }
-setDefaultLang('en').catch((reason) => console.error(reason));
+setDefaultLang(((navigator.language || 'en') as string).substr(0, 2)).catch((reason) => console.error(reason));
 
 export function getDefaultLang() {
   return localStorage.getItem('Language');

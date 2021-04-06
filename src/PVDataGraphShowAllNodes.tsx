@@ -7,7 +7,7 @@ class PVDataGraphShowAllNodes extends PVDataGraph {
   constructor(props: Readonly<any>) {
     super(props);
 
-    this.subscription = (this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-click-row';
+    // this.subscription = (this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-click-row';
 
     this.state = {
       graph: {
@@ -29,7 +29,7 @@ class PVDataGraphShowAllNodes extends PVDataGraph {
         nodes: {
           font: {
             align: 'left',
-            color: '#FFFFFF',
+            color: this.theme.isLight ? '#000000' : '#FFFFFF',
           },
           shapeProperties: {
             useImageSize: true,
@@ -73,7 +73,7 @@ class PVDataGraphShowAllNodes extends PVDataGraph {
             type: 'discrete',
             forceDirection: 'none',
           },
-          color: '#FFFFFF',
+          color: this.theme.isLight ? '#FFFFFF' : '#000000',
         },
         physics: {
           repulsion: {

@@ -2,6 +2,9 @@
   "name": "simple-react-panel",
   "version": "1.0.0",
   "description": "Grafana RSS Panel",
+    "resolutions": {
+    "**/**/immer": "^8.0.1"
+  },
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",

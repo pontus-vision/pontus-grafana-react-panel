@@ -748,7 +748,8 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
               position: 'fixed',
               top: '20%',
               zIndex: 100000,
-              backgroundColor: '#696969',
+              backgroundColor: '#FFFFFF',
+              color: '#000000',
             }}
           >
             <PVGridSelfDiscovery

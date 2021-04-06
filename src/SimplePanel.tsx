@@ -14,6 +14,7 @@ import PVDataGraphShowAllNodes from './PVDataGraphShowAllNodes';
 import PVDoughnutChart from './PVDoughnutChart';
 import PVAceGremlinEditor from './PVAceGremlinEditor';
 import PVAceGremlinJSONQueryResults from './PVAceGremlinJSONQueryResults';
+import { config } from '@grafana/runtime';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -40,6 +41,9 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const customFilter = this.props.options.customFilter;
     const filter = this.props.options.filter;
     const scoreType = this.props.options.scoreType!;
+
+    console.log(`config.bootData = ${config}`);
+    console.log(`config.bootData = ${JSON.stringify(config)}`);
 
     const widget: Record<WidgetType, JSX.Element> = {
       AwarenessPieChart: (
@@ -107,7 +111,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       PVInfraGraph: (
         <PVDataGraphShowAllNodes
-          url={this.props.options.gridUrl}
+          url={this.props.options.directUrl}
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}
