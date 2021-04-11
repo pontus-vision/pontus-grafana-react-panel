@@ -36,8 +36,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const isNeighbour = this.props.options.isNeighbour;
     const neighbourNamespace = this.props.options.neighbourNamespace;
     const widgetType = this.props.options.widgetType;
-    const dataType = this.props.options.dataType || this.props.options.dataSettings?.dataType;
-    const colSettings = this.props.options.colSettings || this.props.options.dataSettings?.colSettings;
+    const dataType = this.props.options.dataSettings?.dataType || this.props.options.dataType;
+    const colSettings = this.props.options.dataSettings?.colSettings || this.props.options.colSettings;
     const customFilter = this.props.options.customFilter;
     const filter = this.props.options.filter;
     const scoreType = this.props.options.scoreType!;

@@ -17,7 +17,7 @@ RUN   yarn audit || [ "$?" -lt 8 ]
 
 #RUN yarn run   dev
 
-FROM grafana/grafana:latest
+FROM grafana/grafana:7.5.3-ubuntu
 
 EXPOSE 3000
 
