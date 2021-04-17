@@ -2,7 +2,7 @@
   "name": "simple-react-panel",
   "version": "1.0.0",
   "description": "Grafana RSS Panel",
-    "resolutions": {
+  "resolutions": {
     "**/**/immer": "^8.0.1"
   },
   "scripts": {
@@ -25,14 +25,15 @@
     "@grafana/data": "^7.3.7",
     "@grafana/runtime": "^7.3.7",
     "@grafana/toolkit": "^7.3.7",
-    "@grafana/ui": "^7.3.7"
-  },
-  "dependencies": {
+    "@grafana/ui": "^7.3.7",
     "@types/js-base64": "^3.0.0",
     "@types/pubsub-js": "^1.8.2",
     "@types/react-select": "^3.1.2",
     "@types/reflexbox": "^4.0.2",
     "@types/slickgrid": "^2.1.30",
+    "tslib": "^2.2.0"
+  },
+  "dependencies": {
     "ag-grid-community": "^25.0.1",
     "ag-grid-react": "^25.0.1",
     "axios": "^0.21.1",
@@ -56,6 +57,6 @@
     "react-svg-gauge": "^1.0.10",
     "reflexbox": "^4.0.6",
     "semantic-ui-react": "^2.0.3",
-    "slickgrid-es6": "^3.0.3"
+    "slickgrid": "^2.4.34"
   }
 }

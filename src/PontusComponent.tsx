@@ -7,6 +7,7 @@ import PubSub from 'pubsub-js';
 import axios, { CancelTokenSource } from 'axios';
 import { getTheme } from '@grafana/ui';
 import { GrafanaTheme } from '@grafana/data';
+import { config } from '@grafana/runtime';
 
 // import * as d3 from "d3";
 
@@ -23,11 +24,13 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   protected errorCounter: number;
   protected hRequest?: NodeJS.Timeout;
   protected theme: GrafanaTheme;
+  protected oauth: any;
   constructor(props: Readonly<any>) {
     super(props);
     this.errorCounter = 0;
     this.url = PontusComponent.getGraphURL(props);
     this.theme = getTheme();
+    this.oauth = config.oauth;
   }
 
   // static getColorScale(minVal, maxVal)

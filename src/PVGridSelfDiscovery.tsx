@@ -6,7 +6,6 @@ import axios from 'axios';
 // import "slickgrid-es6/dist/slick-default-theme.less";
 import { Flex, Box } from 'reflexbox';
 import PontusComponent from './PontusComponent';
-import Column = Slick.Column;
 
 export interface PVGridSelfDiscoveryProps {
   vid?: any;
@@ -15,7 +14,7 @@ export interface PVGridSelfDiscoveryProps {
   metadataType?: string;
   namespace?: string;
   subNamespace?: string;
-  columnSettings?: Array<Column<any>>;
+  columnSettings?: Array<Slick.Column<any>>;
   totalRecords?: number;
   settings?: any;
   style?: any;

@@ -63,6 +63,23 @@ export const defaults: SimpleOptions = {
   isNeighbour: false,
   neighbourNamespace: 'neighbour',
   widgetType: 'PVGrid',
+  dataSettings: {
+    dataType: 'Person.Organisation',
+    colSettings: [
+      {
+        field: '#Person.Organisation.Name',
+        id: '#Person.Organisation.Name',
+        name: 'Name',
+        sortable: true,
+      },
+      {
+        field: '#Person.Organisation.Type',
+        id: '#Person.Organisation.Type',
+        name: 'Type',
+        sortable: true,
+      },
+    ],
+  },
 };
 
 export interface PVNamespaceProps {

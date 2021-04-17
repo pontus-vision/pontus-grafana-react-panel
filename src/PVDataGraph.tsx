@@ -28,6 +28,7 @@ export interface PVDataGraphState extends PVDataGraphProps {
   graph?: GraphData;
   options?: Options;
   events?: any;
+  pausedAnimation: boolean;
 }
 
 /***************************
@@ -61,6 +62,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
     this.selfDiscoveryGridLoadedSubscription =
       (this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-data-loaded';
     this.state = {
+      pausedAnimation: false,
       summary: false,
       vid: -1,
       depth: 1,
@@ -700,6 +702,18 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
             width: '100%',
           }}
         >
+          <button
+            onClick={() => {
+              this.setState({ ...this.state, pausedAnimation: !this.state.pausedAnimation });
+              if (this.graph && this.state.pausedAnimation === true) {
+                this.graph.stopSimulation();
+              } else {
+                this.graph.startSimulation();
+              }
+            }}
+          >
+            {this.state.pausedAnimation ? '▶' : '⏸'}
+          </button>
           {/*<div style={{ width: '100%' }}> */}
           {buttonsList}
           {/*</div>*/}

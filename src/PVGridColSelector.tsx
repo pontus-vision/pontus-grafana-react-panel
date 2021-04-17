@@ -38,7 +38,7 @@ class PVGridColSelector extends PontusComponent<
   private dataType?: string;
   private colSettings?: PVGridColDef[];
 
-  constructor(props: Readonly<PVGridColSelectorProps>) {
+  constructor(props: Readonly<PanelOptionsEditorProps<PVGridColSelectorProps>>) {
     super(props);
 
     this.req = undefined;
@@ -47,8 +47,10 @@ class PVGridColSelector extends PontusComponent<
     this.nodePropertyNamesReactSelect = undefined;
     // this.nodePropertyNamesReactSelect = null;
     this.propsSelected = [];
-    this.dataType = props.dataType;
-    this.colSettings = props.colSettings;
+    this.dataType = props.context.options.dataSettings
+      ? props.context.options.dataSettings.dataType
+      : PontusComponent.t('Person.Natural');
+    this.colSettings = props.context.options.dataSettings ? props.context.options.dataSettingscolSettings : [];
   }
 
   onError = (err: any) => {
@@ -105,16 +107,16 @@ class PVGridColSelector extends PontusComponent<
   };
 
   render() {
-    const nodeTypesVal = this.props.context.options.dataType
+    const nodeTypesVal = this.props.context.options.dataSettings
       ? {
           label: PontusComponent.t(
             PontusComponent.replaceAll(
               '.',
               ' ',
-              PontusComponent.replaceAll('_', ' ', this.props.context.options.dataType)
+              PontusComponent.replaceAll('_', ' ', this.props.context.options.dataSettings.dataType)
             )
           ),
-          value: this.props.context.options.dataType,
+          value: this.props.context.options.dataSettings.dataType,
         }
       : {};
 
@@ -122,8 +124,8 @@ class PVGridColSelector extends PontusComponent<
 
     const propTypesVal = [];
 
-    if (this.props.context.options.colSettings) {
-      for (const setting of this.props.context.options.colSettings) {
+    if (this.props.context.options.dataSettings && this.props.context.options.dataSettings.colSettings) {
+      for (const setting of this.props.context.options.dataSettings.colSettings) {
         propTypesVal.push({ label: setting.name, value: setting.id });
       }
     }

@@ -6121,11 +6121,6 @@ flatbuffers@1.11.0:
   resolved "https://registry.yarnpkg.com/flatbuffers/-/flatbuffers-1.11.0.tgz#90a47e584dd7851ad7a913f5a0ee99c1d76ce59f"
   integrity sha512-0PqFKtXI4MjxomI7jO4g5XfLPm/15g2R+5WGCHBGYGh0ihQiypnHlJ6bMmkkrAe0GzZ4d7PDAfCONKIPUxNF+A==
 
-flatpickr@^1.9.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-1.9.1.tgz#6a6f8dea4a75d4ef9e4b92a8b50de7533ae27dab"
-  integrity sha1-am+N6kp11O+eS5KotQ3nUzrifas=
-
 flatted@^3.1.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.1.1.tgz#c4b489e80096d9df1dfc97c79871aea7c617c469"
@@ -7889,12 +7884,17 @@ jest@26.6.3:
     import-local "^3.0.2"
     jest-cli "^26.6.3"
 
+jquery-ui@>=1.8.0:
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.12.1.tgz#bcb4045c8dd0539c134bc1488cdd3e768a7a9e51"
+  integrity sha1-vLQEXI3QU5wTS8FIjN0+dop6nlE=
+
 jquery@3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
   integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
 
-jquery@^3.4.1:
+jquery@>=1.8.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
   integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
@@ -11649,13 +11649,13 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-slickgrid-es6@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/slickgrid-es6/-/slickgrid-es6-3.0.3.tgz#ebad00728db6e76aac5a520870a3b2e71964aa1d"
-  integrity sha512-l/ISKIS8lJv9S6kGlz6q64GrPoGIVKyuq3cljF0ySttqcw2qPiWnNZit8PPEWL5E+CG4/yK+iP2mpQ7vkfL9Cg==
+slickgrid@^2.4.34:
+  version "2.4.34"
+  resolved "https://registry.yarnpkg.com/slickgrid/-/slickgrid-2.4.34.tgz#a99548cead0943884324b2547704cd6aa86f149d"
+  integrity sha512-g/KS0BsF201AU4DBidAIZr2Q73/w7Fv+F7oxsQh8uPja8PuEnIN8A5dra5uPlx5RHNC1/WtBK/eKlhonOd82YA==
   dependencies:
-    flatpickr "^1.9.1"
-    jquery "^3.4.1"
+    jquery ">=1.8.0"
+    jquery-ui ">=1.8.0"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
@@ -12508,6 +12508,11 @@ tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
+
+tslib@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
+  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
 
 tsutils@^3.17.1:
   version "3.21.0"

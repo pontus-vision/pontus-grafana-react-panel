@@ -172,7 +172,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         }
 
         if (params.filterModel) {
-          self.filtersCalc = self.filters ? [...this.filters] : [];
+          self.filters = self.props.filter ? (JSON.parse(self.props.filter) as any[]) : [];
+          self.filtersCalc = self.filters ? [...self.filters] : [];
 
           for (const fm of Object.keys(params.filterModel)) {
             let colId = fm.replace(/_1$/g, '');
@@ -400,6 +401,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            'X-PV-Timestamp': `${Date.now()}`,
           },
           cancelToken: self.req.token,
         }
@@ -488,7 +490,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   setColumns = (cols: PVGridColDef[]) => {
     // this.state.columnDefs = cols;
     if (this.mountedSuccess) {
-      this.setState({ columnDefs: cols, ...this.state });
+      this.setState({ ...this.state, columnDefs: cols });
       this.cols = cols;
       this.ensureDataCustom(0, this.PAGESIZE);
     }
