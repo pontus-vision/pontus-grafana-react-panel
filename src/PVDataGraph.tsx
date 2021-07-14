@@ -15,11 +15,11 @@ export type PVDataGraphProps = PVNamespaceProps;
 
 export interface PVDataGraphState extends PVDataGraphProps {
   summary?: boolean;
-  vid?: number;
+  vid?: string;
   depth?: number;
   metadataType?: string;
   edgeType?: string;
-  edgeDir?: string;
+  edgeDir?: '<-' | '->';
   open?: boolean;
   height?: number;
   width?: number;
@@ -38,6 +38,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
   protected enableClose: boolean;
   protected numNeighboursNamespace: string;
   protected subscription: string;
+  protected subscriptionDiscovery: string;
   protected selfDiscoveryGridLoadedSubscription: string;
   protected errorCount: number;
   // private underscoreOrDot: RegExp;
@@ -46,7 +47,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
   protected graph: any;
   protected network: any;
 
-  constructor(props: Readonly<any>) {
+  constructor(props: Readonly<PVDataGraphProps>) {
     super(props);
     this.enableClose = false;
     this.numNeighboursNamespace = (this.props.namespace ? this.props.namespace : '') + '-pvgraph-neighbours-click';
@@ -59,12 +60,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         ? this.props.namespace
         : '') + '-pvgrid-on-click-row';
 
+    this.subscriptionDiscovery = this.props.namespace + '-pvgrid-on-click-row';
+
     this.selfDiscoveryGridLoadedSubscription =
       (this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-data-loaded';
     this.state = {
       pausedAnimation: false,
       summary: false,
-      vid: -1,
+      vid: '-1',
       depth: 1,
       metadataType: '',
       edgeType: '',
@@ -129,7 +132,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         //     treeSpacing: 500
         //   }
         // },
-        interaction: { dragNodes: true },
+        interaction: { dragNodes: true, zoomSpeed: 0.2 },
         physics: {
           hierarchicalRepulsion: {
             centralGravity: 0.0,
@@ -192,12 +195,19 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
           (typeof event.id === 'string' || event.id instanceof String) &&
           (event.id.indexOf('->') >= 0 || event.id.indexOf('<-') >= 0);
         if (isEdge) {
-          let edgeDir = event.id.indexOf('<-') !== -1 ? '<-' : '->';
+          let edgeDir: '->' | '<-' = event.id.indexOf('<-') !== -1 ? '<-' : '->';
 
           let metadataType = event.id.replace(/ ->.*/g, '').replace(/ <-.*/g, '').replace(' ', '.').replace(/ /g, '_');
           let edgeType = event.id.replace(/.*-> /g, '').replace(/.*<- /g, '').replace(/ /g, '_').replace(/[()]/g, '');
 
+          if (this.state.open) {
+            this.setState({
+              ...this.state,
+              open: false,
+            });
+          }
           this.setState({
+            ...this.state,
             metadataType: metadataType,
             vid: this.eventId,
             edgeType: edgeType,
@@ -493,12 +503,14 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
       }
     }
     this.on(this.subscription, this.selectData);
+    this.on(this.subscriptionDiscovery, this.selectData);
     this.on(this.selfDiscoveryGridLoadedSubscription, this.enableCloseCb);
     this.on(this.numNeighboursNamespace, this.onClickNumNeighbours);
   }
 
   componentWillUnmount() {
     this.off(this.subscription, this.selectData);
+    this.off(this.subscriptionDiscovery, this.selectData);
     this.off(this.numNeighboursNamespace, this.onClickNumNeighbours);
     // if (this.graph) {
     //   this.graph.removeEventListener('resize');
@@ -653,11 +665,10 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
             ? { border: 0, background: 'rgb(108,108,108)', marginRight: '3px' }
             : { border: 0, background: 'rgb(187,187,188)', marginRight: '3px' }
         }
-        size={'small'}
         onClick={this.onClickSummary}
         toggle={true}
       >
-        ...
+        {'◎'}
       </Button>,
       <PVDetailsButton
         key={200}
@@ -687,7 +698,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
             // inverted={false}
             // color={'black'}
             style={{ border: 0, background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)' }}
-            size={'small'}
+            // size={'small'}
           />
         );
       }
@@ -704,15 +715,18 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
         >
           <button
             onClick={() => {
+              this.state.options.physics.enabled = !this.state.pausedAnimation;
+
               this.setState({ ...this.state, pausedAnimation: !this.state.pausedAnimation });
-              if (this.graph && this.state.pausedAnimation === true) {
-                this.graph.stopSimulation();
+
+              if (this.graph && this.state.pausedAnimation) {
+                this.graph.Network.startSimulation();
               } else {
-                this.graph.startSimulation();
+                this.graph.Network.stopSimulation();
               }
             }}
           >
-            {this.state.pausedAnimation ? '▶' : '⏸'}
+            {this.state.pausedAnimation ? '▶' : '❚❚'}
           </button>
           {/*<div style={{ width: '100%' }}> */}
           {buttonsList}
@@ -751,6 +765,8 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
             animation: 'scale',
             duration: 1400,
           }}
+          closeOnEscape={true}
+          closeOnTriggerClick={true}
         >
           <Segment
             style={{
@@ -766,14 +782,17 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
               color: '#000000',
             }}
           >
+            <span style={{ textAlign: 'center', background: 'lightgray', display: 'block' }}>
+              {PontusComponent.t(this.state.metadataType!)}
+            </span>
             <PVGridSelfDiscovery
               ref={this.selfDiscoveryGrid}
-              style={{ height: '100%' }}
+              // style={{ height: '100%' }}
               namespace={this.props.namespace}
               vid={this.state.vid}
-              edgeType={this.state.edgeType}
-              edgeDir={this.state.edgeDir}
-              metadataType={this.state.metadataType}
+              edgeType={this.state.edgeType!}
+              edgeDir={this.state.edgeDir!}
+              dataType={this.state.metadataType}
             />
           </Segment>
         </Portal>

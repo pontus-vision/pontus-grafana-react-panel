@@ -10,6 +10,7 @@ class PVDataGraphShowAllNodes extends PVDataGraph {
     // this.subscription = (this.props.namespace ? this.props.namespace : '') + '-pvgrid-on-click-row';
 
     this.state = {
+      pausedAnimation: false,
       graph: {
         nodes: [
           // {id: 1, label: 'Jackson Turner', title:"asdfasfdasfd",  color: '#e04141'}

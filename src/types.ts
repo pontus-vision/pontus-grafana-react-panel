@@ -1,4 +1,5 @@
 import { PVGridColDef } from './PVGrid';
+import PontusComponent from './PontusComponent';
 
 export const scTypes = ['au', 'br', 'de'] as const;
 export type Market = typeof scTypes[number];
@@ -54,12 +55,15 @@ export interface SimpleOptions {
     colSettings?: PVGridColDef[];
   };
 }
-
+const urlMidPath = `${PontusComponent.isLocalhost() ? 'gateway/sandbox/pvgdpr_server/' : ''}`;
+export const urlPrefix = `${window.location.protocol}://${
+  window.location.host || window.location.hostname
+}/${urlMidPath}`;
 export const defaults: SimpleOptions = {
   namespace: 'namespace',
-  gridUrl: 'http://localhost:18443/gateway/sandbox/pvgdpr_server/home/agrecords',
-  directUrl: 'http://localhost:18443/gateway/sandbox/pvgdpr_graph',
-  serviceUrl: 'http://localhost:18443/gateway/sandbox/pvgdpr_server',
+  gridUrl: `${urlPrefix}home/agrecords`,
+  directUrl: `${urlPrefix}home/gremlin`,
+  serviceUrl: urlPrefix,
   isNeighbour: false,
   neighbourNamespace: 'neighbour',
   widgetType: 'PVGrid',

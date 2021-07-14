@@ -206,62 +206,40 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     //   }
     // }
     // return "/gateway/sandbox/pvgdpr_graph";
-    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'pvgdpr_graph', '/gateway/sandbox/pvgdpr_graph');
+    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'home/gremlin');
   }
 
   static getRestEdgeLabelsURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/edge_labels',
-      '/gateway/sandbox/pvgdpr_server/home/edge_labels'
-    );
+    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', `home/edge_labels`);
+  }
+  static isLocalhost(): boolean {
+    return window?.location?.host === 'localhost' || window?.location?.host === '127.0.0.1';
   }
 
   static getRestVertexLabelsURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/vertex_labels',
-      '/gateway/sandbox/pvgdpr_server/home/vertex_labels'
-    );
+    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', `home/vertex_labels`);
   }
 
   static getRestNodePropertyNamesURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/node_property_names',
-      '/gateway/sandbox/pvgdpr_server/home/node_property_names'
-    );
+    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'home/node_property_names');
   }
 
   static getRestURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/records',
-      '/gateway/sandbox/pvgdpr_server/home/records'
-    );
+    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'home/records');
   }
 
   static getRestUrlAg(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/agrecords',
-      '/gateway/sandbox/pvgdpr_server/home/agrecords'
-    );
+    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'home/agrecords');
   }
 
-  static getURLGeneric(props: any, pvgdprGuiStr: string, defaultSuffix: string, defaultSandbox: string): string {
+  static getURLGeneric(props: any, pvgdprGuiStr: string, defaultSuffix: string): string {
     if (props.url && props.url.length > 0) {
       return props.url;
     } else if (window.location && window.location.pathname) {
       const pvgdprGuiIndex = window.location.pathname.indexOf(pvgdprGuiStr);
       if (pvgdprGuiIndex > 0) {
         const retVal = window.location.pathname.substr(0, pvgdprGuiIndex);
-        return retVal.concat(defaultSuffix);
+        return retVal.concat(`${PontusComponent.isLocalhost() ? 'pvgdpr_server/' : ''}${defaultSuffix}`);
       }
     } else if (props.baseURI) {
       if (props.ownerDocument && props.ownerDocument.origin) {
@@ -272,12 +250,12 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
           const originLen = props.ownerDocument.origin.length();
           const retVal = uri.substr(originLen, pvgdprGuiIndex);
 
-          return retVal.concat(defaultSuffix);
+          return retVal.concat(`${PontusComponent.isLocalhost() ? 'pvgdpr_server/' : ''}${defaultSuffix}`);
         }
       }
     }
 
-    return defaultSandbox;
+    return `${PontusComponent.isLocalhost() ? '/gateway/sandbox/pvgdpr_server/' : '/'}${defaultSuffix}`;
   }
 
   getColorBasedOnLabel = (vLabel: string) => {

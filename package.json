@@ -30,7 +30,6 @@
     "@types/pubsub-js": "^1.8.2",
     "@types/react-select": "^3.1.2",
     "@types/reflexbox": "^4.0.2",
-    "@types/slickgrid": "^2.1.30",
     "tslib": "^2.2.0"
   },
   "dependencies": {
