@@ -55,10 +55,7 @@ export interface SimpleOptions {
     colSettings?: PVGridColDef[];
   };
 }
-const urlMidPath = `${PontusComponent.isLocalhost() ? 'gateway/sandbox/pvgdpr_server/' : ''}`;
-export const urlPrefix = `${window.location.protocol}://${
-  window.location.host || window.location.hostname
-}/${urlMidPath}`;
+export const urlPrefix = `${PontusComponent.getUrlPrefix()}/`;
 export const defaults: SimpleOptions = {
   namespace: 'namespace',
   gridUrl: `${urlPrefix}home/agrecords`,
