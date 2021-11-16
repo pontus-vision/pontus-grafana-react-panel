@@ -2,9 +2,9 @@ import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 
 import Gauge from 'react-svg-gauge';
-import PontusComponent from './PontusComponent';
+import PontusComponent, { PVComponentProps } from './PontusComponent';
 
-export interface PVGaugeProps {
+export interface PVGaugeProps extends PVComponentProps {
   label: string;
   value: number;
   min: number;

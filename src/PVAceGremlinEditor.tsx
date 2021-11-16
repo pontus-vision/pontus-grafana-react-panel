@@ -67,14 +67,13 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
       self.req = CancelToken.source();
 
       // http.post(url)
-      axios
-        .post(url, self.getSearchObj(data), {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          cancelToken: self.req.token,
-        })
+      this.post(url, self.getSearchObj(data), {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        cancelToken: self.req.token,
+      })
         .then(self.onSuccess)
         .catch((thrown) => {
           if (axios.isCancel(thrown)) {

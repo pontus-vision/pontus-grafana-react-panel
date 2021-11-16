@@ -1,5 +1,5 @@
 import { PVGridColDef } from './PVGrid';
-import PontusComponent from './PontusComponent';
+import PontusComponent, { PVComponentProps } from './PontusComponent';
 
 export const scTypes = ['au', 'br', 'de'] as const;
 export type Market = typeof scTypes[number];
@@ -50,8 +50,9 @@ export interface SimpleOptions {
   colSettings?: PVGridColDef[];
   customFilter?: string;
   filter?: string;
-  awsAccessKey?: string;
-  awsSecretKey?: string;
+  useAws: boolean;
+  awsAccessKeyId?: string;
+  awsSecretKeyId?: string;
   dataSettings?: {
     dataType?: string;
     colSettings?: PVGridColDef[];
@@ -66,8 +67,9 @@ export const defaults: SimpleOptions = {
   isNeighbour: false,
   neighbourNamespace: 'neighbour',
   widgetType: 'PVGrid',
-  awsAccessKey: '',
-  awsSecretKey: '',
+  useAws: false,
+  awsAccessKeyId: '',
+  awsSecretKeyId: '',
   dataSettings: {
     dataType: 'Person.Organisation',
     colSettings: [
@@ -87,7 +89,7 @@ export const defaults: SimpleOptions = {
   },
 };
 
-export interface PVNamespaceProps {
+export interface PVNamespaceProps extends PVComponentProps {
   url?: string;
   isNeighbour?: boolean;
   neighbourNamespace?: string;

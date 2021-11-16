@@ -408,28 +408,29 @@ export class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
     this.hRequest = setTimeout(() => {
       self.req = Axios.CancelToken.source();
-      Axios.post(
-        url,
-        self.getSearchObj(
-          fromReqNum,
-          toReq,
-          self.getSearch(),
-          self.cols,
-          self.dataType,
-          self.sortcol,
-          self.sortdir,
-          self.filtersCalc,
-          self.customFilter
-        ),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            'X-PV-Timestamp': `${Date.now()}`,
-          },
-          cancelToken: self.req.token,
-        }
-      )
+      self
+        .post(
+          url,
+          self.getSearchObj(
+            fromReqNum,
+            toReq,
+            self.getSearch(),
+            self.cols,
+            self.dataType,
+            self.sortcol,
+            self.sortdir,
+            self.filtersCalc,
+            self.customFilter
+          ),
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              'X-PV-Timestamp': `${Date.now()}`,
+            },
+            cancelToken: self.req.token,
+          }
+        )
         .then(self.onSuccessProxy)
         .catch((thrown: any) => {
           if (Axios.isCancel(thrown)) {

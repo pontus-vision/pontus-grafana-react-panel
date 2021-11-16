@@ -17,14 +17,14 @@ import { eyeBlocked as PrivacyNoticesIcon } from 'react-icons-kit/icomoon/eyeBlo
 import { download as SubjectAccessRequestIcon } from 'react-icons-kit/entypo/download';
 
 import Icon from 'react-icons-kit';
-import PontusComponent from './PontusComponent';
+import PontusComponent, { PVComponentProps } from './PontusComponent';
 import { ScoreType } from './types';
 
 /***************************
  * UserList Component
  ***************************/
 
-export interface PVGDPRScoreProps {
+export interface PVGDPRScoreProps extends PVComponentProps {
   url?: string;
   scoreType: ScoreType;
   showText?: boolean;
@@ -135,16 +135,15 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
       self.req = CancelToken.source();
 
       // http.post(url)
-      axios
-        .post(url, self.getSearchQuery(), {
-          maxRedirects: 0,
-          validateStatus: (status) => {
-            self.latestStatus = status;
-            return status >= 200 && status < 300;
-          },
-          headers: reqHeaders,
-          cancelToken: self.req.token,
-        })
+      this.post(url, self.getSearchQuery(), {
+        maxRedirects: 0,
+        validateStatus: (status) => {
+          self.latestStatus = status;
+          return status >= 200 && status < 300;
+        },
+        headers: reqHeaders,
+        cancelToken: self.req.token,
+      })
         .then(self.onSuccessProxy)
         .catch((thrown) => {
           if (axios.isCancel(thrown)) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Portal, Segment } from 'semantic-ui-react';
 import PVReportButton, { PVReportButtonProps } from './PVReportButton';
+import PontusComponent from './PontusComponent';
 
 // import PVDatamaps from './PVDatamaps';
 
@@ -21,6 +22,7 @@ class PVGridReportButtonCellRenderer extends PVReportButton {
       templateText: parsedStaticData[2].substring(1, parsedStaticData[2].length - 1),
     };
 
+    this.url = PontusComponent.getRestTemplateRenderURL(props);
     // this.state.context
   }
 

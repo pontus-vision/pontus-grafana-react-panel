@@ -1,11 +1,11 @@
 import React, { CSSProperties } from 'react';
 import PVGremlinComboBox from './PVGremlinComboBox';
 // import { Flex } from 'reflexbox';
-import PontusComponent from './PontusComponent';
+import PontusComponent, { PVComponentProps } from './PontusComponent';
 import { PVGridColDef } from './PVGrid';
 import { PanelOptionsEditorProps } from '@grafana/data';
 
-export interface PVGridColSelectorProps {
+export interface PVGridColSelectorProps extends PVComponentProps {
   namespace?: string;
   subNamespace?: string;
   mountedSuccess?: boolean;
@@ -56,11 +56,11 @@ class PVGridColSelector extends PontusComponent<
   onError = (err: any) => {
     console.error('error loading pages ' + err);
   };
-  onChangeVertexLabels = (val: { label: string; value: string }) => {
+  onChangeVertexLabels = async (val: { label: string; value: string }) => {
     // alert("got data " + val);
     // this.props.glEventHub.emit('userSearch-on-boxChanged')
     if (this.nodePropertyNamesReactSelect) {
-      this.nodePropertyNamesReactSelect.getOptions({ labels: val });
+      await this.nodePropertyNamesReactSelect.getOptions({ version: 'v2.0.0', labels: val });
     }
     if (this.props.onChange) {
       this.dataType = val.value;

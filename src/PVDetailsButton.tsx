@@ -91,14 +91,13 @@ export class PVDetailsButton extends PontusComponent<PVDetailsButtonProps, PVDet
       let CancelToken = axios.CancelToken;
       self.req = CancelToken.source();
 
-      axios
-        .post(url, self.getQuery(contextId, templateText), {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          cancelToken: self.req.token,
-        })
+      this.post(url, self.getQuery(contextId, templateText), {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        cancelToken: self.req.token,
+      })
         .then(this.onSuccess)
         .catch((thrown) => {
           if (axios.isCancel(thrown)) {

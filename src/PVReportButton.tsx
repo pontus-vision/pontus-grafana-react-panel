@@ -100,7 +100,7 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
       const CancelToken = Axios.CancelToken;
       self.req = CancelToken.source();
 
-      Axios.post(url, self.getQuery(contextId, templateText), {
+      this.post(url, self.getQuery(contextId, templateText), {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',

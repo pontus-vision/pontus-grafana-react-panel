@@ -3,6 +3,7 @@ import { defaults, ScoreType, ScoreTypeValues, SimpleOptions, WidgetType, Widget
 import { SimplePanel } from './SimplePanel';
 import PontusComponent from './PontusComponent';
 import PVGridColSelector from './PVGridColSelector';
+import PVSensitiveInfo from './PVSensitiveInfo';
 // import { SimpleEditorFuncComp } from './SimpleEditor';
 
 // export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setDefaults(defaults).setEditor(SimpleEditor);
@@ -197,15 +198,48 @@ plugin.setPanelOptions((builder) => {
       return currentConfig.widgetType === 'PVGrid';
     },
   });
+  builder.addBooleanSwitch({
+    path: 'useAws',
+    name: PontusComponent.t('Use AWS')!,
+    defaultValue: defaults.useAws,
+    // description: 'isNeighbour',
+    settings: undefined,
+    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+      return true;
+    },
+  });
 
   builder.addTextInput({
-    path: 'awsAccessKey',
+    path: 'awsAccessKeyId',
     // description: PontusComponent.t('Custom Filter')!,
-    defaultValue: defaults.awsAccessKey,
+    defaultValue: defaults.awsAccessKeyId,
     name: PontusComponent.t('AWS ACCESS KEY')!,
     settings: {},
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return true;
+      return currentConfig.useAws;
+    },
+  });
+  // builder.addTextInput({
+  //   path: 'awsSecretKeyId',
+  //   // description: PontusComponent.t('Custom Filter')!,
+  //   defaultValue: defaults.awsSecretKeyId,
+  //   name: PontusComponent.t('AWS SECRET KEY')!,
+  //   settings: {},
+  //   showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+  //     return currentConfig.useAws;
+  //   },
+  // });
+
+  builder.addCustomEditor({
+    id: 'PVSensitiveInfo',
+    name: PontusComponent.t('AWS SECRET KEY')!,
+    path: 'awsSecretKeyId',
+    // description: '',
+    settings: {},
+    defaultValue: defaults.awsSecretKeyId,
+    editor: PVSensitiveInfo,
+    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+      return currentConfig.useAws;
     },
   });
 });

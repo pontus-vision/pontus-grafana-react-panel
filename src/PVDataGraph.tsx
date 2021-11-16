@@ -372,14 +372,13 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
       let CancelToken = axios.CancelToken;
       self.req = CancelToken.source();
 
-      axios
-        .post(url, this.getQuery(this.origNodeId), {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          cancelToken: self.req.token,
-        })
+      this.post(url, this.getQuery(this.origNodeId), {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        cancelToken: self.req.token,
+      })
         .then(this.onSuccess)
         .catch((thrown) => {
           if (axios.isCancel(thrown)) {

@@ -56,7 +56,7 @@ class PVGridSelfDiscovery extends PVGrid {
     const CancelToken = Axios.CancelToken;
     this.req2 = CancelToken.source();
     try {
-      const response = await Axios.post(
+      const response = await this.post(
         url,
         { labels: [{ label: this.props.dataType, value: this.props.dataType }] },
         {

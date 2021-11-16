@@ -4,9 +4,10 @@ import React from 'react';
 import i18next, { getDefaultLang } from './i18n';
 // let d3 = window.d3;
 import PubSub from 'pubsub-js';
-import axios, { CancelTokenSource } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, CancelTokenSource } from 'axios';
+import { PVSigV4Utils } from './PVSigV4Utils';
 import { getTheme } from '@grafana/ui';
-import { GrafanaTheme } from '@grafana/data';
+import { GrafanaTheme, PanelOptionsEditorProps } from '@grafana/data';
 import { config } from '@grafana/runtime';
 
 // import * as d3 from "d3";
@@ -14,10 +15,20 @@ import { config } from '@grafana/runtime';
 export interface PubSubCallback extends Function {
   (topic: string, data: any): void;
 }
+export interface PVComponentProps {
+  url?: string | undefined;
+  isNeighbour?: boolean;
+  neighbourNamespace?: string;
+  namespace?: string;
+  subNamespace?: string;
+  mountedSuccess?: boolean;
+  awsSecretKeyId?: string;
+  awsAccessKeyId?: string;
+}
 
 // const { t, i18n } = useTranslation();
 
-class PontusComponent<T, S> extends React.PureComponent<T, S> {
+class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>, S> extends React.PureComponent<T, S> {
   protected url: string;
   protected req: CancelTokenSource | undefined;
   protected request: any;
@@ -150,6 +161,9 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   static getRestNodePropertyNamesURL(props: any): string {
     return PontusComponent.getURLGeneric(props, 'home/node_property_names');
   }
+  static getRestTemplateRenderURL(props: any): string {
+    return PontusComponent.getURLGeneric(props, 'home/report/template/render');
+  }
 
   static getRestURL(props: any): string {
     return PontusComponent.getURLGeneric(props, 'home/records');
@@ -230,7 +244,7 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
       self.req = CancelToken.source();
 
       // http.post(url)
-      axios
+      self
         .post(url, self.getQuery(id1, id2), {
           headers: {
             'Content-Type': 'application/json',
@@ -341,6 +355,29 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   protected getQuery = (eventId: any, id2?: any): { bindings: Record<string, any>; gremlin: string } => {
     return { bindings: { hello: 'world' }, gremlin: '' };
   };
+  async post<T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> {
+    if ((this.props as PVComponentProps).awsAccessKeyId) {
+      const props = this.props as PVComponentProps;
+      config = PVSigV4Utils.getRequestConfig(
+        {
+          AccessKeyId: props.awsAccessKeyId!,
+          SecretAccessKey: props.awsSecretKeyId!,
+        },
+        config!
+      );
+    } else if ((this.props as unknown as PanelOptionsEditorProps<PVComponentProps>).context.options.awsAccessKeyId) {
+      const props = this.props as unknown as PanelOptionsEditorProps<PVComponentProps>;
+      config = PVSigV4Utils.getRequestConfig(
+        {
+          AccessKeyId: props.context.options.awsAccessKeyId!,
+          SecretAccessKey: props.context.options.awsSecretKeyId!,
+        },
+        config!
+      );
+    }
+
+    return axios.post<T, R>(url, data, config);
+  }
 }
 
 export default PontusComponent;

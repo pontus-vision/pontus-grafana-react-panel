@@ -92,7 +92,7 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
     const CancelToken = Axios.CancelToken;
     this.req = CancelToken.source();
     try {
-      const response = await Axios.post(url, jsonRequest, {
+      const response = await this.post(url, jsonRequest, {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         cancelToken: this.req.token,
       });
