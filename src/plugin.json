@@ -14,8 +14,8 @@
       "large": "img/logo.svg"
     },
     "links": [
-      { "name": "Website", "url": "https://github.com/pontus-vision/simple-react-panel" },
-      { "name": "License", "url": "https://github.com/grafana/simple-react-panel/blob/master/LICENSE" }
+      { "name": "Website", "url": "https://github.com/pontus-vision/" },
+      { "name": "License", "url": "https://github.com/pontus-vision/LICENSE" }
     ],
     "screenshots": [],
     "version": "%VERSION%",
@@ -23,7 +23,7 @@
   },
 
   "dependencies": {
-    "grafanaVersion": "6.x.x",
+    "grafanaVersion": "7.x.x",
     "plugins": []
   }
 }

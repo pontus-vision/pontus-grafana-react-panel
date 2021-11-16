@@ -50,6 +50,8 @@ export interface SimpleOptions {
   colSettings?: PVGridColDef[];
   customFilter?: string;
   filter?: string;
+  awsAccessKey?: string;
+  awsSecretKey?: string;
   dataSettings?: {
     dataType?: string;
     colSettings?: PVGridColDef[];
@@ -64,6 +66,8 @@ export const defaults: SimpleOptions = {
   isNeighbour: false,
   neighbourNamespace: 'neighbour',
   widgetType: 'PVGrid',
+  awsAccessKey: '',
+  awsSecretKey: '',
   dataSettings: {
     dataType: 'Person.Organisation',
     colSettings: [

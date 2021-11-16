@@ -140,7 +140,7 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   }
 
   static isLocalhost(): boolean {
-    return window?.location?.host === 'localhost' || window?.location?.host === '127.0.0.1';
+    return window?.location?.hostname === 'localhost' || window?.location?.hostname === '127.0.0.1';
   }
 
   static getRestVertexLabelsURL(props: any): string {
@@ -190,14 +190,12 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
 
   static getUrlPrefix(): string {
     const proto = `${window.location.protocol || 'http:'}//`;
-    const portStr = `:${window.location.port || 18443}/`;
-    const port = `${
-      (proto === 'https' && portStr === ':443/') || (proto === 'http' && portStr === ':80/') ? '/' : portStr
-    }`;
+    const portStr = window.location.port;
+    const port = portStr ? `:${portStr}` : '';
 
     const host = `${window.location.hostname || 'localhost'}`;
     const prefix = `${proto}${host}${port}`;
-    const middle = `${PontusComponent.isLocalhost() ? 'gateway/sandbox/pvgdpr_server' : ''}`;
+    const middle = `${PontusComponent.isLocalhost() ? '/gateway/sandbox/pvgdpr_server' : ''}`;
 
     return `${prefix}${middle}`;
   }

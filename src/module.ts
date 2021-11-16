@@ -197,6 +197,17 @@ plugin.setPanelOptions((builder) => {
       return currentConfig.widgetType === 'PVGrid';
     },
   });
+
+  builder.addTextInput({
+    path: 'awsAccessKey',
+    // description: PontusComponent.t('Custom Filter')!,
+    defaultValue: defaults.awsAccessKey,
+    name: PontusComponent.t('AWS ACCESS KEY')!,
+    settings: {},
+    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+      return true;
+    },
+  });
 });
 // plugin.setDefaults(defaults);
 // plugin.setEditor(SimpleEditor);

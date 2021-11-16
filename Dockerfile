@@ -15,6 +15,11 @@ ENV NODE_ENV=development
 RUN   yarn run build
 RUN   yarn audit || [ "$?" -lt 8 ]
 
+ARG GRAFANA_API_KEY
+ENV GRAFANA_API_KEY=${GRAFANA_API_KEY}
+RUN echo $GRAFANA_API_KEY
+RUN   npx @grafana/toolkit plugin:sign
+
 #RUN yarn run   dev
 
 FROM grafana/grafana:7.5.3-ubuntu
