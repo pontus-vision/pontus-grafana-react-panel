@@ -2,8 +2,12 @@
   "name": "simple-react-panel",
   "version": "1.0.0",
   "description": "Grafana RSS Panel",
-    "resolutions": {
-    "**/**/immer": "^8.0.1"
+  "resolutions": {
+    "**/**/immer": "^9.0.6",
+    "**/**/postcss": "^7.0.36",
+    "**/**/css-what": "^5.0.1",
+    "**/**/glob-parent": "~5.1.2",
+    "**/**/axios": "^0.21.2"
   },
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -22,22 +26,24 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-react": "^7.12.10",
-    "@grafana/data": "^7.3.7",
-    "@grafana/runtime": "^7.3.7",
-    "@grafana/toolkit": "^7.3.7",
-    "@grafana/ui": "^7.3.7"
-  },
-  "dependencies": {
+    "@grafana/data": "^7.5.11",
+    "@grafana/runtime": "^7.5.11",
+    "@grafana/toolkit": "^7.5.11",
+    "@grafana/ui": "^7.5.11",
+    "@types/crypto-js": "^4.0.2",
     "@types/js-base64": "^3.0.0",
     "@types/pubsub-js": "^1.8.2",
     "@types/react-select": "^3.1.2",
     "@types/reflexbox": "^4.0.2",
-    "@types/slickgrid": "^2.1.30",
+    "tslib": "^2.2.0"
+  },
+  "dependencies": {
     "ag-grid-community": "^25.0.1",
     "ag-grid-react": "^25.0.1",
-    "axios": "^0.21.1",
+    "axios": "0.21.2",
     "brace": "^0.11.1",
     "chart.js": "^2.9.4",
+    "crypto-js": "^4.1.1",
     "i18next": "^19.8.4",
     "js-base64": "^3.6.0",
     "path": "^0.12.7",
@@ -56,6 +62,6 @@
     "react-svg-gauge": "^1.0.10",
     "reflexbox": "^4.0.6",
     "semantic-ui-react": "^2.0.3",
-    "slickgrid-es6": "^3.0.3"
+    "slickgrid": "^2.4.34"
   }
 }

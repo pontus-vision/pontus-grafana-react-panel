@@ -39,7 +39,7 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
     this.req = CancelToken.source();
 
     try {
-      const response = await axios.post(url, jsonRequest, {
+      const response = await this.post(url, jsonRequest, {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         cancelToken: this.req.token,
       });

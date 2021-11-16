@@ -4,31 +4,40 @@ import React from 'react';
 import i18next, { getDefaultLang } from './i18n';
 // let d3 = window.d3;
 import PubSub from 'pubsub-js';
-import axios, { CancelTokenSource } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, CancelTokenSource } from 'axios';
+import { PVSigV4Utils } from './PVSigV4Utils';
 import { getTheme } from '@grafana/ui';
-import { GrafanaTheme } from '@grafana/data';
+import { GrafanaTheme, PanelOptionsEditorProps } from '@grafana/data';
+import { config } from '@grafana/runtime';
 
 // import * as d3 from "d3";
 
 export interface PubSubCallback extends Function {
   (topic: string, data: any): void;
 }
+export interface PVComponentProps {
+  url?: string | undefined;
+  isNeighbour?: boolean;
+  neighbourNamespace?: string;
+  namespace?: string;
+  subNamespace?: string;
+  mountedSuccess?: boolean;
+  awsSecretKeyId?: string;
+  awsAccessKeyId?: string;
+}
 
 // const { t, i18n } = useTranslation();
 
-class PontusComponent<T, S> extends React.PureComponent<T, S> {
+class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>, S> extends React.PureComponent<T, S> {
   protected url: string;
   protected req: CancelTokenSource | undefined;
   protected request: any;
   protected errorCounter: number;
   protected hRequest?: NodeJS.Timeout;
   protected theme: GrafanaTheme;
-  constructor(props: Readonly<any>) {
-    super(props);
-    this.errorCounter = 0;
-    this.url = PontusComponent.getGraphURL(props);
-    this.theme = getTheme();
-  }
+  protected oauth: any;
+  // }
+  private topics: Record<string, number> = {};
 
   // static getColorScale(minVal, maxVal)
   // {
@@ -36,85 +45,14 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
   //     .domain([minVal, (maxVal - minVal) / 2, maxVal])
   //     .range(['green', 'orange', 'red']);
   //
-  // }
-  private topics: Record<string, number> = {};
   private callbacksPerTopic: Record<string, PubSubCallback[]> = {};
 
-  ensureData = (id1: any, id2?: any) => {
-    if (this.req) {
-      this.req.cancel();
-    }
-
-    let url = this.url;
-    if (this.hRequest) {
-      clearTimeout(this.hRequest);
-    }
-
-    let self = this;
-
-    this.hRequest = setTimeout(() => {
-      let CancelToken = axios.CancelToken;
-      self.req = CancelToken.source();
-
-      // http.post(url)
-      axios
-        .post(url, self.getQuery(id1, id2), {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          cancelToken: self.req.token,
-        })
-        .then(this.onSuccess)
-        .catch((thrown) => {
-          if (axios.isCancel(thrown)) {
-            console.log('Request canceled', thrown.message);
-          } else {
-            this.onError(undefined, thrown);
-          }
-        });
-    }, 50);
-  };
-  onSuccess = (resp: any) => {};
-  onError = (event: any, thrown: Error) => {};
-
-  protected getQuery = (eventId: any, id2?: any): { bindings: Record<string, any>; gremlin: string } => {
-    return { bindings: { hello: 'world' }, gremlin: '' };
-  };
-
-  on(topic: string, callback: PubSubCallback) {
-    if (!this.topics[topic]) {
-      this.topics[topic] = 0;
-    }
-    if (!this.callbacksPerTopic[topic]) {
-      this.callbacksPerTopic[topic] = [];
-    }
-    if (!this.callbacksPerTopic[topic].some((currCallback) => currCallback === callback)) {
-      PubSub.subscribe(topic, callback);
-      this.callbacksPerTopic[topic].push(callback);
-      this.topics[topic]++;
-    }
-  }
-
-  off(topic: string, callback: PubSubCallback) {
-    if (!this.topics[topic]) {
-      return;
-    }
-
-    const found = this.callbacksPerTopic[topic].findIndex((currCallback) => currCallback === callback);
-    if (found === -1) {
-      return;
-    }
-
-    PubSub.unsubscribe(callback);
-
-    this.callbacksPerTopic[topic].splice(found, 1);
-
-    this.topics[topic]--;
-  }
-
-  emit(topic: string, data: any) {
-    PubSub.publish(topic, data);
+  constructor(props: Readonly<any>) {
+    super(props);
+    this.errorCounter = 0;
+    this.url = PontusComponent.getGraphURL(props);
+    this.theme = getTheme();
+    this.oauth = config.oauth;
   }
 
   static recursiveSplitTranslateJoin(itemToSplit: string, splitArrayPattern: string[]): string {
@@ -142,10 +80,12 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     }
   }
 
+  static decode = (str: string): string => Buffer.from(str, 'base64').toString('binary');
+
   static b64DecodeUnicode(str: string): string {
     return decodeURIComponent(
       Array.prototype.map
-        .call(atob(str), (c) => {
+        .call(PontusComponent.decode(str), (c) => {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         })
         .join('')
@@ -203,78 +143,163 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     //   }
     // }
     // return "/gateway/sandbox/pvgdpr_graph";
-    return PontusComponent.getURLGeneric(props, 'pvgdpr_gui', 'pvgdpr_graph', '/gateway/sandbox/pvgdpr_graph');
+    return PontusComponent.getURLGeneric(props, 'home/gremlin');
   }
 
   static getRestEdgeLabelsURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/edge_labels',
-      '/gateway/sandbox/pvgdpr_server/home/edge_labels'
-    );
+    return PontusComponent.getURLGeneric(props, `home/edge_labels`);
+  }
+
+  static isLocalhost(): boolean {
+    return window?.location?.hostname === 'localhost' || window?.location?.hostname === '127.0.0.1';
   }
 
   static getRestVertexLabelsURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/vertex_labels',
-      '/gateway/sandbox/pvgdpr_server/home/vertex_labels'
-    );
+    return PontusComponent.getURLGeneric(props, `home/vertex_labels`);
   }
 
   static getRestNodePropertyNamesURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/node_property_names',
-      '/gateway/sandbox/pvgdpr_server/home/node_property_names'
-    );
+    return PontusComponent.getURLGeneric(props, 'home/node_property_names');
+  }
+  static getRestTemplateRenderURL(props: any): string {
+    return PontusComponent.getURLGeneric(props, 'home/report/template/render');
   }
 
   static getRestURL(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/records',
-      '/gateway/sandbox/pvgdpr_server/home/records'
-    );
+    return PontusComponent.getURLGeneric(props, 'home/records');
   }
 
   static getRestUrlAg(props: any): string {
-    return PontusComponent.getURLGeneric(
-      props,
-      'pvgdpr_gui',
-      'pvgdpr_server/home/agrecords',
-      '/gateway/sandbox/pvgdpr_server/home/agrecords'
-    );
+    return PontusComponent.getURLGeneric(props, 'home/agrecords');
   }
 
-  static getURLGeneric(props: any, pvgdprGuiStr: string, defaultSuffix: string, defaultSandbox: string): string {
+  static getURLGeneric(props: any, defaultSuffix: string): string {
+    const pvgdprGuiStr = 'pvgdpr_gui';
     if (props.url && props.url.length > 0) {
       return props.url;
     } else if (window.location && window.location.pathname) {
       const pvgdprGuiIndex = window.location.pathname.indexOf(pvgdprGuiStr);
       if (pvgdprGuiIndex > 0) {
         const retVal = window.location.pathname.substr(0, pvgdprGuiIndex);
-        return retVal.concat(defaultSuffix);
-      }
-    } else if (props.baseURI) {
-      if (props.ownerDocument && props.ownerDocument.origin) {
-        const uri = props.baseURI;
-        const pvgdprGuiIndex = uri.indexOf(pvgdprGuiStr);
-
-        if (pvgdprGuiIndex > 0) {
-          const originLen = props.ownerDocument.origin.length();
-          const retVal = uri.substr(originLen, pvgdprGuiIndex);
-
-          return retVal.concat(defaultSuffix);
-        }
+        return retVal.concat(`${PontusComponent.isLocalhost() ? 'pvgdpr_server/' : ''}${defaultSuffix}`);
       }
     }
+    // else if (props.baseURI) {
+    //   if (props.ownerDocument && props.ownerDocument.origin) {
+    //     const uri = props.baseURI;
+    //     const pvgdprGuiIndex = uri.indexOf(pvgdprGuiStr);
+    //
+    //     if (pvgdprGuiIndex > 0) {
+    //       const originLen = props.ownerDocument.origin.length();
+    //       const retVal = uri.substr(originLen, pvgdprGuiIndex);
+    //
+    //       return retVal.concat(`${PontusComponent.isLocalhost() ? 'pvgdpr_server/' : ''}${defaultSuffix}`);
+    //     } else {
+    //       return uri;
+    //     }
+    //   }
+    // }
+    return `${PontusComponent.getUrlPrefix()}/${defaultSuffix}`;
+  }
 
-    return defaultSandbox;
+  static getUrlPrefix(): string {
+    const proto = `${window.location.protocol || 'http:'}//`;
+    const portStr = window.location.port;
+    const port = portStr ? `:${portStr}` : '';
+
+    const host = `${window.location.hostname || 'localhost'}`;
+    const prefix = `${proto}${host}${port}`;
+    const middle = `${PontusComponent.isLocalhost() ? '/gateway/sandbox/pvgdpr_server' : ''}`;
+
+    return `${prefix}${middle}`;
+  }
+
+  static setItem(key: string, val: any) {
+    localStorage.setItem(getDefaultLang() + key, val);
+  }
+
+  static getItem(key: string, defVal: any | undefined = undefined): string | null {
+    let retVal = localStorage.getItem(getDefaultLang() + key);
+    if (!retVal && defVal) {
+      PontusComponent.setItem(key, defVal);
+      retVal = defVal;
+    }
+    return retVal;
+  }
+
+  ensureData = (id1: any, id2?: any) => {
+    if (this.req) {
+      this.req.cancel();
+    }
+
+    let url = this.url;
+    if (this.hRequest) {
+      clearTimeout(this.hRequest);
+    }
+
+    let self = this;
+
+    this.hRequest = setTimeout(() => {
+      let CancelToken = axios.CancelToken;
+      self.req = CancelToken.source();
+
+      // http.post(url)
+      self
+        .post(url, self.getQuery(id1, id2), {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          cancelToken: self.req.token,
+        })
+        .then(this.onSuccess)
+        .catch((thrown) => {
+          if (axios.isCancel(thrown)) {
+            console.log('Request canceled', thrown.message);
+          } else {
+            this.onError(undefined, thrown);
+          }
+        });
+    }, 50);
+  };
+
+  onSuccess = (resp: any) => {};
+
+  onError = (event: any, thrown: Error) => {};
+
+  on(topic: string, callback: PubSubCallback) {
+    if (!this.topics[topic]) {
+      this.topics[topic] = 0;
+    }
+    if (!this.callbacksPerTopic[topic]) {
+      this.callbacksPerTopic[topic] = [];
+    }
+    if (!this.callbacksPerTopic[topic].some((currCallback) => currCallback === callback)) {
+      PubSub.subscribe(topic, callback);
+      this.callbacksPerTopic[topic].push(callback);
+      this.topics[topic]++;
+    }
+  }
+
+  off(topic: string, callback: PubSubCallback) {
+    if (!this.topics[topic]) {
+      return;
+    }
+
+    const found = this.callbacksPerTopic[topic].findIndex((currCallback) => currCallback === callback);
+    if (found === -1) {
+      return;
+    }
+
+    PubSub.unsubscribe(callback);
+
+    this.callbacksPerTopic[topic].splice(found, 1);
+
+    this.topics[topic]--;
+  }
+
+  emit(topic: string, data: any) {
+    PubSub.publish(topic, data);
   }
 
   getColorBasedOnLabel = (vLabel: string) => {
@@ -327,17 +352,31 @@ class PontusComponent<T, S> extends React.PureComponent<T, S> {
     return state;
   };
 
-  static setItem(key: string, val: any) {
-    localStorage.setItem(getDefaultLang() + key, val);
-  }
-
-  static getItem(key: string, defVal: any | undefined = undefined): string | null {
-    let retVal = localStorage.getItem(getDefaultLang() + key);
-    if (!retVal && defVal) {
-      PontusComponent.setItem(key, defVal);
-      retVal = defVal;
+  protected getQuery = (eventId: any, id2?: any): { bindings: Record<string, any>; gremlin: string } => {
+    return { bindings: { hello: 'world' }, gremlin: '' };
+  };
+  async post<T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> {
+    if ((this.props as PVComponentProps).awsAccessKeyId) {
+      const props = this.props as PVComponentProps;
+      config = PVSigV4Utils.getRequestConfig(
+        {
+          AccessKeyId: props.awsAccessKeyId!,
+          SecretAccessKey: props.awsSecretKeyId!,
+        },
+        config!
+      );
+    } else if ((this.props as unknown as PanelOptionsEditorProps<PVComponentProps>).context.options.awsAccessKeyId) {
+      const props = this.props as unknown as PanelOptionsEditorProps<PVComponentProps>;
+      config = PVSigV4Utils.getRequestConfig(
+        {
+          AccessKeyId: props.context.options.awsAccessKeyId!,
+          SecretAccessKey: props.context.options.awsSecretKeyId!,
+        },
+        config!
+      );
     }
-    return retVal;
+
+    return axios.post<T, R>(url, data, config);
   }
 }
 

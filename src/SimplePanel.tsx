@@ -36,11 +36,13 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const isNeighbour = this.props.options.isNeighbour;
     const neighbourNamespace = this.props.options.neighbourNamespace;
     const widgetType = this.props.options.widgetType;
-    const dataType = this.props.options.dataType || this.props.options.dataSettings?.dataType;
-    const colSettings = this.props.options.colSettings || this.props.options.dataSettings?.colSettings;
+    const dataType = this.props.options.dataSettings?.dataType || this.props.options.dataType;
+    const colSettings = this.props.options.dataSettings?.colSettings || this.props.options.colSettings;
     const customFilter = this.props.options.customFilter;
     const filter = this.props.options.filter;
     const scoreType = this.props.options.scoreType!;
+    const awsAccessKeyId = this.props.options.awsAccessKeyId;
+    const awsSecretKeyId = this.props.options.awsSecretKeyId;
 
     console.log(`config.bootData = ${config}`);
     console.log(`config.bootData = ${JSON.stringify(config)}`);
@@ -56,6 +58,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           subNamespace={undefined}
           width={width}
           height={height}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
         />
       ),
       GremlinQueryEditor: (
@@ -66,6 +70,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           isNeighbour={isNeighbour}
           namespace={namespace}
           subNamespace={undefined}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
         />
       ),
       GremlinQueryResults: (
@@ -75,6 +81,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           isNeighbour={isNeighbour}
           namespace={namespace}
           subNamespace={undefined}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
         />
       ),
       PVGDPRScore: (
@@ -85,6 +93,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           showText={this.props.options.showText}
           showIcon={this.props.options.showIcon}
           showExplanation={this.props.options.showExplanation}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
         />
       ),
       PVDataGraph: (
@@ -93,6 +103,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
         />
       ),
       PVGrid: (
@@ -107,6 +119,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           columnDefs={colSettings}
           subNamespace={undefined}
           filter={filter}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
         />
       ),
       PVInfraGraph: (
@@ -115,6 +129,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
         />
       ),
     };

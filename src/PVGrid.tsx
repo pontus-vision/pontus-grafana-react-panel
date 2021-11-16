@@ -17,6 +17,9 @@ export interface PVGridProps extends PVNamespaceProps {
   columnDefs?: PVGridColDef[];
   dataType?: string;
   filter?: string;
+  vid?: string;
+  edgeDir?: '->' | '<-';
+  edgeType?: string;
 }
 
 export interface PVGridState extends PVGridProps {
@@ -45,37 +48,57 @@ export interface PVGridColDef extends ColDef {
   id: string;
   name: string;
   field: string;
+  defaultSortAsc?: boolean;
+  focusable?: boolean;
+  headerCssClass?: string;
+  minWidth?: number;
+  rerenderOnResize?: boolean;
+  resizable?: boolean;
+  selectable?: boolean;
+  sortable?: boolean;
+  width?: number;
 }
 
-class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
+export interface PVGridSearch {
+  cols?: PVGridColDef[];
+  relationship?: string;
+  direction?: '->' | '<-';
+  vid?: string;
+  searchStr: string;
+  searchExact: boolean;
+  extraSearch?: any;
+}
+
+export class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   // protected namespace: string;
   // protected subNamespace: string;
-  private mountedSuccess: boolean;
+  protected mountedSuccess: boolean;
   protected customFilter: string | undefined;
-  private dataType: string | undefined;
-  private readonly PAGESIZE: number;
-  private errCounter: number;
-  private data: any[];
-  private searchstr: string;
-  private searchExact: boolean;
-  private sortcol: any | null;
-  private sortdir: string;
-  private filters: any;
-  private colFieldTranslation: Record<string, string>;
+  protected dataType: string | undefined;
+  protected readonly PAGESIZE: number;
+  protected errCounter: number;
+  protected data: any[];
+  protected searchstr: string;
+  protected searchExact: boolean;
+  protected sortcol: any | null;
+  protected sortdir: string;
+  protected filters: any;
+  protected colFieldTranslation: Record<string, string>;
   // private gridApi: GridApi | null | undefined;
   // private gridColumnApi: ColumnApi | null | undefined;
-  private getRowsParams: IGetRowsParams | undefined;
-  private from: number | undefined;
-  private to: number | undefined;
+  protected getRowsParams: IGetRowsParams | undefined;
+  protected from: number | undefined;
+  protected to: number | undefined;
   // private extraSearch: any;
-  private cols: PVGridColDef[] | undefined;
+  protected cols: PVGridColDef[] | undefined;
   // private h_request2: NodeJS.Timeout | undefined;
   // private req2: CancelTokenSource | undefined;
-  private fromPage: number;
-  private toPage: number;
-  private filtersCalc: any[];
+  protected fromPage: number;
+  protected toPage: number;
+  protected filtersCalc: any[];
+  // protected search: PVGridSearch;
 
-  constructor(props: PVGridProps) {
+  constructor(props: Readonly<PVGridProps>) {
     super(props);
     this.fromPage = 0;
     this.toPage = 0;
@@ -87,7 +110,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.searchstr = '';
     this.searchExact = true;
     this.customFilter = props.customFilter;
-    this.filters = props.filter ? (JSON.parse(props.filter) as any[]) : [];
+    this.filters = props.filter ? (JSON.parse(props.filter!) as any[]) : [];
     this.filtersCalc = [];
     this.sortcol = null;
     this.sortdir = '+desc';
@@ -100,7 +123,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     this.colFieldTranslation = {};
 
     this.state = {
-      ...this.props,
+      ...props,
+
       hideMenu: true,
       totalRecords: 0,
       columnDefs: this.getColSettings(props),
@@ -172,7 +196,8 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
         }
 
         if (params.filterModel) {
-          self.filtersCalc = self.filters ? [...this.filters] : [];
+          self.filters = self.props.filter ? (JSON.parse(self.props.filter!) as any[]) : [];
+          self.filtersCalc = self.filters ? [...self.filters] : [];
 
           for (const fm of Object.keys(params.filterModel)) {
             let colId = fm.replace(/_1$/g, '');
@@ -277,8 +302,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   getSearchObj = (
     from: number,
     to: number,
-    searchstr: string,
-    searchExact: any,
+    search: PVGridSearch,
     cols: any,
     dataType: string | undefined,
     sortcol: any,
@@ -287,12 +311,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     customFilter: string | undefined
   ) => {
     return {
-      search: {
-        searchStr: searchstr,
-        searchExact: searchExact,
-        cols: cols,
-        extraSearch: { label: dataType, value: dataType },
-      },
+      search: search,
       customFilter: customFilter,
       cols: cols,
       filters: filters,
@@ -357,7 +376,14 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   //       });
   //   }, 50);
   // };
-
+  getSearch = (): PVGridSearch => {
+    return {
+      searchStr: this.searchstr,
+      searchExact: this.searchExact,
+      cols: this.cols,
+      extraSearch: { label: this.dataType, value: this.dataType },
+    };
+  };
   ensureDataCustom = (fromReq?: number, toReq?: number) => {
     if (undefined === fromReq || undefined === toReq) {
       return;
@@ -382,28 +408,29 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
     this.hRequest = setTimeout(() => {
       self.req = Axios.CancelToken.source();
-      Axios.post(
-        url,
-        self.getSearchObj(
-          fromReqNum,
-          toReq,
-          self.searchstr,
-          self.searchExact,
-          self.cols,
-          self.dataType,
-          self.sortcol,
-          self.sortdir,
-          self.filtersCalc,
-          self.customFilter
-        ),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          cancelToken: self.req.token,
-        }
-      )
+      self
+        .post(
+          url,
+          self.getSearchObj(
+            fromReqNum,
+            toReq,
+            self.getSearch(),
+            self.cols,
+            self.dataType,
+            self.sortcol,
+            self.sortdir,
+            self.filtersCalc,
+            self.customFilter
+          ),
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              'X-PV-Timestamp': `${Date.now()}`,
+            },
+            cancelToken: self.req.token,
+          }
+        )
         .then(self.onSuccessProxy)
         .catch((thrown: any) => {
           if (Axios.isCancel(thrown)) {
@@ -419,7 +446,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   };
   onErrorCustom = (err: any, fromPage: number | undefined, toPage: number | undefined) => {
     this.errCounter++;
-
+    this.emit(this.props.namespace + '-pvgrid-on-data-loaded', {});
     if (this.errCounter < 3) {
       this.ensureDataCustom(this.from, this.to);
     }
@@ -427,6 +454,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
 
   onSuccessProxy = (resp: { data: { from: any; records: string | any[]; totalAvailable: number | undefined } }) => {
     this.errCounter = 0;
+    this.emit(this.props.namespace + '-pvgrid-on-data-loaded', resp);
 
     this.onSuccessPVRestQuery(resp);
   };
@@ -488,7 +516,7 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   setColumns = (cols: PVGridColDef[]) => {
     // this.state.columnDefs = cols;
     if (this.mountedSuccess) {
-      this.setState({ columnDefs: cols, ...this.state });
+      this.setState({ ...this.state, columnDefs: cols });
       this.cols = cols;
       this.ensureDataCustom(0, this.PAGESIZE);
     }
@@ -756,5 +784,4 @@ class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
      */
   };
 }
-
 export default PVGrid;

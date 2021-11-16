@@ -1,11 +1,11 @@
 import React, { CSSProperties } from 'react';
 import PVGremlinComboBox from './PVGremlinComboBox';
 // import { Flex } from 'reflexbox';
-import PontusComponent from './PontusComponent';
+import PontusComponent, { PVComponentProps } from './PontusComponent';
 import { PVGridColDef } from './PVGrid';
 import { PanelOptionsEditorProps } from '@grafana/data';
 
-export interface PVGridColSelectorProps {
+export interface PVGridColSelectorProps extends PVComponentProps {
   namespace?: string;
   subNamespace?: string;
   mountedSuccess?: boolean;
@@ -38,7 +38,7 @@ class PVGridColSelector extends PontusComponent<
   private dataType?: string;
   private colSettings?: PVGridColDef[];
 
-  constructor(props: Readonly<PVGridColSelectorProps>) {
+  constructor(props: Readonly<PanelOptionsEditorProps<PVGridColSelectorProps>>) {
     super(props);
 
     this.req = undefined;
@@ -47,18 +47,20 @@ class PVGridColSelector extends PontusComponent<
     this.nodePropertyNamesReactSelect = undefined;
     // this.nodePropertyNamesReactSelect = null;
     this.propsSelected = [];
-    this.dataType = props.dataType;
-    this.colSettings = props.colSettings;
+    this.dataType = props.context.options.dataSettings
+      ? props.context.options.dataSettings.dataType
+      : PontusComponent.t('Person.Natural');
+    this.colSettings = props.context.options.dataSettings ? props.context.options.dataSettingscolSettings : [];
   }
 
   onError = (err: any) => {
     console.error('error loading pages ' + err);
   };
-  onChangeVertexLabels = (val: { label: string; value: string }) => {
+  onChangeVertexLabels = async (val: { label: string; value: string }) => {
     // alert("got data " + val);
     // this.props.glEventHub.emit('userSearch-on-boxChanged')
     if (this.nodePropertyNamesReactSelect) {
-      this.nodePropertyNamesReactSelect.getOptions({ labels: val });
+      await this.nodePropertyNamesReactSelect.getOptions({ version: 'v2.0.0', labels: val });
     }
     if (this.props.onChange) {
       this.dataType = val.value;
@@ -105,16 +107,16 @@ class PVGridColSelector extends PontusComponent<
   };
 
   render() {
-    const nodeTypesVal = this.props.context.options.dataType
+    const nodeTypesVal = this.props.context.options.dataSettings
       ? {
           label: PontusComponent.t(
             PontusComponent.replaceAll(
               '.',
               ' ',
-              PontusComponent.replaceAll('_', ' ', this.props.context.options.dataType)
+              PontusComponent.replaceAll('_', ' ', this.props.context.options.dataSettings.dataType)
             )
           ),
-          value: this.props.context.options.dataType,
+          value: this.props.context.options.dataSettings.dataType,
         }
       : {};
 
@@ -122,8 +124,8 @@ class PVGridColSelector extends PontusComponent<
 
     const propTypesVal = [];
 
-    if (this.props.context.options.colSettings) {
-      for (const setting of this.props.context.options.colSettings) {
+    if (this.props.context.options.dataSettings && this.props.context.options.dataSettings.colSettings) {
+      for (const setting of this.props.context.options.dataSettings.colSettings) {
         propTypesVal.push({ label: setting.name, value: setting.id });
       }
     }
