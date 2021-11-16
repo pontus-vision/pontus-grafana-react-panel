@@ -352,12 +352,15 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
     return state;
   };
 
-  protected getQuery = (eventId: any, id2?: any): { bindings: Record<string, any>; gremlin: string } => {
+  protected getQuery = (
+    eventId: any,
+    id2?: any
+  ): { bindings: Record<string, any>; gremlin: string } | { refEntryId: string; templateId: string } => {
     return { bindings: { hello: 'world' }, gremlin: '' };
   };
   async post<T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> {
-    if ((this.props as PVComponentProps).awsAccessKeyId) {
-      const props = this.props as PVComponentProps;
+    if ((this.props as unknown as any)?.awsAccessKeyId && (this.props as unknown as any)?.awsSecretKeyId) {
+      const props = this.props as unknown as PVComponentProps;
       config = PVSigV4Utils.getRequestConfig(
         {
           AccessKeyId: props.awsAccessKeyId!,
@@ -365,8 +368,12 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
         },
         config!
       );
-    } else if ((this.props as unknown as PanelOptionsEditorProps<PVComponentProps>).context.options.awsAccessKeyId) {
-      const props = this.props as unknown as PanelOptionsEditorProps<PVComponentProps>;
+    } else if (
+      (this.props as unknown as /* PanelOptionsEditorProps<PVComponentProps> */ any)?.context?.options
+        ?.awsAccessKeyId &&
+      (this.props as unknown as /* PanelOptionsEditorProps<PVComponentProps> */ any)?.context?.options?.awsSecretKeyId
+    ) {
+      const props = this.props as unknown as any;
       config = PVSigV4Utils.getRequestConfig(
         {
           AccessKeyId: props.context.options.awsAccessKeyId!,

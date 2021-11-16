@@ -70,13 +70,20 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
     // super.componentWillUnmount();
   }
 
-  getQuery = (contextId: string, templateText: string) => {
+  getQuery = (
+    contextId: string,
+    templateText: string
+  ): { bindings: Record<string, any>; gremlin: string } | { refEntryId: string; templateId: string } => {
+    // return {
+    //   gremlin: 'renderReportInBase64(pg_id,pg_templateText)',
+    //   bindings: {
+    //     pg_id: contextId,
+    //     pg_templateText: templateText,
+    //   },
+    // };
     return {
-      gremlin: 'renderReportInBase64(pg_id,pg_templateText)',
-      bindings: {
-        pg_id: contextId,
-        pg_templateText: templateText,
-      },
+      refEntryId: contextId,
+      templateId: templateText,
     };
   };
 
@@ -132,8 +139,8 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
     try {
       if (resp.status === 200) {
         // let items = resp.data.result.data['@value'][0]['@value'];
-        const items = resp.data.result.data['@value'][0];
-
+        // const items = resp.data.result.data['@value'][0];
+        const items = resp.data.base64Report;
         this.setState({
           open: !this.state.open,
           preview: Base64.decode(items),

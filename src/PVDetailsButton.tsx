@@ -65,7 +65,10 @@ export class PVDetailsButton extends PontusComponent<PVDetailsButtonProps, PVDet
     // super.componentWillUnmount();
   }
 
-  getQuery = (contextId: any, templateText: string) => {
+  protected getQuery = (
+    contextId: any,
+    templateText?: any
+  ): { bindings: Record<string, any>; gremlin: string } | { refEntryId: string; templateId: string } => {
     return {
       gremlin: 'getPropsNonMetadataAsHTMLTableRows(g, pg_id ,  pg_origLabel)',
       bindings: {
