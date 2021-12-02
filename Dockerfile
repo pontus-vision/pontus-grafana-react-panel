@@ -12,7 +12,8 @@ COPY . /plugin/
 COPY --from=pontusvisiongdpr/pontus-i18n:latest /*.json  /plugin/src/
 
 ENV NODE_ENV=development
-RUN   yarn run build
+#RUN   yarn run build
+RUN yarn run dev
 RUN   yarn audit || [ "$?" -lt 8 ]
 
 ARG GRAFANA_API_KEY

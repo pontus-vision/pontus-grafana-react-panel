@@ -8,13 +8,15 @@ import axios, { AxiosRequestConfig, AxiosResponse, CancelTokenSource } from 'axi
 import { PVSigV4Utils } from './PVSigV4Utils';
 import { getTheme } from '@grafana/ui';
 import { GrafanaTheme, PanelOptionsEditorProps } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import { config, EchoSrv } from '@grafana/runtime';
+import Keycloak from 'keycloak-js';
 
 // import * as d3 from "d3";
 
 export interface PubSubCallback extends Function {
   (topic: string, data: any): void;
 }
+
 export interface PVComponentProps {
   url?: string | undefined;
   isNeighbour?: boolean;
@@ -24,11 +26,15 @@ export interface PVComponentProps {
   mountedSuccess?: boolean;
   awsSecretKeyId?: string;
   awsAccessKeyId?: string;
+  auth?: any;
+  echoSrv?: EchoSrv;
 }
 
 // const { t, i18n } = useTranslation();
 
 class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>, S> extends React.PureComponent<T, S> {
+  static kc?: Keycloak.KeycloakInstance;
+  static counter = 0;
   protected url: string;
   protected req: CancelTokenSource | undefined;
   protected request: any;
@@ -36,14 +42,14 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
   protected hRequest?: NodeJS.Timeout;
   protected theme: GrafanaTheme;
   protected oauth: any;
-  // }
-  private topics: Record<string, number> = {};
 
   // static getColorScale(minVal, maxVal)
   // {
   //   return scaleLinear.linear()
   //     .domain([minVal, (maxVal - minVal) / 2, maxVal])
   //     .range(['green', 'orange', 'red']);
+  // }
+  private topics: Record<string, number> = {};
   //
   private callbacksPerTopic: Record<string, PubSubCallback[]> = {};
 
@@ -161,6 +167,7 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
   static getRestNodePropertyNamesURL(props: any): string {
     return PontusComponent.getURLGeneric(props, 'home/node_property_names');
   }
+
   static getRestTemplateRenderURL(props: any): string {
     return PontusComponent.getURLGeneric(props, 'home/report/template/render');
   }
@@ -202,14 +209,14 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
     return `${PontusComponent.getUrlPrefix()}/${defaultSuffix}`;
   }
 
-  static getUrlPrefix(): string {
+  static getUrlPrefix(addMiddle = true): string {
     const proto = `${window.location.protocol || 'http:'}//`;
     const portStr = window.location.port;
     const port = portStr ? `:${portStr}` : '';
 
     const host = `${window.location.hostname || 'localhost'}`;
     const prefix = `${proto}${host}${port}`;
-    const middle = `${PontusComponent.isLocalhost() ? '/gateway/sandbox/pvgdpr_server' : ''}`;
+    const middle = `${PontusComponent.isLocalhost() && addMiddle ? '/gateway/sandbox/pvgdpr_server' : ''}`;
 
     return `${prefix}${middle}`;
   }
@@ -225,6 +232,79 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
       retVal = defVal;
     }
     return retVal;
+  }
+
+  static async getKeyCloak(): Promise<Keycloak.KeycloakInstance | undefined> {
+    let err: any | undefined;
+    // @ts-ignore
+    if (!window.kc) {
+      try {
+        PontusComponent.counter++;
+
+        if (PontusComponent.counter === 1) {
+          const kc = Keycloak({
+            // url: `${PontusComponent.getUrlPrefix(false)}/auth`,
+            url: `/auth`,
+            clientId: 'broker',
+            realm: 'pontus',
+          });
+          const authenticated = await kc.init({
+            adapter: 'default',
+            onLoad: 'login-required',
+            enableLogging: true,
+            messageReceiveTimeout: 100000,
+          });
+          if (authenticated) {
+            // @ts-ignore
+            window.kc = kc;
+            // @ts-ignore
+            return window.kc;
+          }
+        }
+        let retries = 10;
+        // @ts-ignore
+        while (!window.kc && retries >= 0) {
+          retries--;
+          await new Promise((r) => setTimeout(r, 2000));
+        }
+      } catch (e) {
+        // @ts-ignore
+        window.kc = undefined;
+        PontusComponent.counter = 0;
+        console.error(e);
+        err = e;
+      }
+      if (err?.message) {
+        return undefined;
+      }
+    }
+
+    // @ts-ignore
+    return window.kc;
+  }
+
+  static async initKeycloak(): Promise<string | undefined> {
+    const kc = await PontusComponent.getKeyCloak();
+    if (kc) {
+      axios.interceptors.request.use(async (config) => {
+        try {
+          const success = await kc.updateToken(5);
+          if (success) {
+            config.headers.Authorization = 'Bearer ' + kc.idToken;
+          } else {
+            kc.login();
+          }
+        } catch (e) {
+          kc.login();
+        }
+      });
+      const success = await kc.updateToken(5);
+
+      if (success) {
+        return 'Bearer ' + kc.idToken;
+      }
+    }
+    return undefined;
   }
 
   ensureData = (id1: any, id2?: any) => {
@@ -352,12 +432,6 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
     return state;
   };
 
-  protected getQuery = (
-    eventId: any,
-    id2?: any
-  ): { bindings: Record<string, any>; gremlin: string } | { refEntryId: string; templateId: string } => {
-    return { bindings: { hello: 'world' }, gremlin: '' };
-  };
   async post<T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig): Promise<R> {
     if ((this.props as unknown as any)?.awsAccessKeyId && (this.props as unknown as any)?.awsSecretKeyId) {
       const props = this.props as unknown as PVComponentProps;
@@ -383,8 +457,64 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
       );
     }
 
+    if (config) {
+      try {
+        const authHeader = await PontusComponent.initKeycloak();
+        if (authHeader) {
+          config!.headers = {
+            Authorization: authHeader,
+            ...config!.headers,
+          };
+        }
+      } catch (e) {
+        console.error(e);
+        delete config!.headers['Authorization'];
+      }
+    }
+
     return axios.post<T, R>(url, data, config);
+
+    // const srv = getBackendSrv();
+    // const resp = await srv
+    //   .fetch({
+    //     url: url,
+    //     data: data,
+    //     method: 'POST',
+    //     credentials: 'same-origin',
+    //     responseType: 'json',
+    //     headers: config?.headers as Record<string, any>,
+    //     showErrorAlert: true,
+    //     showSuccessAlert: true,
+    //     hideFromInspector: false,
+    //     params: config?.params,
+    //     retry: 5,
+    //   })
+    //   .toPromise();
+    //
+    // const finalResp: AxiosResponse<any> = {
+    //   data: resp.data,
+    //   status: resp.status,
+    //   statusText: resp.statusText,
+    //   headers: resp.headers,
+    //   config: config!,
+    //   request: '',
+    // };
+    // return finalResp as unknown as R;
   }
+
+  protected getQuery = (
+    eventId: any,
+    id2?: any
+  ): { bindings: Record<string, any>; gremlin: string } | { refEntryId: string; templateId: string } => {
+    return { bindings: { hello: 'world' }, gremlin: '' };
+  };
 }
+
+// PontusComponent.initKeycloak()
+//   .then(() => console.log(`Keycloak Initialised`))
+//   .catch((e) => {
+//     console.log(e);
+//     console.log(`error: ${e.message}`);
+//   });
 
 export default PontusComponent;

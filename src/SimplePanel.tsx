@@ -14,7 +14,7 @@ import PVDataGraphShowAllNodes from './PVDataGraphShowAllNodes';
 import PVDoughnutChart from './PVDoughnutChart';
 import PVAceGremlinEditor from './PVAceGremlinEditor';
 import PVAceGremlinJSONQueryResults from './PVAceGremlinJSONQueryResults';
-import { config } from '@grafana/runtime';
+import { config, getEchoSrv } from '@grafana/runtime';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -30,6 +30,10 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     super(props);
   }
 
+  // componentDidMount = async (): Promise<void> => {
+  //   await PontusComponent.getKeyCloak();
+  // };
+
   render() {
     const { width, height } = this.props;
     const namespace = this.props.options.namespace;
@@ -43,9 +47,11 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const scoreType = this.props.options.scoreType!;
     const awsAccessKeyId = this.props.options.awsAccessKeyId;
     const awsSecretKeyId = this.props.options.awsSecretKeyId;
+    const echoSrv = getEchoSrv();
 
-    console.log(`config.bootData = ${config}`);
-    console.log(`config.bootData = ${JSON.stringify(config)}`);
+    // console.log(`config.bootData = ${config.bootData}`);
+    // console.log(`config.bootData = ${JSON.stringify(config.bootData)}`);
+    // console.log(`config.oauth = ${JSON.stringify(config.oauth)}`);
 
     const widget: Record<WidgetType, JSX.Element> = {
       AwarenessPieChart: (
@@ -53,6 +59,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           maxHeight={1000}
           url={this.props.options.directUrl}
           neighbourNamespace={neighbourNamespace}
+          auth={config.oauth}
+          echoSrv={echoSrv}
           isNeighbour={isNeighbour}
           namespace={namespace}
           subNamespace={undefined}
@@ -64,6 +72,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       GremlinQueryEditor: (
         <PVAceGremlinEditor
+          auth={config.oauth}
+          echoSrv={echoSrv}
           style={{ height: '100%', width: '100%' }}
           url={this.props.options.directUrl}
           neighbourNamespace={neighbourNamespace}
@@ -76,6 +86,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       GremlinQueryResults: (
         <PVAceGremlinJSONQueryResults
+          auth={config.oauth}
+          echoSrv={echoSrv}
           url={this.props.options.directUrl}
           neighbourNamespace={neighbourNamespace}
           isNeighbour={isNeighbour}
@@ -87,6 +99,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       PVGDPRScore: (
         <PVGDPRScore
+          auth={config.oauth}
+          echoSrv={echoSrv}
           url={this.props.options.directUrl}
           scoreType={scoreType}
           showGauge={this.props.options.showGauge}
@@ -99,6 +113,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       PVDataGraph: (
         <PVDataGraph
+          auth={config.oauth}
+          echoSrv={echoSrv}
           url={this.props.options.directUrl}
           isNeighbour={isNeighbour}
           namespace={namespace}
@@ -109,6 +125,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       PVGrid: (
         <PVGrid
+          auth={config.oauth}
+          echoSrv={echoSrv}
           url={this.props.options.gridUrl}
           neighbourNamespace={neighbourNamespace}
           isNeighbour={isNeighbour}
@@ -125,6 +143,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       PVInfraGraph: (
         <PVDataGraphShowAllNodes
+          auth={config.oauth}
+          echoSrv={echoSrv}
           url={this.props.options.directUrl}
           isNeighbour={isNeighbour}
           namespace={namespace}
