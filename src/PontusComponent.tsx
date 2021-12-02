@@ -250,7 +250,7 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
           });
           const authenticated = await kc.init({
             adapter: 'default',
-            onLoad: 'login-required',
+            // onLoad: 'login-required',
             enableLogging: true,
             messageReceiveTimeout: 100000,
           });
