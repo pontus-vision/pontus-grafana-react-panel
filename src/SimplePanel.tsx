@@ -15,6 +15,7 @@ import PVDoughnutChart from './PVDoughnutChart';
 import PVAceGremlinEditor from './PVAceGremlinEditor';
 import PVAceGremlinJSONQueryResults from './PVAceGremlinJSONQueryResults';
 import { config, getEchoSrv } from '@grafana/runtime';
+import PVReportPanel from './PVReportPanel';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -47,6 +48,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const scoreType = this.props.options.scoreType!;
     const awsAccessKeyId = this.props.options.awsAccessKeyId;
     const awsSecretKeyId = this.props.options.awsSecretKeyId;
+    const templateText = this.props.options.templateText;
     const echoSrv = getEchoSrv();
 
     // console.log(`config.bootData = ${config.bootData}`);
@@ -146,6 +148,16 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
           auth={config.oauth}
           echoSrv={echoSrv}
           url={this.props.options.directUrl}
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          neighbourNamespace={neighbourNamespace}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
+        />
+      ),
+      PVReportPanel: (
+        <PVReportPanel
+          templateText={templateText || ''}
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}

@@ -1,8 +1,9 @@
 import React from 'react';
 import Axios, { AxiosResponse } from 'axios';
-import { Button, Segment, Portal } from 'semantic-ui-react';
+import { Button, Portal, Segment } from 'semantic-ui-react';
 import { Base64 } from 'js-base64';
 import PontusComponent from './PontusComponent';
+// import { html2pdf } from 'html2pdf-jspdf2';
 
 // import PVDatamaps from './PVDatamaps';
 export interface PVReportButtonProps {
@@ -182,18 +183,47 @@ class PVReportButton extends PontusComponent<PVReportButtonProps, PVReportButton
             style={{
               height: '50%',
               width: '50%',
-              overflowX: 'auto',
-              overflowY: 'auto',
+
               left: '30%',
               position: 'fixed',
               top: '20%',
               zIndex: 100000,
-              backgroundColor: 'rgba(250, 245, 245,0.75)',
-              padding: '10px',
+              // backgroundColor:   'rgba(250, 245, 245,0.75)',
+              backgroundColor: 'rgba(250, 245, 245,1)',
+              padding: '11px',
             }}
           >
             <div
-              style={{ backgroundColor: 'rgba(250, 245, 245,0.75)' }}
+              style={{
+                display: 'flex',
+                flexWrap: 'nowrap',
+                flexDirection: 'row',
+                flexGrow: 1,
+                background: this.theme.isLight ? 'rgb(187,187,188)' : 'rgb(48,48,48)',
+                width: '100%',
+              }}
+            >
+              <button
+                onClick={async () => {
+                  // pdf.create(this.state.preview).toFile();
+                  // html_to_pdf.generatePdf({content: this.state.preview})
+                  // generatePdf({ content: this.state.preview });
+                  // html2pdf().from(this.state.preview).save();
+                }}
+              >
+                {'🖫'}
+              </button>
+            </div>
+            <div
+              style={{
+                backgroundColor: 'rgba(250, 245, 245,0.75)',
+                display: 'flex',
+                flexWrap: 'nowrap',
+                flexDirection: 'row',
+                flexGrow: 1,
+                overflowX: 'auto',
+                overflowY: 'auto',
+              }}
               dangerouslySetInnerHTML={{ __html: this.state.preview }}
             />
           </Segment>

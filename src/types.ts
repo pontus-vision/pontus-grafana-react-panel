@@ -25,6 +25,7 @@ export const WidgetTypeValues = [
   'PVGDPRScore',
   'PVGrid',
   'PVDataGraph',
+  'PVReportPanel',
   'PVInfraGraph',
   'GremlinQueryEditor',
   'GremlinQueryResults',
@@ -57,7 +58,9 @@ export interface SimpleOptions {
     dataType?: string;
     colSettings?: PVGridColDef[];
   };
+  templateText?: string;
 }
+
 export const urlPrefix = `${PontusComponent.getUrlPrefix()}/`;
 export const defaults: SimpleOptions = {
   namespace: 'namespace',
@@ -87,6 +90,7 @@ export const defaults: SimpleOptions = {
       },
     ],
   },
+  templateText: '',
 };
 
 export interface PVNamespaceProps extends PVComponentProps {

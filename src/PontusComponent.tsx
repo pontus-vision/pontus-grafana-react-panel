@@ -172,6 +172,10 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
     return PontusComponent.getURLGeneric(props, 'home/report/template/render');
   }
 
+  static getRestReportRenderURL(props: any): string {
+    return PontusComponent.getURLGeneric(props, 'home/report/render');
+  }
+
   static getRestURL(props: any): string {
     return PontusComponent.getURLGeneric(props, 'home/records');
   }
@@ -236,73 +240,117 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
 
   static async getKeyCloak(): Promise<Keycloak.KeycloakInstance | undefined> {
     let err: any | undefined;
+    let kc;
     // @ts-ignore
-    if (!window.kc) {
+    if (!window.top.keycloakInstance) {
       try {
         PontusComponent.counter++;
 
         if (PontusComponent.counter === 1) {
-          const kc = Keycloak({
+          kc = Keycloak({
             // url: `${PontusComponent.getUrlPrefix(false)}/auth`,
             url: `/auth`,
-            clientId: 'broker',
+            clientId: 'test',
             realm: 'pontus',
           });
-          const authenticated = await kc.init({
-            adapter: 'default',
-            // onLoad: 'login-required',
-            enableLogging: true,
-            messageReceiveTimeout: 100000,
-          });
+          // kc.responseType = 'code id_token token';
+          // kc.flow = 'standard';
+          const inProgress = PontusComponent.getItem('pv-keycloak-in-progress', 'false');
+
+          let authenticated;
+          if (inProgress !== 'true') {
+            PontusComponent.setItem('pv-keycloak-in-progress', 'true');
+            authenticated = await kc.init({
+              adapter: 'default',
+              onLoad: 'check-sso',
+              enableLogging: true,
+              messageReceiveTimeout: 100000,
+              silentCheckSsoRedirectUri: PontusComponent.getUrlPrefix() + '/pv/silent_keycloak_sso_iframe',
+              silentCheckSsoFallback: true,
+              flow: 'standard',
+
+              // responseMode: 'code id_token token'
+            });
+            if (!authenticated) {
+              await kc.login({
+                prompt: 'login',
+              });
+
+              await kc.loadUserInfo();
+            }
+            // PontusComponent.setItem('pv-keycloak-in-progress', 'false');
+
+            authenticated = true;
+          }
           if (authenticated) {
             // @ts-ignore
-            window.kc = kc;
+            window.top.keycloakInstance = kc;
+            PontusComponent.setItem('pv-keycloak-in-progress', 'false');
+
             // @ts-ignore
-            return window.kc;
+            return window.top.keycloakInstance;
           }
         }
         let retries = 10;
         // @ts-ignore
-        while (!window.kc && retries >= 0) {
+        while (!window.top.keycloakInstance && retries >= 0) {
           retries--;
           await new Promise((r) => setTimeout(r, 2000));
         }
       } catch (e) {
+        if (kc) {
+          await kc.login({
+            prompt: 'login',
+          });
+
+          // @ts-ignore
+          window.top.keycloakInstance = kc;
+          PontusComponent.setItem('pv-keycloak-in-progress', 'false');
+        } else {
+          PontusComponent.kc = undefined;
+          PontusComponent.counter = 0;
+          if (e) {
+            console.error(e);
+            err = e;
+          }
+        }
+
         // @ts-ignore
-        window.kc = undefined;
-        PontusComponent.counter = 0;
-        console.error(e);
-        err = e;
       }
       if (err?.message) {
+        PontusComponent.setItem('pv-keycloak-in-progress', 'false');
         return undefined;
       }
     }
 
     // @ts-ignore
-    return window.kc;
+    return window.top.keycloakInstance;
   }
 
   static async initKeycloak(): Promise<string | undefined> {
-    const kc = await PontusComponent.getKeyCloak();
+    // @ts-ignore
+    const kc = window.top.keycloakInstance || (await PontusComponent.getKeyCloak());
     if (kc) {
-      axios.interceptors.request.use(async (config) => {
-        try {
-          const success = await kc.updateToken(5);
-          if (success) {
-            config.headers.Authorization = 'Bearer ' + kc.idToken;
-          } else {
-            kc.login();
-          }
-        } catch (e) {
-          kc.login();
+      // axios.interceptors.request.use(async (config) => {
+      try {
+        if (kc.isTokenExpired(5)) {
+          await kc.updateToken(5);
         }
-      });
-      const success = await kc.updateToken(5);
-
-      if (success) {
-        return 'Bearer ' + kc.idToken;
+        // config.headers.Authorization = 'Bearer ' + kc.idToken;
+        return `Bearer ${kc.idToken}`;
+      } catch (e) {
+        kc.login();
       }
+      // });
+      // try {
+      //   const success = await kc.updateToken(5);
+      //
+      //   if (success) {
+      //     return 'Bearer ' + kc.idToken;
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      // }
     }
     return undefined;
   }

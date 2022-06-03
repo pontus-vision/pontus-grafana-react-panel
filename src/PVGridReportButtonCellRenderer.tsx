@@ -2,7 +2,8 @@ import React from 'react';
 import { Button, Portal, Segment } from 'semantic-ui-react';
 import PVReportButton, { PVReportButtonProps } from './PVReportButton';
 import PontusComponent from './PontusComponent';
-
+// const html2pdf = require('html2pdf-jspdf2');
+// import { jsPDF } from 'jspdf';
 // import PVDatamaps from './PVDatamaps';
 
 class PVGridReportButtonCellRenderer extends PVReportButton {
@@ -63,6 +64,32 @@ class PVGridReportButtonCellRenderer extends PVReportButton {
               padding: '10px',
             }}
           >
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'nowrap',
+                flexDirection: 'row',
+                flexGrow: 1,
+                // todo: check the theme:
+                background: this.theme.isLight ? 'rgb(48,48,48)' : 'rgb(187,187,188)',
+                width: '100%',
+                // overflowX: 'auto',
+                // overflowY: 'auto',
+              }}
+            >
+              {/* <button
+                onClick={() => {
+                  const pdf = new jsPDF();
+                  pdf.html(this.state.preview).save('report.pdf');
+                  // html2pdf().from(this.state.preview).save();
+                  // pdf.create(this.state.preview).toFile();
+                  // generatePdf({ content: this.state.preview });
+                  // doc.html(this.state.preview, { filename: 'report.pdf' }).save('report.pdf');
+                }}
+              >
+                {'🖫'}
+              </button > */}
+            </div>
             <div dangerouslySetInnerHTML={{ __html: this.state.preview }} />
           </Segment>
         </Portal>

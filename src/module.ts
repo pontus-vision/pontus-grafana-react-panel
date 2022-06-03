@@ -4,6 +4,7 @@ import { SimplePanel } from './SimplePanel';
 import PontusComponent from './PontusComponent';
 import PVGridColSelector from './PVGridColSelector';
 import PVSensitiveInfo from './PVSensitiveInfo';
+import PVReportPanelTemplateEditor from './PVReportPanelTemplateEditor';
 // import { SimpleEditorFuncComp } from './SimpleEditor';
 
 // export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setDefaults(defaults).setEditor(SimpleEditor);
@@ -240,6 +241,19 @@ plugin.setPanelOptions((builder) => {
     editor: PVSensitiveInfo,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
       return currentConfig.useAws;
+    },
+  });
+
+  builder.addCustomEditor({
+    id: 'PVReportPanelTemplateEditor',
+    name: PontusComponent.t('Template Editor')!,
+    path: 'templateText',
+    // description: '',
+    settings: {},
+    defaultValue: defaults.templateText,
+    editor: PVReportPanelTemplateEditor,
+    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+      return currentConfig.widgetType === 'PVReportPanel';
     },
   });
 });
