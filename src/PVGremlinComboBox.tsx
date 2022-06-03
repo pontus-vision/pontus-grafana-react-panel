@@ -115,8 +115,8 @@ class PVGremlinComboBox extends PontusComponent<PVGremlinComboBoxProps, PVGremli
       //   complete: true
       //
       // });
-    } catch (thrown) {
-      if (Axios.isCancel(thrown)) {
+    } catch (thrown: any) {
+      if (thrown && Axios.isCancel(thrown)) {
         console.log('Request canceled', thrown.message);
       } else {
         this.onError(thrown);

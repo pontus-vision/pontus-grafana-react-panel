@@ -76,7 +76,7 @@ class PVAceGremlinEditor extends PontusComponent<PVAceGremlinEditorProps, PVAceG
       })
         .then(self.onSuccess)
         .catch((thrown) => {
-          if (axios.isCancel(thrown)) {
+          if (thrown && axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
             self.onError(thrown);

@@ -381,7 +381,7 @@ class PVDataGraph extends PontusComponent<PVDataGraphProps, PVDataGraphState> {
       })
         .then(this.onSuccess)
         .catch((thrown) => {
-          if (axios.isCancel(thrown)) {
+          if (thrown && axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
             this.onError(event, thrown);

@@ -24,7 +24,8 @@ RUN echo $GRAFANA_API_KEY
 
 #RUN yarn run   dev
 
-FROM grafana/grafana:7.5.11-ubuntu
+#FROM grafana/grafana:7.5.11-ubuntu
+FROM grafana/grafana:8.5.4-ubuntu
 
 EXPOSE 3000
 

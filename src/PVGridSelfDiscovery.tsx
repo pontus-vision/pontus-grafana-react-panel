@@ -86,7 +86,7 @@ class PVGridSelfDiscovery extends PVGrid {
       //   complete: true
       //
       // });
-    } catch (thrown) {
+    } catch (thrown: any) {
       if (Axios.isCancel(thrown)) {
         console.log('Request canceled', thrown.message);
       } else {

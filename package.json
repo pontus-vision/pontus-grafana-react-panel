@@ -7,7 +7,8 @@
     "**/**/postcss": "^7.0.36",
     "**/**/css-what": "^5.0.1",
     "**/**/glob-parent": "~5.1.2",
-    "**/**/axios": "^0.21.2"
+    "**/**/axios": "^0.21.2",
+    "**/**/minimist": "~1.2.6"
   },
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -26,16 +27,17 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-react": "^7.12.10",
-    "@grafana/data": "^7.5.11",
-    "@grafana/runtime": "^7.5.11",
-    "@grafana/toolkit": "^7.5.11",
-    "@grafana/ui": "^7.5.11",
+    "@grafana/data": "^8.5.4",
+    "@grafana/runtime": "^8.5.4",
+    "@grafana/toolkit": "^8.5.4",
+    "@grafana/ui": "^8.5.4",
     "@types/crypto-js": "^4.0.2",
     "@types/js-base64": "^3.0.0",
     "@types/keycloak-js": "^3.4.1",
     "@types/pubsub-js": "^1.8.2",
     "@types/react-select": "^3.1.2",
     "@types/reflexbox": "^4.0.2",
+    "postcss": "^8.4.14",
     "prettier": "^2.6.2",
     "tslib": "^2.2.0"
   },

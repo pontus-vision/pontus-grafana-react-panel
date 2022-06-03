@@ -55,9 +55,9 @@ class PVGremlinComboboxToolbar extends PVGremlinComboBox {
           options: response.data.labels,
         });
       }
-    } catch (thrown) {
-      if (axios.isCancel(thrown)) {
-        console.log('Request canceled', thrown.message);
+    } catch (thrown: any) {
+      if (thrown && axios.isCancel(thrown)) {
+        console.log('Request canceled', thrown.message || '');
       } else {
         this.onError(thrown);
       }

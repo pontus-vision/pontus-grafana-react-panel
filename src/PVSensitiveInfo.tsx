@@ -26,7 +26,7 @@ class PVSensitiveInfo extends PontusComponent<PanelOptionsEditorProps<PVSensitiv
         <div style={{ display: 'block', width: '100%', padding: '10px' }}>
           <Input
             type={'password'}
-            css={{ width: '100%', height: '100%' }}
+            style={{ width: '100%', height: '100%' }}
             onChange={(event: any) => {
               if (this.props.onChange) {
                 this.val = event.value;

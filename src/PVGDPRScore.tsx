@@ -146,7 +146,7 @@ class PVGDPRScores extends PontusComponent<PVGDPRScoreProps, PVGDPRScoreState> {
       })
         .then(self.onSuccessProxy)
         .catch((thrown) => {
-          if (axios.isCancel(thrown)) {
+          if (thrown && axios.isCancel(thrown)) {
             console.log('Request canceled', thrown.message);
           } else {
             self.onError(thrown);
