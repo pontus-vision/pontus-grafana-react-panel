@@ -7,7 +7,9 @@ import { Base64 } from 'js-base64';
 // import PVDatamaps from './PVDatamaps';
 
 export interface PVReportProps extends PVNamespaceProps {
-  templateText: string;
+  templateText: {
+    templateText: string;
+  };
 }
 
 export interface PVReportState extends PVReportProps {
@@ -41,7 +43,7 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
   };
   componentDidMount = () => {
     this.createSubscriptions(this.props);
-    this.ensureData(undefined, this.props.templateText);
+    this.ensureData(undefined, this.props.templateText.templateText);
   };
 
   // componentDidUpdate = (prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void => {
@@ -52,6 +54,16 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
   componentWillUnmount = () => {
     this.removeSubscriptions(this.props);
   };
+
+  componentDidUpdate(prevProps: Readonly<PVReportProps>) {
+    // Typical usage (don't forget to compare props):
+    if (this.props?.templateText?.templateText !== prevProps?.templateText?.templateText) {
+      this.ensureData(this.state.contextId, this.props.templateText.templateText);
+    }
+  }
+
+  // decode = (str: string):string => Buffer.from(str, 'base64').toString('binary');
+  // encode = (str: string):string => Buffer.from(str, 'binary').toString('base64');
 
   ensureData = (contextId: any, templateText: string) => {
     if (this.req) {
@@ -73,7 +85,7 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
         url,
         {
           refEntryId: contextId,
-          reportTemplateBase64: templateText,
+          reportTemplateBase64: Base64.encode(templateText),
         },
         {
           headers: {
@@ -123,7 +135,12 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
   };
 
   render() {
-    return <div dangerouslySetInnerHTML={{ __html: this.state.preview || '' }} />;
+    return (
+      <div
+        style={{ width: '100%', height: '100%', overflow: 'scroll' }}
+        dangerouslySetInnerHTML={{ __html: this.state.preview || '' }}
+      />
+    );
   }
 }
 

@@ -18,10 +18,10 @@ RUN   yarn audit || [ "$?" -lt 8 ]
 
 ARG GRAFANA_API_KEY
 ENV GRAFANA_API_KEY=${GRAFANA_API_KEY}
-RUN echo $GRAFANA_API_KEY
+#RUN echo $GRAFANA_API_KEY
 #RUN npm config set ignore-scripts true
-#RUN   npx @grafana/toolkit@7.5.11 plugin:sign
-
+#RUN   npx  @grafana/toolkit@8.5.4 plugin:sign --legacy-peer-deps
+#RUN yarn run build:sign  --rootUrls https://pv-demo,https://lgpd-prod,https://scrlgpd,https://pv-demo.pgr.mpf.mp.br,https://pontus-admin,https://pontus
 #RUN yarn run   dev
 
 #FROM grafana/grafana:7.5.11-ubuntu

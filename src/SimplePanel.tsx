@@ -157,7 +157,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       ),
       PVReportPanel: (
         <PVReportPanel
-          templateText={templateText || ''}
+          templateText={{ templateText: templateText || '' }}
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}

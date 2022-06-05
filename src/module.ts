@@ -140,7 +140,8 @@ plugin.setPanelOptions((builder) => {
         currentConfig.widgetType === 'PVGDPRScore' ||
         currentConfig.widgetType === 'PVInfraGraph' ||
         currentConfig.widgetType === 'PVDataGraph' ||
-        currentConfig.widgetType === 'AwarenessPieChart'
+        currentConfig.widgetType === 'AwarenessPieChart' ||
+        currentConfig.widgetType === 'PVReportPanel'
       );
     },
   });
@@ -220,6 +221,7 @@ plugin.setPanelOptions((builder) => {
       return currentConfig.useAws;
     },
   });
+
   // builder.addTextInput({
   //   path: 'awsSecretKeyId',
   //   // description: PontusComponent.t('Custom Filter')!,

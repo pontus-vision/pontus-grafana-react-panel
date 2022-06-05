@@ -1,42 +1,45 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import PontusComponent from './PontusComponent';
 import { PanelOptionsEditorProps } from '@grafana/data';
 import ReactResizeDetector from 'react-resize-detector';
 import { Button } from 'semantic-ui-react';
 import AceEditor from 'react-ace';
-import { PVNamespaceProps } from './types';
+import { PVGridColSelectorProps } from './PVGridColSelector';
+// import { PVNamespaceProps } from './types';
 
-export interface PVReportPanelTemplateEditorProps extends PVNamespaceProps {
-  height?: number;
-  width?: number;
-  style?: CSSProperties;
-  value: string;
+export interface PVReportPanelTemplateEditorProps extends PVGridColSelectorProps {
+  templateText?: string;
 }
 
-export interface PVReportPanelTemplateEditorState extends PVReportPanelTemplateEditorProps {}
+export interface PVReportPanelTemplateEditorState extends PVReportPanelTemplateEditorProps {
+  height?: number;
+  width?: number;
+
+  // style?: CSSProperties;
+}
 
 class PVReportPanelTemplateEditor extends PontusComponent<
-  PanelOptionsEditorProps<PVReportPanelTemplateEditorProps>,
+  PanelOptionsEditorProps<PVReportPanelTemplateEditorProps | string>,
   PVReportPanelTemplateEditorState
 > {
-  private val: string;
+  // private val: string;
   private od: any;
 
-  constructor(props: Readonly<PVReportPanelTemplateEditorProps>) {
+  constructor(props: Readonly<PanelOptionsEditorProps<PVReportPanelTemplateEditorProps | string>>) {
     super(props);
 
     this.req = undefined;
 
-    this.state = { ...props };
+    this.state = { ...props.context.options };
     // this.nodePropertyNamesReactSelect = null;
-    this.val = '';
+    // this.val = '';
   }
 
   handleResize = () => {
     try {
       let width = this.od.offsetParent.offsetWidth;
       let height = this.od.offsetParent.offsetHeight;
-      this.setState({ height: height, width: width });
+      this.setState({ ...this.state, height: height, width: width });
 
       console.log(this);
     } catch (e) {
@@ -46,7 +49,7 @@ class PVReportPanelTemplateEditor extends PontusComponent<
 
   onChange = (val: any, ev: any) => {
     // PontusComponent.setItem(this.props.namespace + 'LGPD-savedStateTemplateEditor', val);
-    // this.setState({value: val})
+    this.setState({ templateText: val });
   };
 
   setOuterDiv = (od: any) => {
@@ -85,8 +88,7 @@ class PVReportPanelTemplateEditor extends PontusComponent<
               className={'compact'}
               onClick={(event: any) => {
                 if (this.props.onChange) {
-                  this.val = event.value;
-                  this.props.onChange({ value: this.val });
+                  this.props.onChange(this.state.templateText);
                 }
               }}
               style={{
@@ -100,17 +102,17 @@ class PVReportPanelTemplateEditor extends PontusComponent<
             </Button>
           </div>
           <AceEditor
-            mode="groovy"
-            theme="monokai"
+            mode="html"
+            theme="tomorrow"
             onChange={this.onChange}
-            name="gremlin-editor"
+            name="html-editor"
             editorProps={{ $blockScrolling: true, useIncrementalSearch: true }}
             enableBasicAutocompletion={true}
             // enableLiveAutocompletion={true}
             tabSize={2}
-            value={this.val}
+            value={this.state.templateText}
             height={height! - 20 + 'px'}
-            width={width! - 20 + 'px'}
+            width={width! - 40 + 'px'}
             // style={{ overflow: 'auto', flexGrow: 1 }}
             style={{ overflow: 'auto', height: '90%', width: '100%', flexGrow: 1 }}
           />

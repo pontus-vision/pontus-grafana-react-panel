@@ -1464,7 +1464,7 @@
     tiny-invariant "^1.0.1"
     tiny-warning "^0.0.3"
 
-"@grafana/toolkit@^8.5.4":
+"@grafana/toolkit@8.5.4":
   version "8.5.4"
   resolved "https://registry.yarnpkg.com/@grafana/toolkit/-/toolkit-8.5.4.tgz#fb1189da4415ac240b876e3d35a4d222a5c41e8e"
   integrity sha512-lqfvdlUOWRNvHClLtGrIoBSDTWHJcrXOSU2zBqq2ckMA76CI04GMpClP/mEHxSIuy4k7eMpKc5Y1sBIFPSLsdQ==
