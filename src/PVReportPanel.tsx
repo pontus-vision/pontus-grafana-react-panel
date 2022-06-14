@@ -28,7 +28,7 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
 
   onClickNeighbour: PubSubCallback = (topic: string, obj: any) => {
     this.setState({ ...this.state, contextId: obj.id });
-    this.ensureData(obj.id, this.state.templateText.templateText);
+    this.ensureData(obj.id, this.props.templateText.templateText);
   };
 
   createSubscriptions = (props: Readonly<PVReportProps>) => {
