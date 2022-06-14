@@ -69,7 +69,10 @@ export interface PVGridSearch {
   extraSearch?: any;
 }
 
-export class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
+export class PVGrid<
+  Props extends PVGridProps = PVGridProps,
+  State extends PVGridState = PVGridState
+> extends PontusComponent<Props, State> {
   // protected namespace: string;
   // protected subNamespace: string;
   protected mountedSuccess: boolean;
@@ -98,7 +101,7 @@ export class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
   protected filtersCalc: any[];
   // protected search: PVGridSearch;
 
-  constructor(props: Readonly<PVGridProps>) {
+  constructor(props: Readonly<Props>) {
     super(props);
     this.fromPage = 0;
     this.toPage = 0;
@@ -122,8 +125,9 @@ export class PVGrid extends PontusComponent<PVGridProps, PVGridState> {
     // WARNING: THIS MUST BE SET BEFORE this.getColSettings() below:
     this.colFieldTranslation = {};
 
+    // @ts-ignore
     this.state = {
-      ...props,
+      ...this.props,
 
       hideMenu: true,
       totalRecords: 0,

@@ -3,48 +3,44 @@ import axios, { AxiosResponse } from 'axios';
 import PontusComponent, { PubSubCallback } from './PontusComponent';
 import { PVNamespaceProps } from './types';
 import { Base64 } from 'js-base64';
+import { ReactFormBuilder } from 'react-form-builder2';
+import 'react-form-builder2/dist/app.css';
 
 // import PVDatamaps from './PVDatamaps';
 
-export interface PVReportProps extends PVNamespaceProps {
-  templateText: {
-    templateText: string;
+export interface PVFormBuilderProps extends PVNamespaceProps {
+  formbuilderOpts: {
+    toolbarItems: any;
+    init: any;
+    neighbourId?: string;
   };
-  contextId?: string;
 }
 
-export interface PVReportState extends PVReportProps {
-  preview?: string;
-}
+export interface PVFormBuilderState extends PVFormBuilderProps {}
 
-export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState> {
+export class PVFormBuilderPanel extends PontusComponent<PVFormBuilderProps, PVFormBuilderState> {
   private h_request: any;
 
-  constructor(props: Readonly<any>) {
+  constructor(props: Readonly<PVFormBuilderProps>) {
     super(props);
     this.url = PontusComponent.getRestReportRenderURL(props);
     this.state = { ...this.props };
   }
 
-  onClickNeighbour: PubSubCallback = (topic: string, obj: any) => {
-    this.setState({ ...this.state, contextId: obj.id });
-    this.ensureData(obj.id, this.state.templateText.templateText);
-  };
-
-  createSubscriptions = (props: Readonly<PVReportProps>) => {
+  createSubscriptions = (props: Readonly<PVFormBuilderProps>) => {
     if (props.isNeighbour) {
       this.on(`${props.neighbourNamespace}-pvgrid-on-click-row`, this.onClickNeighbour);
     }
   };
 
-  removeSubscriptions = (props: Readonly<PVReportProps>) => {
+  removeSubscriptions = (props: Readonly<PVFormBuilderProps>) => {
     if (props.isNeighbour) {
       this.off(`${props.neighbourNamespace}-pvgrid-on-click-row`, this.onClickNeighbour);
     }
   };
   componentDidMount = () => {
     this.createSubscriptions(this.props);
-    this.ensureData(undefined, this.props.templateText.templateText);
+    // this.ensureData(undefined, this.props.templateText.templateText);
   };
 
   // componentDidUpdate = (prevProps: Readonly<PVGridProps>, prevState: Readonly<PVGridState>, snapshot?: any): void => {
@@ -56,16 +52,15 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
     this.removeSubscriptions(this.props);
   };
 
-  componentDidUpdate(prevProps: Readonly<PVReportProps>) {
+  componentDidUpdate(prevProps: Readonly<PVFormBuilderProps>) {
     // Typical usage (don't forget to compare props):
-    if (
-      this.props?.templateText?.templateText !== prevProps?.templateText?.templateText ||
-      this.props?.contextId !== prevProps?.contextId
-    ) {
-      this.ensureData(this.state.contextId, this.props.templateText.templateText);
+    if (this.props?.formbuilderOpts?.init !== prevProps?.formbuilderOpts?.init) {
+      // this.ensureData(this.state.contextId, this.props.templateText.templateText);
     }
   }
-
+  onClickNeighbour: PubSubCallback = (topic: string, obj: any) => {
+    // this.ensureData(obj.id, this.state.templateText.templateText);
+  };
   // decode = (str: string):string => Buffer.from(str, 'base64').toString('binary');
   // encode = (str: string):string => Buffer.from(str, 'binary').toString('base64');
 
@@ -113,7 +108,7 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
     if (this.errorCounter > 5) {
       console.error('error loading data:' + err);
     } else {
-      this.ensureData(this.state.contextId, '');
+      // this.ensureData(this.state.contextId, '');
     }
     this.errorCounter++;
   };
@@ -123,29 +118,28 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
 
     try {
       if (resp.status === 200) {
-        const items = resp.data.base64Report;
+        // const items = resp.data.base64Report;
         this.setState({
           ...this.state,
-          preview: Base64.decode(items),
+          // preview: Base64.decode(items),
         });
       }
     } catch (e) {
       // e;
       this.setState({
         ...this.state,
-        preview: `Error rendering template: ${e}`,
+        // preview: `Error rendering template: ${e}`,
       });
     }
   };
 
   render() {
     return (
-      <div
-        style={{ width: '100%', height: '100%', overflow: 'scroll' }}
-        dangerouslySetInnerHTML={{ __html: this.state.preview || '' }}
-      />
+      <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}>
+        <ReactFormBuilder toolbarItems={this.state.formbuilderOpts.toolbarItems} />,
+      </div>
     );
   }
 }
 
-export default PVReportPanel;
+export default PVFormBuilderPanel;
