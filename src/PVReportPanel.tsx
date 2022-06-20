@@ -73,6 +73,7 @@ export class PVReportPanel extends PontusComponent<PVReportProps, PVReportState>
     if (this.req) {
       this.req.cancel();
     }
+    this.setState({ ...this.state, preview: 'Loading...' });
 
     let url = this.url;
     if (this.h_request !== null) {

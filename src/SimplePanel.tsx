@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { PanelProps } from '@grafana/data';
 import { SimpleOptions, WidgetType } from 'types';
-import './App.css';
+// import './App.css';
 // import PVGrid from './PVGrid';
 // import {AgGridReact} from "ag-grid-react";
 // import PVGrid from "./PVGrid";
@@ -16,6 +16,7 @@ import PVAceGremlinEditor from './PVAceGremlinEditor';
 import PVAceGremlinJSONQueryResults from './PVAceGremlinJSONQueryResults';
 import { config, getEchoSrv } from '@grafana/runtime';
 import PVReportPanel from './PVReportPanel';
+import PVFormPanel from './PVFormPanel';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -49,6 +50,7 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const awsAccessKeyId = this.props.options.awsAccessKeyId;
     const awsSecretKeyId = this.props.options.awsSecretKeyId;
     const templateText = this.props.options.templateText;
+    const components = this.props.options?.pvFormBuilderEditorProps?.components || [];
     const echoSrv = getEchoSrv();
 
     // console.log(`config.bootData = ${config.bootData}`);
@@ -158,6 +160,16 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       PVReportPanel: (
         <PVReportPanel
           templateText={{ templateText: templateText || '' }}
+          isNeighbour={isNeighbour}
+          namespace={namespace}
+          neighbourNamespace={neighbourNamespace}
+          awsAccessKeyId={awsAccessKeyId}
+          awsSecretKeyId={awsSecretKeyId}
+        />
+      ),
+      PVFormPanel: (
+        <PVFormPanel
+          components={components || []}
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}

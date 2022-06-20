@@ -1,6 +1,14 @@
 import { PVGridColDef } from './PVGrid';
 import PontusComponent, { PVComponentProps } from './PontusComponent';
+import { PVGridColSelectorProps } from './PVGridColSelector';
+import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
+// declare module 'react-formio';
 
+export interface PVFormBuilderEditorProps extends PVGridColSelectorProps {
+  components: ComponentSchema[] | ExtendedComponentSchema[];
+  init: any;
+  neighbourId?: string;
+}
 export const scTypes = ['au', 'br', 'de'] as const;
 export type Market = typeof scTypes[number];
 
@@ -30,6 +38,7 @@ export const WidgetTypeValues = [
   'GremlinQueryEditor',
   'GremlinQueryResults',
   'AwarenessPieChart',
+  'PVFormPanel',
 ] as const;
 
 export type WidgetType = typeof WidgetTypeValues[number];
@@ -59,6 +68,7 @@ export interface SimpleOptions {
     colSettings?: PVGridColDef[];
   };
   templateText?: string;
+  pvFormBuilderEditorProps?: PVFormBuilderEditorProps;
 }
 
 export const urlPrefix = `${PontusComponent.getUrlPrefix()}/`;

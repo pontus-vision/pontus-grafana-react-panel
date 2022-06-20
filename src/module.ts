@@ -5,6 +5,7 @@ import PontusComponent from './PontusComponent';
 import PVGridColSelector from './PVGridColSelector';
 import PVSensitiveInfo from './PVSensitiveInfo';
 import PVReportPanelTemplateEditor from './PVReportPanelTemplateEditor';
+import PVFormBuilderEditor from './PVFormBuilderEditor';
 // import { SimpleEditorFuncComp } from './SimpleEditor';
 
 // export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setDefaults(defaults).setEditor(SimpleEditor);
@@ -140,8 +141,7 @@ plugin.setPanelOptions((builder) => {
         currentConfig.widgetType === 'PVGDPRScore' ||
         currentConfig.widgetType === 'PVInfraGraph' ||
         currentConfig.widgetType === 'PVDataGraph' ||
-        currentConfig.widgetType === 'AwarenessPieChart' ||
-        currentConfig.widgetType === 'PVReportPanel'
+        currentConfig.widgetType === 'AwarenessPieChart'
       );
     },
   });
@@ -256,6 +256,21 @@ plugin.setPanelOptions((builder) => {
     editor: PVReportPanelTemplateEditor,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
       return currentConfig.widgetType === 'PVReportPanel';
+    },
+  });
+
+  builder.addCustomEditor({
+    id: 'PVFormBuilderEditor',
+    name: PontusComponent.t('Form Editor')!,
+    path: 'pvFormBuilderProps',
+    // description: '',
+    settings: {},
+    defaultValue: {
+      components: [],
+    },
+    editor: PVFormBuilderEditor,
+    showIf: (currentConfig: SimpleOptions): boolean | undefined => {
+      return currentConfig.widgetType === 'PVFormPanel';
     },
   });
 });

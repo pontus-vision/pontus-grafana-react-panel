@@ -1,24 +1,30 @@
 import React from 'react';
+
+// import './FormBuilder.scss';
+// import 'formiojs/dist/formio.form.min.css';
+// import 'formiojs/dist/formio.embed.css';
+// import 'formiojs/dist/formio.full.min.css';
+// // import './formBuilder.css';
+
 import axios, { AxiosResponse } from 'axios';
 import PontusComponent, { PubSubCallback } from './PontusComponent';
 import { PVNamespaceProps } from './types';
 import { Base64 } from 'js-base64';
-import { ReactFormBuilder } from 'react-form-builder2';
-import 'react-form-builder2/dist/app.css';
+// @ts-ignore
+import { Form } from '@formio/react';
+import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
 
 // import PVDatamaps from './PVDatamaps';
 
 export interface PVFormBuilderProps extends PVNamespaceProps {
-  formbuilderOpts: {
-    toolbarItems: any;
-    init: any;
-    neighbourId?: string;
-  };
+  components: ComponentSchema[];
+  init?: any;
+  neighbourId?: string;
 }
 
 export interface PVFormBuilderState extends PVFormBuilderProps {}
 
-export class PVFormBuilderPanel extends PontusComponent<PVFormBuilderProps, PVFormBuilderState> {
+export class PVFormPanel extends PontusComponent<PVFormBuilderProps, PVFormBuilderState> {
   private h_request: any;
 
   constructor(props: Readonly<PVFormBuilderProps>) {
@@ -54,10 +60,11 @@ export class PVFormBuilderPanel extends PontusComponent<PVFormBuilderProps, PVFo
 
   componentDidUpdate(prevProps: Readonly<PVFormBuilderProps>) {
     // Typical usage (don't forget to compare props):
-    if (this.props?.formbuilderOpts?.init !== prevProps?.formbuilderOpts?.init) {
+    if (this.props?.components !== prevProps?.components) {
       // this.ensureData(this.state.contextId, this.props.templateText.templateText);
     }
   }
+
   onClickNeighbour: PubSubCallback = (topic: string, obj: any) => {
     // this.ensureData(obj.id, this.state.templateText.templateText);
   };
@@ -136,10 +143,33 @@ export class PVFormBuilderPanel extends PontusComponent<PVFormBuilderProps, PVFo
   render() {
     return (
       <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}>
-        <ReactFormBuilder toolbarItems={this.state.formbuilderOpts.toolbarItems} />,
+        <Form
+          // className={styles.pvFormBuilder}
+          display={'form'}
+          form={{
+            components: this.props?.components || [],
+            title: this.state.namespace || '',
+            display: 'form',
+          }}
+          onChange={(schema: ComponentSchema[]) => console.log(schema)}
+          onSaveComponent={(component: ExtendedComponentSchema) =>
+            console.log(`onSaveComponent - ${JSON.stringify(component)}`)
+          }
+          onCancelComponent={(component: ExtendedComponentSchema) =>
+            console.log(`onCancelComponent - ${JSON.stringify(component)}`)
+          }
+          onDeleteComponent={(component: ExtendedComponentSchema) =>
+            console.log(`onDeleteComponent - ${JSON.stringify(component)}`)
+          }
+          onUpdateComponent={(component: ExtendedComponentSchema) =>
+            console.log(`onUpdateComponent - ${JSON.stringify(component)}`)
+          }
+          onEditComponent={(component: ExtendedComponentSchema) => console.log(`${JSON.stringify(component)}`)}
+          components={this.props?.components}
+        />
       </div>
     );
   }
 }
 
-export default PVFormBuilderPanel;
+export default PVFormPanel;
