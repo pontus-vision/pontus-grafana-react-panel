@@ -1,11 +1,11 @@
 import { PVGridColDef } from './PVGrid';
 import PontusComponent, { PVComponentProps } from './PontusComponent';
 import { PVGridColSelectorProps } from './PVGridColSelector';
-import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
+// import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
 // declare module 'react-formio';
 
 export interface PVFormBuilderEditorProps extends PVGridColSelectorProps {
-  components: ComponentSchema[] | ExtendedComponentSchema[];
+  components: any;
   init: any;
   neighbourId?: string;
 }

@@ -1,21 +1,43 @@
-import React from 'react';
 // @ts-ignore
-// import './FormBuilder.scss';
+import $ from 'jquery';
+import React, { createRef } from 'react';
+
+// @ts-ignore
+window.jQuery = $;
+// @ts-ignore
+window.$ = $;
+
+require('jquery-ui-sortable');
+require('formBuilder');
+
+const formData = [
+  {
+    type: 'header',
+    subtype: 'h1',
+    label: 'formBuilder in React',
+  },
+  {
+    type: 'paragraph',
+    label: 'This is a demonstration of formBuilder running in a React project.',
+  },
+];
+// import './PVFormBuilderEditor.scoped.scss';
 // import 'formiojs/dist/formio.embed.css';
 // import 'formiojs/dist/formio.builder.min.css';
 // import 'formiojs/dist/formio.full.min.css';
 // import './formBuilder.css';
-import 'brace/mode/groovy';
-import 'brace/theme/monokai';
-import 'brace/ext/searchbox';
+// import 'brace/mode/groovy';
+// import 'brace/theme/monokai';
+// import 'brace/ext/searchbox';
 
 import PontusComponent from './PontusComponent';
 import { PanelOptionsEditorProps } from '@grafana/data';
 import ReactResizeDetector from 'react-resize-detector';
 // import './react-formio';
-// @ts-ignore
-import { FormBuilder } from '@formio/react';
-import { ComponentSchema } from 'formiojs';
+// import { FormBuilder } from '@formio/react';
+// import { ComponentSchema } from 'formiojs';
+// import { ReactFormBuilder } from 'react-form-builder2';
+import 'react-form-builder2/dist/app.css';
 
 import { PVFormBuilderEditorProps } from './types';
 
@@ -42,7 +64,12 @@ class PVFormBuilderEditor extends PontusComponent<
     // this.nodePropertyNamesReactSelect = null;
     // this.val = '';
   }
+  fb = createRef();
 
+  componentDidMount() {
+    // @ts-ignore
+    $(this.fb.current).formBuilder({ formData });
+  }
   handleResize = () => {
     try {
       let width = this.od.offsetParent.offsetWidth;
@@ -73,6 +100,8 @@ class PVFormBuilderEditor extends PontusComponent<
 
     let width = this.od ? this.od.offsetParent.offsetWidth - 30 : this.state.width;
     let height = this.od ? this.od.offsetParent.offsetHeight - 50 : this.state.height;
+    // @ts-ignore
+    let formBuilderDiv = <div id="fb-editor" ref={this.fb} />;
 
     return (
       <ReactResizeDetector onResize={this.handleResize}>
@@ -87,33 +116,7 @@ class PVFormBuilderEditor extends PontusComponent<
               width: '100%',
             }}
           >
-            <FormBuilder
-              // className={styles.pvFormBuilder}
-              display={'form'}
-              options={{}}
-              form={{
-                components: this.props.context?.options?.pvFormBuilderEditorProps?.components || [],
-                display: 'form',
-              }}
-              onSaveComponent={(schema: ComponentSchema[]) => {
-                if (this.props.onChange) {
-                  this.props.onChange({
-                    ...this.state,
-                    components: schema,
-                  });
-                }
-              }}
-              onChange={(schema: ComponentSchema[]) => {
-                if (this.props.onChange) {
-                  this.props.onChange({
-                    ...this.state,
-                    components: schema,
-                  });
-                }
-              }}
-              // displayChoices={ }
-              components={this.props.context?.options?.pvFormBuilderEditorProps?.components || []}
-            />
+            {formBuilderDiv}
           </div>
         </div>
       </ReactResizeDetector>

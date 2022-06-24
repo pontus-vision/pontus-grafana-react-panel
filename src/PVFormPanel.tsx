@@ -10,14 +10,15 @@ import axios, { AxiosResponse } from 'axios';
 import PontusComponent, { PubSubCallback } from './PontusComponent';
 import { PVNamespaceProps } from './types';
 import { Base64 } from 'js-base64';
+// import { ReactFormGenerator } from 'react-form-builder2';
 // @ts-ignore
-import { Form } from '@formio/react';
-import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
+// import { Form } from '@formio/react';
+// import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
 
 // import PVDatamaps from './PVDatamaps';
 
 export interface PVFormBuilderProps extends PVNamespaceProps {
-  components: ComponentSchema[];
+  components: any;
   init?: any;
   neighbourId?: string;
 }
@@ -141,34 +142,10 @@ export class PVFormPanel extends PontusComponent<PVFormBuilderProps, PVFormBuild
   };
 
   render() {
-    return (
-      <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}>
-        <Form
-          // className={styles.pvFormBuilder}
-          display={'form'}
-          form={{
-            components: this.props?.components || [],
-            title: this.state.namespace || '',
-            display: 'form',
-          }}
-          onChange={(schema: ComponentSchema[]) => console.log(schema)}
-          onSaveComponent={(component: ExtendedComponentSchema) =>
-            console.log(`onSaveComponent - ${JSON.stringify(component)}`)
-          }
-          onCancelComponent={(component: ExtendedComponentSchema) =>
-            console.log(`onCancelComponent - ${JSON.stringify(component)}`)
-          }
-          onDeleteComponent={(component: ExtendedComponentSchema) =>
-            console.log(`onDeleteComponent - ${JSON.stringify(component)}`)
-          }
-          onUpdateComponent={(component: ExtendedComponentSchema) =>
-            console.log(`onUpdateComponent - ${JSON.stringify(component)}`)
-          }
-          onEditComponent={(component: ExtendedComponentSchema) => console.log(`${JSON.stringify(component)}`)}
-          components={this.props?.components}
-        />
-      </div>
-    );
+    if (!this.state.components) {
+      return <div />;
+    }
+    return <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}></div>;
   }
 }
 
