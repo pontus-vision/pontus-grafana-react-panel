@@ -262,12 +262,10 @@ plugin.setPanelOptions((builder) => {
   builder.addCustomEditor({
     id: 'PVFormBuilderEditor',
     name: PontusComponent.t('Form Editor')!,
-    path: 'pvFormBuilderProps',
+    path: 'components',
     // description: '',
     settings: {},
-    defaultValue: {
-      components: [],
-    },
+    defaultValue: [],
     editor: PVFormBuilderEditor,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
       return currentConfig.widgetType === 'PVFormPanel';

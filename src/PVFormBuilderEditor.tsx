@@ -37,7 +37,7 @@ import ReactResizeDetector from 'react-resize-detector';
 // import { FormBuilder } from '@formio/react';
 // import { ComponentSchema } from 'formiojs';
 // import { ReactFormBuilder } from 'react-form-builder2';
-import 'react-form-builder2/dist/app.css';
+// import 'react-form-builder2/dist/app.css';
 
 import { PVFormBuilderEditorProps } from './types';
 
@@ -65,10 +65,32 @@ class PVFormBuilderEditor extends PontusComponent<
     // this.val = '';
   }
   fb = createRef();
-
+  formBuilder: any;
   componentDidMount() {
     // @ts-ignore
-    $(this.fb.current).formBuilder({ formData });
+    this.formBuilder = $(this.fb.current).formBuilder({
+      formData: this.props.context.options.components || formData,
+      actionButtons: [
+        {
+          id: 'smile',
+          className: 'btn btn-success',
+          label: '😁',
+          type: 'button',
+          events: {
+            click: function () {
+              alert('😁😁😁 !SMILE! 😁😁😁');
+            },
+          },
+        },
+      ],
+      disabledActionButtons: ['data'],
+      // @ts-ignore
+      onSave: (evt: any, formData: any) => {
+        if (this.props.onChange) {
+          this.props.onChange(formData);
+        }
+      },
+    });
   }
   handleResize = () => {
     try {

@@ -1,12 +1,24 @@
-import React from 'react';
+import axios, { AxiosResponse } from 'axios';
+
+// @ts-ignore
+import $ from 'jquery';
+import React, { createRef } from 'react';
+
+// @ts-ignore
+window.jQuery = $;
+// @ts-ignore
+window.$ = $;
+require('jquery-ui-sortable');
+require('formBuilder/dist/form-render.min');
+
+// require('formRender');
 
 // import './FormBuilder.scss';
 // import 'formiojs/dist/formio.form.min.css';
 // import 'formiojs/dist/formio.embed.css';
 // import 'formiojs/dist/formio.full.min.css';
-// // import './formBuilder.css';
+// import './formBuilder.css';
 
-import axios, { AxiosResponse } from 'axios';
 import PontusComponent, { PubSubCallback } from './PontusComponent';
 import { PVNamespaceProps } from './types';
 import { Base64 } from 'js-base64';
@@ -16,6 +28,9 @@ import { Base64 } from 'js-base64';
 // import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
 
 // import PVDatamaps from './PVDatamaps';
+// require('formBuilder/src/js/form-render.js');
+
+// @ts-ignore
 
 export interface PVFormBuilderProps extends PVNamespaceProps {
   components: any;
@@ -45,8 +60,18 @@ export class PVFormPanel extends PontusComponent<PVFormBuilderProps, PVFormBuild
       this.off(`${props.neighbourNamespace}-pvgrid-on-click-row`, this.onClickNeighbour);
     }
   };
+
+  fb = createRef();
+  formRender: any;
+
   componentDidMount = () => {
     this.createSubscriptions(this.props);
+    // require('formBuilder/dist/form-render.min.js');
+
+    // @ts-ignore
+    this.formRender = $(this.fb.current).formRender({
+      formData: this.props.components,
+    });
     // this.ensureData(undefined, this.props.templateText.templateText);
   };
 
@@ -62,6 +87,11 @@ export class PVFormPanel extends PontusComponent<PVFormBuilderProps, PVFormBuild
   componentDidUpdate(prevProps: Readonly<PVFormBuilderProps>) {
     // Typical usage (don't forget to compare props):
     if (this.props?.components !== prevProps?.components) {
+      // @ts-ignore
+      this.formRender = $(this.fb.current).formRender({
+        formData: this.props.components,
+      });
+
       // this.ensureData(this.state.contextId, this.props.templateText.templateText);
     }
   }
@@ -145,7 +175,10 @@ export class PVFormPanel extends PontusComponent<PVFormBuilderProps, PVFormBuild
     if (!this.state.components) {
       return <div />;
     }
-    return <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}></div>;
+    // @ts-ignore
+    let formRenderDiv = <form ref={this.fb} />;
+
+    return <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}>{formRenderDiv}</div>;
   }
 }
 

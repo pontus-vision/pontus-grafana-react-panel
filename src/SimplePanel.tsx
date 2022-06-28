@@ -50,7 +50,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
     const awsAccessKeyId = this.props.options.awsAccessKeyId;
     const awsSecretKeyId = this.props.options.awsSecretKeyId;
     const templateText = this.props.options.templateText;
-    const components = this.props.options?.pvFormBuilderEditorProps?.components || [];
+    const components =
+      typeof this.props.options?.components === 'string' ? JSON.parse(this.props.options?.components) || [] : [];
     const echoSrv = getEchoSrv();
 
     // console.log(`config.bootData = ${config.bootData}`);

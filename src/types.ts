@@ -68,6 +68,7 @@ export interface SimpleOptions {
     colSettings?: PVGridColDef[];
   };
   templateText?: string;
+  components?: any;
   pvFormBuilderEditorProps?: PVFormBuilderEditorProps;
 }
 

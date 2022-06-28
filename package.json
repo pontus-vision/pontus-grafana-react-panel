@@ -39,10 +39,8 @@
     "@types/pubsub-js": "^1.8.2",
     "@types/react-select": "^3.1.2",
     "@types/reflexbox": "^4.0.2",
-    "babel-plugin-react-scoped-css": "^1.1.1",
     "postcss": "^8.4.14",
     "prettier": "^2.6.2",
-    "scoped-css-loader": "^1.0.0",
     "tslib": "^2.2.0"
   },
   "dependencies": {
