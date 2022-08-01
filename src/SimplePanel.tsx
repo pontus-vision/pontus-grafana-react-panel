@@ -171,6 +171,8 @@ export class SimplePanel extends PureComponent<Props, SimplePanelState> {
       PVFormPanel: (
         <PVFormPanel
           components={components || []}
+          dataType={dataType}
+          columnDefs={colSettings}
           isNeighbour={isNeighbour}
           namespace={namespace}
           neighbourNamespace={neighbourNamespace}

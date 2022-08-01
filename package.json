@@ -8,7 +8,9 @@
     "**/**/css-what": "^5.0.1",
     "**/**/glob-parent": "~5.1.2",
     "**/**/axios": "^0.21.2",
-    "**/**/minimist": "~1.2.6"
+    "**/**/minimist": "~1.2.6",
+    "**/**/moment": "~2.29.4",
+    "**/**/terser": "~4.8.1"
   },
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -63,6 +65,7 @@
     "jquery": "^3.6.0",
     "jquery-ui-sortable": "^1.0.0",
     "js-base64": "^3.6.0",
+    "js-file-download": "^0.4.12",
     "jspdf": "^2.5.0",
     "keycloak-js": "^15.0.2",
     "lodash": "^4.17.21",
@@ -82,6 +85,7 @@
     "react-select": "^3.2.0",
     "react-svg-gauge": "^1.0.10",
     "react-table": "^7.8.0",
+    "react-to-print": "^2.14.7",
     "redux": "^4.0.5",
     "reflexbox": "^4.0.6",
     "semantic-ui-react": "^2.0.3",

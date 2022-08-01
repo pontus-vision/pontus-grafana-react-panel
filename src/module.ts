@@ -197,7 +197,7 @@ plugin.setPanelOptions((builder) => {
     defaultValue: defaults.dataSettings,
     editor: PVGridColSelector,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType === 'PVGrid';
+      return currentConfig.widgetType === 'PVGrid' || currentConfig.widgetType === 'PVFormPanel';
     },
   });
   builder.addBooleanSwitch({

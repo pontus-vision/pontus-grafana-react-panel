@@ -1,5 +1,5 @@
 #!/bin/bash
-TAG=${TAG:-1.15.1}
+TAG=${TAG:-1.15.2}
 set -e
 DIR="$( cd "$(dirname "$0")" ; pwd -P )"
 cd $DIR
