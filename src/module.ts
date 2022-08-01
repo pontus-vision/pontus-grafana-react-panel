@@ -197,7 +197,7 @@ plugin.setPanelOptions((builder) => {
     defaultValue: defaults.dataSettings,
     editor: PVGridColSelector,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
-      return currentConfig.widgetType === 'PVGrid';
+      return currentConfig.widgetType === 'PVGrid' || currentConfig.widgetType === 'PVFormPanel';
     },
   });
   builder.addBooleanSwitch({
@@ -262,12 +262,10 @@ plugin.setPanelOptions((builder) => {
   builder.addCustomEditor({
     id: 'PVFormBuilderEditor',
     name: PontusComponent.t('Form Editor')!,
-    path: 'pvFormBuilderProps',
+    path: 'components',
     // description: '',
     settings: {},
-    defaultValue: {
-      components: [],
-    },
+    defaultValue: [],
     editor: PVFormBuilderEditor,
     showIf: (currentConfig: SimpleOptions): boolean | undefined => {
       return currentConfig.widgetType === 'PVFormPanel';

@@ -176,6 +176,12 @@ class PontusComponent<T extends PVComponentProps | PanelOptionsEditorProps<any>,
     return PontusComponent.getURLGeneric(props, 'home/report/render');
   }
 
+  static getRestPdfReportRenderURL(props: any): string {
+    return PontusComponent.getURLGeneric(props, 'home/report/pdf/render');
+  }
+  static getFormDataURL(props: any): string {
+    return PontusComponent.getURLGeneric(props, 'home/form/data');
+  }
   static getRestURL(props: any): string {
     return PontusComponent.getURLGeneric(props, 'home/records');
   }

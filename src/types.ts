@@ -1,14 +1,50 @@
 import { PVGridColDef } from './PVGrid';
 import PontusComponent, { PVComponentProps } from './PontusComponent';
 import { PVGridColSelectorProps } from './PVGridColSelector';
-import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
+// import { ComponentSchema, ExtendedComponentSchema } from 'formiojs';
 // declare module 'react-formio';
 
+export interface PVFormDataValues {
+  label: string;
+  value: string;
+  selected?: boolean;
+}
+export interface PVFormData {
+  type: string;
+  subtype?: string;
+  label: string;
+  className?: string;
+  name?: string;
+  access?: boolean | string;
+  default?: any;
+  requireValidOption?: boolean;
+  inline?: boolean;
+  multiple?: boolean;
+  values?: PVFormDataValues;
+  other?: boolean;
+  description?: string;
+  placeholder?: string;
+  value?: string;
+  maxlength?: number;
+  rows?: number;
+  role?: string;
+  toggle?: boolean;
+  required?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  userData?: string[];
+}
 export interface PVFormBuilderEditorProps extends PVGridColSelectorProps {
-  components: ComponentSchema[] | ExtendedComponentSchema[];
+  components: PVFormData[];
   init: any;
   neighbourId?: string;
+  dataSettings?: {
+    dataType?: string;
+    colSettings?: PVGridColDef[];
+  };
 }
+
 export const scTypes = ['au', 'br', 'de'] as const;
 export type Market = typeof scTypes[number];
 
@@ -68,6 +104,7 @@ export interface SimpleOptions {
     colSettings?: PVGridColDef[];
   };
   templateText?: string;
+  components?: any;
   pvFormBuilderEditorProps?: PVFormBuilderEditorProps;
 }
 
