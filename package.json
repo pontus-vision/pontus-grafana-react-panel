@@ -5,7 +5,8 @@
   "resolutions": {
     "**/**/immer": "^9.0.6",
     "**/**/postcss": "^7.0.36",
-    "**/**/css-what": "^5.0.1",
+    "**/**/css-what": "^6.0.1",
+    "**/**/css-select": "^5.0.1",
     "**/**/glob-parent": "~5.1.2",
     "**/**/axios": "^0.21.2",
     "**/**/minimist": "~1.2.6",
@@ -48,7 +49,7 @@
   "dependencies": {
     "ag-grid-community": "^25.0.1",
     "ag-grid-react": "^25.0.1",
-    "axios": "0.21.2",
+    "axios": "^0.21.2",
     "bootstrap": "^5.1.3",
     "bootswatch": "^5.1.3",
     "brace": "^0.11.1",
@@ -62,6 +63,7 @@
     "hawk": "^9.0.0",
     "html2canvas": "^1.3.3",
     "i18next": "^19.8.4",
+    "immer": "^9.0.6",
     "jquery": "^3.6.0",
     "jquery-ui-sortable": "^1.0.0",
     "js-base64": "^3.6.0",
